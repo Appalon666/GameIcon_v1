@@ -12,8 +12,11 @@
 import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import puppeteer from 'puppeteer-core';
+import sharp from 'sharp';
+import { DROP_GAMES, DROP_SHOTS, DROP_ICONS } from './moderation-list.mjs';
+import { chromePath } from './lib.mjs';
 
-const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const CHROME = chromePath();
 const URL = `http://localhost:${process.env.PORT || 8080}/`;
 const NAME = 'Угадай игру по иконке и скриншоту';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -75,14 +78,58 @@ const shots = read('public/data/shots.json');
   }
   const anchors = [...html.matchAll(/<a\s[^>]*href=/gi)].length;
   if (anchors) hits.push(`тегов <a href>: ${anchors}`);
+
+  // Данные — тоже часть игры. Раньше проверка смотрела только код и разметку,
+  // а в icons.json и shots.json спокойно ехали 1837 адресов cdn2.steamgriddb.com
+  // и store.steampowered.com: модератор листает файлы архива, а не только экран.
+  // В public/ поля происхождения остаются, из архива их убирает pack.mjs —
+  // поэтому здесь проверяется именно архив.
+  if (fs.existsSync('dist/game.zip')) {
+    for (const name of ['data/icons.json', 'data/shots.json', 'data/games.json']) {
+      // Поиск делает сам python и печатает только найденные адреса: печать
+      // содержимого целиком падала на кириллице (консоль Windows в cp1251).
+      let found = '';
+      try {
+        found = execFileSync('python', ['-c',
+          `import zipfile,re;t=zipfile.ZipFile('dist/game.zip').read('${name}').decode('utf8');` +
+          `print(chr(10).join(re.findall(r'https?://[^\s\"]+',t)))`]).toString();
+      } catch (e) { hits.push(`${name}: не прочитать из архива (${e.message.slice(0, 80)})`); continue; }
+      const urls = found.split('\n').map((x) => x.trim()).filter(Boolean);
+      if (urls.length) hits.push(`архив/${name}: ${urls.length} адресов, первый — ${urls[0]}`);
+    }
+
+    // Музыкальный файл — исключение, и оно осознанное. В его теге стоит адрес
+    // страницы-источника: это единственное, чем подтверждается лицензия CC0
+    // (п. 3.5), и ровно то, чего у соседнего проекта не хватило, когда
+    // модерация запросила права. Адрес не отрисовывается, не кликается и лежит
+    // в стандартном поле метаданных. Проверяем, что он там ОДИН и именно тот.
+    const LICENSE_URL = 'https://opengameart.org/content/menu-music';
+    try {
+      const found = execFileSync('python', ['-c',
+        "import zipfile,re;d=zipfile.ZipFile('dist/game.zip').read('audio/theme.mp3').decode('latin-1');" +
+        "print(chr(10).join(sorted(set(re.findall(r'https?://[!-~]+',d)))))"]).toString();
+      // Точка в конце предложения к адресу не относится — срезаем хвостовую пунктуацию.
+      const urls = found.split(String.fromCharCode(10)).map((x) => x.trim().replace(/[.,;]+$/, '')).filter(Boolean);
+      const extra = urls.filter((u) => u !== LICENSE_URL);
+      if (extra.length) hits.push(`архив/audio/theme.mp3: посторонние адреса — ${extra.join(', ')}`);
+      if (!urls.includes(LICENSE_URL)) hits.push('в теге трека нет ссылки на лицензию — нечем подтвердить п. 3.5');
+    } catch (e) {
+      hits.push(`audio/theme.mp3: не прочитать из архива (${e.message.slice(0, 80)})`);
+    }
+  } else {
+    hits.push('архива нет — данные в нём не проверены (npm run pack)');
+  }
+
   check('п. 8.4.2 — в игре нет ссылок и доменов', !hits.length, hits.join('; ') || 'только SDK Яндекса');
 }
 
 // п. 8.2.5 — вычищенный контент отсутствует и в данных, и на диске.
 {
-  const gone = ['schedule-i', 'postal-2', 'mirror', 'crush-crush', 'love-is-all-around'];
-  const goneShots = ['wolfenstein-ii-the-new-colossus-1.jpg', 'cyberpunk-2077-1.jpg', 'tower-of-fantasy-1.jpg'];
-  const goneIcons = ['company-of-heroes-legacy-edition.png', 'return-to-castle-wolfenstein.png'];
+  // Списки — общие с moderation-clean.mjs: свой второй список рано или поздно
+  // разошёлся бы с настоящим, и проверка перестала бы что-либо стеречь.
+  const gone = DROP_GAMES;
+  const goneShots = Object.keys(DROP_SHOTS);
+  const goneIcons = Object.keys(DROP_ICONS);
   const bad = [];
   for (const id of gone) {
     if (games.games.some((g) => g.id === id)) bad.push(`игра ${id} осталась в базе`);
@@ -136,9 +183,11 @@ const shots = read('public/data/shots.json');
   for (const [f, w, h] of want) {
     if (!fs.existsSync(f)) { bad.push(`${f}: нет файла`); continue; }
     try {
-      const size = execFileSync('magick', ['identify', '-format', '%wx%h', f]).toString();
-      if (size !== `${w}x${h}`) bad.push(`${f}: ${size}, ждали ${w}x${h}`);
-    } catch { bad.push(`${f}: не удалось прочитать размер`); }
+      // sharp, а не ImageMagick: magick стоит не на всякой машине, и проверка
+      // молча проваливалась там, где с промо всё в порядке.
+      const meta = await sharp(f).metadata();
+      if (meta.width !== w || meta.height !== h) bad.push(`${f}: ${meta.width}x${meta.height}, ждали ${w}x${h}`);
+    } catch (e) { bad.push(`${f}: не удалось прочитать размер (${e.message})`); }
   }
   if (fs.readdirSync('promo').some((f) => f.includes('menu'))) bad.push('в promo остался кадр меню');
   check('п. 5.1.1.2 — промо: 8 кадров геймплея в нужных размерах', !bad.length, bad.join('; ') || 'все 8 на месте');

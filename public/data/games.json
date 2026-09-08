@@ -1,6 +1,6 @@
 {
   "generatedAt": "2026-07-28T19:39:10.912Z",
-  "count": 1036,
+  "count": 1035,
   "games": [
     {
       "id": "counter-strike-global-offensive",
@@ -6776,17 +6776,6 @@
       "tier": 3,
       "appid": 1824220,
       "developer": "Torn Banner Studios",
-      "owners": 3500000,
-      "fact": "",
-      "year": 2022
-    },
-    {
-      "id": "mirror-2-project-x",
-      "name": "Mirror 2: Project X",
-      "genre": "Головоломка",
-      "tier": 3,
-      "appid": 1832640,
-      "developer": "KAGAMI Ⅱ WORKs",
       "owners": 3500000,
       "fact": "",
       "year": 2022

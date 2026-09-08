@@ -2,9 +2,133 @@
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { execFile } from 'node:child_process';
+import { existsSync } from 'node:fs';
+import { execFile, execFileSync } from 'node:child_process';
 
 export const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+
+/**
+ * Путь к ffmpeg. Он нужен только для сборки промо-ролика, и на машине без
+ * ffmpeg в PATH скрипт падал у самой последней команды — после того, как
+ * потратил несколько минут на съёмку кадров.
+ *
+ * Порядок тот же, что у браузера: переменная окружения FFMPEG, потом обычные
+ * места установки. В конце — сборки, которые кладут рядом с собой другие
+ * программы: у Krita и у некоторых редакторов лежит полноценный ffmpeg с
+ * libmp3lame и libx264, и для наших целей он ничем не хуже отдельного.
+ */
+export function ffmpegPath() {
+  return pickFfmpeg().path;
+}
+
+/**
+ * Чем кодировать H.264. Разные сборки ffmpeg собраны с разным набором
+ * кодировщиков, и «просто libx264» есть далеко не везде: у сборки, которая
+ * едет в комплекте с Krita, его нет вовсе, и скрипт падал на последней команде
+ * — после того, как потратил минуты на съёмку кадров.
+ *
+ * Порядок предпочтения: libx264 (эталон качества при заданном CRF) → h264_nvenc
+ * (аппаратный, качество близкое, но нужен драйвер NVIDIA) → libopenh264
+ * (программный, без CRF, задаём битрейт с запасом).
+ */
+const H264 = [
+  { name: 'libx264', args: ['-profile:v', 'high', '-preset', 'slow', '-crf', '18'] },
+  { name: 'h264_nvenc', args: ['-profile:v', 'high', '-preset', 'p6', '-rc', 'vbr', '-cq', '19', '-b:v', '0'] },
+  { name: 'libopenh264', args: ['-profile:v', 'high', '-b:v', '14M'] },
+];
+
+let ffmpegCache = null;
+
+/** Ищет ffmpeg и заодно решает, каким кодировщиком он умеет писать H.264. */
+function pickFfmpeg() {
+  if (ffmpegCache) return ffmpegCache;
+
+  const candidates = [];
+  if (process.env.FFMPEG) {
+    if (!existsSync(process.env.FFMPEG)) throw new Error(`FFMPEG=${process.env.FFMPEG}: файла нет`);
+    candidates.push(process.env.FFMPEG);
+  }
+  const local = process.env.LOCALAPPDATA ?? '';
+  const home = process.env.USERPROFILE ?? '';
+  candidates.push(
+    'C:/ffmpeg/bin/ffmpeg.exe',
+    'C:/ProgramData/chocolatey/bin/ffmpeg.exe',
+    local && join(local, 'Microsoft/WinGet/Links/ffmpeg.exe'),
+    home && join(home, 'scoop/shims/ffmpeg.exe'),
+    // Сборки, которые кладут рядом с собой другие программы. Полноценный
+    // ffmpeg, просто не в PATH.
+    'C:/Program Files (x86)/MOZA Pit House/bin/ffmpeg.exe',
+    'C:/Program Files/Krita (x64)/bin/ffmpeg.exe',
+    'ffmpeg',
+  );
+
+  let fallback = null;
+  for (const path of candidates.filter(Boolean)) {
+    if (path !== 'ffmpeg' && !existsSync(path)) continue;
+    let list;
+    try {
+      list = execFileSync(path, ['-hide_banner', '-encoders'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+    } catch {
+      continue;
+    }
+    for (const codec of H264) {
+      if (!list.includes(codec.name)) continue;
+      const found = { path, codec };
+      // Первый в списке предпочтений — берём сразу; иначе запоминаем и смотрим,
+      // не найдётся ли дальше сборка получше.
+      if (codec === H264[0]) return (ffmpegCache = found);
+      if (!fallback || H264.indexOf(codec) < H264.indexOf(fallback.codec)) fallback = found;
+    }
+  }
+  if (fallback) return (ffmpegCache = fallback);
+  throw new Error(
+    'не нашёл ffmpeg с кодировщиком H.264. Укажи путь: FFMPEG="C:/путь/к/ffmpeg.exe" npm run ...',
+  );
+}
+
+/** Аргументы кодировщика H.264 для найденной сборки. */
+export function h264Args() {
+  const { codec } = pickFfmpeg();
+  return ['-c:v', codec.name, ...codec.args];
+}
+
+/** Имя выбранного кодировщика — для отчёта в консоль. */
+export function h264Name() {
+  return pickFfmpeg().codec.name;
+}
+
+/**
+ * Путь к браузеру для puppeteer-core. Раньше он был захардкожен в каждом
+ * скрипте одной и той же строкой — на машине без Chrome в этом месте падали
+ * разом все проверки, включая verify-moderation.
+ *
+ * Порядок: переменная окружения CHROME (годится и для Chromium, и для Edge),
+ * затем обычные места установки. Движок один и тот же, так что для проверки
+ * вёрстки и обрезки Edge равноценен Chrome.
+ */
+export function chromePath() {
+  if (process.env.CHROME) {
+    if (!existsSync(process.env.CHROME)) throw new Error(`CHROME=${process.env.CHROME}: файла нет`);
+    return process.env.CHROME;
+  }
+  const local = process.env.LOCALAPPDATA ?? '';
+  const candidates = [
+    'C:/Program Files/Google/Chrome/Application/chrome.exe',
+    'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe',
+    local && join(local, 'Google/Chrome/Application/chrome.exe'),
+    'C:/Program Files/Microsoft/Edge/Application/msedge.exe',
+    'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
+  ].filter(Boolean);
+  const found = candidates.find((p) => existsSync(p));
+  if (!found) {
+    throw new Error(
+      'браузер не найден. Укажи путь: CHROME="C:/путь/к/chrome.exe" npm run ... — ' +
+      `искали: ${candidates.join(', ')}`,
+    );
+  }
+  return found;
+}
+
 export const DATA = join(ROOT, 'public', 'data');
 export const IMG = join(ROOT, 'public', 'img');
 export const CACHE = join(ROOT, 'scripts', '.cache');

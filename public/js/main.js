@@ -3,6 +3,7 @@ import { sdk } from './sdk.js';
 import { Game, MODE, KIND, BOARD, TIME } from './game.js';
 import { drawItem, loadImage } from './render.js';
 import { icon, setIcon } from './icons.js';
+import { music } from './audio.js';
 
 /** Папка с картинками по типу контента. */
 const IMG = { icon: 'img/icons/', shot: 'img/shots/' };
@@ -42,6 +43,10 @@ const el = {
   hintIcon: $('hint-icon'),
   homeIcon: $('home-icon'),
   home: $('btn-home'),
+  sound: $('btn-sound'),
+  soundIcon: $('sound-icon'),
+  soundMenu: $('btn-sound-menu'),
+  soundIconMenu: $('sound-icon-menu'),
   gain: $('gain'),
   gainTime: $('gain-time'),
   canvas: $('canvas'),
@@ -184,24 +189,69 @@ function stopTimer() {
 const PAUSE = { HIDDEN: 'hidden', AD: 'ad', PLATFORM: 'platform' };
 const pauseReasons = new Set();
 
+/**
+ * Сколько ждём game_api_resume, прежде чем снять паузу площадки самим.
+ * У каждой причины паузы должен быть свой срок: колбэк снятия может не прийти
+ * совсем, и тогда партия встанет навсегда при живом экране (п. 1.14). Срок
+ * заведомо длиннее любого системного оверлея и ролика площадки.
+ */
+const PLATFORM_PAUSE_TIMEOUT_MS = 180_000;
+let platformPauseTimer = null;
+
 /** Вопрос показан целиком (картинка нарисована) и ещё не отвечен. */
 let questionLive = false;
+
+/**
+ * Идёт ли геймплей с точки зрения площадки. GameplayAPI ждёт парных вызовов, а
+ * зовём мы их из четырёх мест (пауза, разбор, старт партии, выход в меню) —
+ * без этого флага по два `start` подряд уходило бы на каждый вопрос.
+ */
+let gameplayRunning = false;
+
+function gameplayStart() {
+  if (gameplayRunning) return;
+  gameplayRunning = true;
+  sdk.gameplayStart();
+}
+
+function gameplayStop() {
+  if (!gameplayRunning) return;
+  gameplayRunning = false;
+  sdk.gameplayStop();
+}
 
 function addPause(reason) {
   if (pauseReasons.has(reason)) return;
   pauseReasons.add(reason);
   if (pauseReasons.size > 1) return;
-  sdk.gameplayStop();
+  gameplayStop();
   stopTimer();
+  // Скрытая вкладка (п. 1.3) и полноэкранная реклама (п. 4.7) обязаны глушить
+  // звук. Причины считаются здесь же — своего списка у музыки нет намеренно.
+  music.pause();
 }
 
 function dropPause(reason) {
   if (!pauseReasons.delete(reason) || pauseReasons.size) return;
+  // Музыка возвращается до проверок на экран: она играет и в меню, и на
+  // разборе ответа, где геймплея нет.
+  music.resume();
   if (el.game.hidden || game.isOver || !el.reveal.hidden) return;
-  sdk.gameplayStart();
+  resumeGameplay();
   // Таймер поднимаем, только если вопрос уже на экране: пока грузится картинка,
   // его запустит сам nextQuestion().
   if (questionLive) startTimer();
+}
+
+/**
+ * Говорит площадке, что геймплей снова идёт. Отдельной функцией, потому что
+ * gameplayStop() уходит на каждую паузу, а парного start звать было некому,
+ * если пауза снялась на разборе: dropPause там выходит раньше, и до конца
+ * партии площадка считала, что игры нет. Зовём и когда вопрос встал на экран.
+ */
+function resumeGameplay() {
+  if (pauseReasons.size || el.game.hidden || game.isOver) return;
+  gameplayStart();
 }
 
 /** Время вышло: показываем правильный ответ и итоги. */
@@ -262,6 +312,24 @@ function optionButtons() {
   return [...el.options.querySelectorAll('.option')];
 }
 
+/* ---------- Звук ---------- */
+
+/**
+ * Обе кнопки звука (в меню и в верхней панели игры) показывают одно состояние.
+ * Отдельной функцией, потому что состояние меняется не только по клику: музыка
+ * зовёт её же, когда сама решила, что играть пока нельзя.
+ */
+function renderSound() {
+  const off = music.muted;
+  const label = off ? 'Включить звук' : 'Выключить звук';
+  for (const [btn, host] of [[el.sound, el.soundIcon], [el.soundMenu, el.soundIconMenu]]) {
+    setIcon(host, off ? 'mute' : 'sound', { size: btn === el.sound ? 18 : 16 });
+    btn.setAttribute('aria-label', label);
+    btn.setAttribute('aria-pressed', String(off));
+    btn.classList.toggle('is-off', off);
+  }
+}
+
 /* ---------- Ход игры ---------- */
 
 const MAX_LOAD_FAILURES = 8;
@@ -305,6 +373,7 @@ async function nextQuestion() {
       renderTimer();
       questionLive = true;
       for (const btn of optionButtons()) btn.disabled = false;
+      resumeGameplay();
       startTimer();
       el.hint.disabled = false;
       busy = false;
@@ -482,7 +551,7 @@ async function finish() {
   const run = runId;
   questionLive = false;
   stopTimer();
-  sdk.gameplayStop();
+  gameplayStop();
   // Кулдаун обязателен и здесь: в «Хардкоре» партия кончается за секунды, и
   // без него «Ещё раз» крутил бы рекламу чаще раза в минуту (п. 4 требований).
   await sdk.showInterstitial({ respectCooldown: true });
@@ -553,7 +622,7 @@ function goHome() {
   runId++;
   questionLive = false;
   stopTimer();
-  sdk.gameplayStop();
+  gameplayStop();
   if (game.score > 0) {
     sdk.submitScore(game.board, game.score);
     sdk.saveBest(game.board, game.score).then(refreshMenu);
@@ -573,7 +642,7 @@ function startGame(mode) {
   }
   el.reveal.hidden = true;
   show(el.game);
-  sdk.gameplayStart();
+  gameplayStart();
   nextQuestion();
 }
 
@@ -704,6 +773,10 @@ async function boot() {
     if (btn) setKind(btn.dataset.kind);
   });
 
+  music.init(renderSound);
+  el.sound.addEventListener('click', () => music.toggle());
+  el.soundMenu.addEventListener('click', () => music.toggle());
+
   el.home.addEventListener('click', goHome);
   el.play.addEventListener('click', () => startGame(MODE.NORMAL));
   el.playTimed.addEventListener('click', () => startGame(MODE.TIMED));
@@ -742,8 +815,19 @@ async function boot() {
   }, 1000);
   // Паузы со стороны площадки (game_api_pause/resume) — отдельная причина.
   sdk.onPause(
-    () => addPause(PAUSE.PLATFORM),
-    () => dropPause(PAUSE.PLATFORM),
+    () => {
+      addPause(PAUSE.PLATFORM);
+      clearTimeout(platformPauseTimer);
+      // Своей развязки у этой причины нет — только ответное событие площадки.
+      // Не пришло, а вкладка при этом на виду — снимаем сами (п. 1.14).
+      platformPauseTimer = setTimeout(() => {
+        if (!document.hidden) dropPause(PAUSE.PLATFORM);
+      }, PLATFORM_PAUSE_TIMEOUT_MS);
+    },
+    () => {
+      clearTimeout(platformPauseTimer);
+      dropPause(PAUSE.PLATFORM);
+    },
   );
 
   // Перерисовка картинки при любом изменении размера рамки. ResizeObserver

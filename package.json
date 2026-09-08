@@ -18,6 +18,12 @@
     "stress": "node scripts/stress-test.mjs 100",
     "stress-live": "node scripts/stress-test.mjs 6 1 --live",
     "verify": "node scripts/verify-moderation.mjs",
+    "check-ads": "node scripts/check-ads.mjs",
+    "check-audio": "node scripts/check-audio.mjs",
+    "review": "node scripts/contact-sheet.mjs",
+    "check-blur": "node scripts/check-blur.mjs",
+    "ocr-blur": "node scripts/ocr-blur.mjs",
+    "blur-pick": "node scripts/blur-pick.mjs",
     "sweep": "node scripts/sweep-layout.mjs"
   },
   "devDependencies": {

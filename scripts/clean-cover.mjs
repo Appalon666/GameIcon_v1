@@ -70,7 +70,8 @@ async function main() {
     .png()
     .toBuffer();
 
-  await sharp(cleaned).resize(800, 470, { fit: 'fill' }).png().toFile(join(A, 'cover.png'));
+  // Без альфа-канала: обложка по п. 8.3.3 — PNG без прозрачности.
+  await sharp(cleaned).resize(800, 470, { fit: 'fill' }).removeAlpha().png().toFile(join(A, 'cover.png'));
   // hero — фон экрана загрузки в игре. JPEG: арт фотографичный, PNG вышел бы в
   // разы тяжелее без выигрыша в качестве.
   await sharp(cleaned).jpeg({ quality: 82, mozjpeg: true }).toFile(join(ROOT, 'public', 'img', 'hero.jpg'));

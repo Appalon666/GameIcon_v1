@@ -26,7 +26,7 @@
  * через меню в кадр не попадает: получается жёсткая склейка с вопроса на
  * вопрос.
  *
- * Нужен запущенный дев-сервер (npm run serve) и ffmpeg в PATH.
+ * Нужен запущенный дев-сервер (npm run serve) и ffmpeg (см. ffmpegPath в lib.mjs).
  * Запуск: npm run promo-video       — вертикальный 1080×1920
  *         npm run promo-video-wide  — горизонтальный 1920×1080
  */
@@ -34,9 +34,9 @@ import { join, dirname } from 'node:path';
 import { mkdir, rm, writeFile, readFile } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import puppeteer from 'puppeteer-core';
-import { ROOT, sleep } from './lib.mjs';
+import { ROOT, sleep, chromePath, ffmpegPath, h264Args, h264Name } from './lib.mjs';
 
-const CHROME = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
+const CHROME = chromePath();
 const PAGE_URL = `http://localhost:${process.env.PORT || 8080}/`;
 
 const FPS = 60;
@@ -393,7 +393,7 @@ async function encode(slots) {
   await writeFile(listPath, `ffconcat version 1.0\n${body}\nfile '${slots.at(-1).replace(/\\/g, '/')}'\n`);
 
   await mkdir(dirname(OUT), { recursive: true });
-  await run('ffmpeg', [
+  await run(ffmpegPath(), [
     '-y', '-hide_banner', '-loglevel', 'error',
     '-f', 'concat', '-safe', '0', '-i', listPath,
     // JPEG-кадры идут в полном диапазоне яркости; переводим в телевизионный и
@@ -401,7 +401,9 @@ async function encode(slots) {
     // ролик светлее, чем игра выглядит на самом деле.
     '-vf', `scale=${WIDTH}:${HEIGHT}:flags=lanczos:in_range=full:out_range=limited,setsar=1,format=yuv420p`,
     '-r', String(FPS), '-fps_mode', 'cfr',
-    '-c:v', 'libx264', '-profile:v', 'high', '-preset', 'slow', '-crf', '18',
+    // Кодировщик выбирается по тому, что есть в найденной сборке ffmpeg:
+    // libx264 есть не везде (см. h264Args в lib.mjs).
+    ...h264Args(),
     '-color_range', 'tv', '-colorspace', 'bt709',
     '-color_primaries', 'bt709', '-color_trc', 'bt709',
     '-movflags', '+faststart', '-an',
@@ -411,7 +413,7 @@ async function encode(slots) {
 
 /* ---------- Запуск ---------- */
 
-console.log(`Формат: ${FORMAT_NAME} — ${WIDTH}×${HEIGHT}`);
+console.log(`Формат: ${FORMAT_NAME} — ${WIDTH}×${HEIGHT}, кодировщик ${h264Name()}`);
 await rm(WORK, { recursive: true, force: true });
 await mkdir(WORK, { recursive: true });
 

@@ -93,7 +93,11 @@ async function clean(name, out, w, h, override) {
     .composite([{ input: patch, left: cx - half, top: cy - half }])
     .png()
     .toBuffer();
-  await sharp(patched).resize(w, h, { fit: 'fill' }).png().toFile(join(A, out));
+  // removeAlpha: заплатка накладывается RGBA, и без этого в готовом файле
+  // остаётся альфа-канал. Требования к иконке и обложке (п. 8.3.3) — PNG без
+  // прозрачности и с прямыми углами; канал полностью непрозрачный, но повода
+  // для придирки лучше не оставлять.
+  await sharp(patched).resize(w, h, { fit: 'fill' }).removeAlpha().png().toFile(join(A, out));
 
   // Проверка: яркость в месте знака должна упасть до фоновой.
   const { data, info } = await sharp(join(A, out)).raw().toBuffer({ resolveWithObject: true });

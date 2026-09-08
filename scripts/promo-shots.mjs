@@ -12,9 +12,9 @@
 import { join } from 'node:path';
 import { mkdir } from 'node:fs/promises';
 import puppeteer from 'puppeteer-core';
-import { ROOT } from './lib.mjs';
+import { ROOT, chromePath } from './lib.mjs';
 
-const CHROME = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
+const CHROME = chromePath();
 const URL = `http://localhost:${process.env.PORT || 8080}/`;
 const OUT = join(ROOT, 'promo');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

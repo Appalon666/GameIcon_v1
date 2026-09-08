@@ -421,6 +421,18 @@ body {
 
 .links { display: flex; justify-content: center; gap: 8px; }
 
+/* Кнопка звука в ряду ссылок: только иконка, без подписи — ряд и так упирается
+   в ширину телефона (п. 1.10.1), а динамик понятен без слов. */
+.btn--sound { padding: 8px 10px; }
+.btn__icon { display: inline-flex; color: var(--muted); }
+.btn--sound:hover .btn__icon { color: var(--accent); }
+
+/* Выключенный звук виден по иконке, но приглушим и цвет: состояние кнопки
+   должно читаться с одного взгляда, а не по форме значка. */
+.chip.is-off .chip__icon,
+.btn--sound.is-off .btn__icon { color: var(--muted); }
+.chip.is-off { border-color: var(--line); }
+
 .records { color: var(--muted); font-size: 14px; }
 .records b { color: var(--text); }
 
@@ -1011,4 +1023,19 @@ body {
   .screen--center { gap: 6px; }
   .mode { padding: 7px 12px; }
   .option { padding: 6px 10px; }
+}
+
+/* Крайне низкое окно (высота ≤360): узкий портрет 320x320 и такой же узкий
+   ландшафт. Реальных телефонов с такой высотой нет, но встроенный вью и
+   разделённый экран дают и это, а модерацию интересует любой размер окна
+   (п. 1.10.1): без блока ряд «Лидерборды / Об игре» уходил за нижний край на
+   41px. Ужимаем отступы и заголовок; размеры кнопок и зоны нажатия не трогаем —
+   их и так держит накладка 44x44. */
+@media (max-height: 360px) {
+  .screen { padding-top: 5px; padding-bottom: calc(5px + env(safe-area-inset-bottom)); }
+  .screen--center { gap: 4px; }
+  .title { font-size: 20px; }
+  .mode { padding: 5px 12px; }
+  .mode__desc { font-size: 11.5px; }
+  .picker { padding: 6px; }
 }

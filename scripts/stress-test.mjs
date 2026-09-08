@@ -24,8 +24,9 @@
  *                                               печатается: смотреть глазами
  */
 import puppeteer from 'puppeteer-core';
+import { chromePath } from './lib.mjs';
 
-const CHROME = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
+const CHROME = chromePath();
 const URL = `http://localhost:${process.env.PORT || 8080}/`;
 const RUNS = Number(process.argv[2] || 100);
 const QUESTIONS = 6; // вопросов за прогон

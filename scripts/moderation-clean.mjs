@@ -6,45 +6,10 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { DROP_GAMES, DROP_SHOTS, DROP_ICONS } from './moderation-list.mjs';
 
 const DATA = 'public/data';
 const IMG = 'public/img';
-
-/** Игры, которые убираем целиком — тема или контент под прямым запретом. */
-const DROP_GAMES = [
-  'schedule-i',          // наркоторговля, гроубокс — претензия модератора
-  'postal-2',            // наркотики + крайнее насилие
-  'mirror',              // эротическая игра
-  'crush-crush',         // эротический дейт-сим
-  'love-is-all-around',  // дейт-сим с реальными актрисами
-];
-
-/** Отдельные скриншоты под удаление: файл -> причина. */
-const DROP_SHOTS = {
-  'wolfenstein-ii-the-new-colossus-1.jpg': 'свастика на повязке',
-  'cyberpunk-2077-1.jpg': 'обнажённая натура',
-  'tower-of-fantasy-1.jpg': 'купальники, откровенные позы',
-  'final-fantasy-xv-windows-edition-1.jpg': 'логотип Steam + «Purchase on Steam»',
-  'frostpunk-1.jpg': 'www.frostpunkgame.com и ценники',
-  'dirt-rally-20-1.jpg': 'логотипы Xbox/PS4/Steam/Windows/Oculus',
-  'warhammer-40-000-space-marine-2-1.jpg': 'логотипы AMD/FOCUS, не геймплей',
-  'watch-dogs-1.jpg': 'раскладка издания, не геймплей',
-  'microsoft-flight-simulator-2020-40th-anniversary-edition-1.jpg': 'таблица изданий',
-  'insurgency-sandstorm-1.jpg': 'таблица изданий + логотип FOCUS',
-  'mortal-kombat-x-1.jpg': 'страница стора с ценами',
-  'doom-doom-ii-1.jpg': 'маркетинговый коллаж',
-  'a-plague-tale-innocence-1.jpg': 'пресс-оценки GameSpot/Screenrant',
-  'alan-wake-1.jpg': 'пресс-оценки IGN/Eurogamer/PC Gamer',
-  'life-is-strange-episode-1-1.jpg': 'награды BAFTA/Golden Joystick',
-  'outriders-1.jpg': 'пресс-оценки Forbes/GameSpot',
-  'pillars-of-eternity-1.jpg': 'пресс-цитаты Game Informer/IGN',
-};
-
-/** Отдельные иконки под удаление. */
-const DROP_ICONS = {
-  'company-of-heroes-legacy-edition.png': 'офицер вермахта, Железный крест',
-  'return-to-castle-wolfenstein.png': 'эмблема-орёл в нацистской стилистике',
-};
 
 const read = (f) => JSON.parse(fs.readFileSync(path.join(DATA, f), 'utf8'));
 const write = (f, o) => fs.writeFileSync(path.join(DATA, f), JSON.stringify(o, null, 2) + '\n');

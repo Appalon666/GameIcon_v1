@@ -15,8 +15,9 @@
  * Нужен дев-сервер: npm run serve. Запуск: node scripts/sweep-layout.mjs
  */
 import puppeteer from 'puppeteer-core';
+import { chromePath } from './lib.mjs';
 
-const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const CHROME = chromePath();
 const URL = `http://localhost:${process.env.PORT || 8080}/`;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 

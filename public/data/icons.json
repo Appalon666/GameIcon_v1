@@ -1,6 +1,6 @@
 {
   "generatedAt": "2026-07-28T23:09:08.938Z",
-  "count": 827,
+  "count": 823,
   "icons": [
     {
       "file": "counter-strike-global-offensive.png",
@@ -2148,17 +2148,6 @@
       "skip": false
     },
     {
-      "file": "day-of-defeat-source.png",
-      "gameId": "day-of-defeat-source",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/3b1f10d5d1857a3f9577979905c49938.ico",
-      "author": "saturday99",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "alien-swarm.png",
       "gameId": "alien-swarm",
       "kind": "icon",
@@ -3483,17 +3472,6 @@
       "gameId": "gang-beasts",
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/8485694bae96aebc7c4fe6119599d0e0.ico",
-      "author": "BigHungryChicken",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "tabletop-simulator.png",
-      "gameId": "tabletop-simulator",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/68230fb510baa246a67bf901c7f895ea.ico",
       "author": "BigHungryChicken",
       "blur": [],
       "clean": true,
@@ -5607,17 +5585,6 @@
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/1455d8443f7d124bcbbd60278824ee58.png",
       "author": "MassiveGoods",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "balatro.png",
-      "gameId": "balatro",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/de7954bda572f1c1b0dfe0f44dee24f6.ico",
-      "author": "r_dsgnd",
       "blur": [],
       "clean": true,
       "needsReview": false,
@@ -7818,8 +7785,15 @@
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/7f9d5084b8246feed7719e125b3834f6.ico",
       "author": "EchoesNorthbound",
-      "blur": [],
-      "clean": true,
+      "blur": [
+        {
+          "x": 0,
+          "y": 0.356,
+          "w": 1,
+          "h": 0.118
+        }
+      ],
+      "clean": false,
       "needsReview": false,
       "skip": false
     },
@@ -8698,17 +8672,6 @@
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/8d6f8b44a67f6366b4abdc2198de2ec6.png",
       "author": "khalidvawda",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "poker-night-at-the-inventory.png",
-      "gameId": "poker-night-at-the-inventory",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/d24ca82b65728d3135a636c10b367fa2.png",
-      "author": "Sterophonick",
       "blur": [],
       "clean": true,
       "needsReview": false,

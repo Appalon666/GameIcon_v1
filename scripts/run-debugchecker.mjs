@@ -18,8 +18,9 @@ import { readFile } from 'node:fs/promises';
 import fs from 'node:fs';
 import { join, extname } from 'node:path';
 import puppeteer from 'puppeteer-core';
+import { chromePath } from './lib.mjs';
 
-const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const CHROME = chromePath();
 const CHECKER_DIR = process.argv[2] || 'C:/yandex-games-debug-checker';
 const CHECKER_FILE = join(CHECKER_DIR, 'debugcheck.js');
 const PUBLIC = 'public';

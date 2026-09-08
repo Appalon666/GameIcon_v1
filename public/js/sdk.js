@@ -41,6 +41,25 @@ function coerceBest(raw) {
 const INTERSTITIAL_COOLDOWN_MS = 60_000;
 let lastInterstitialAt = 0;
 
+/**
+ * Сторожа рекламы. Двухступенчатые, и это важно: один короткий таймаут на всё
+ * означал бы, что игра оживает ПОД ещё идущим роликом — звук и геймплей во
+ * время полноэкранной рекламы площадка запрещает (п. 4.7), а следующий вопрос
+ * успевал бы прийти и уйти невидимым для игрока.
+ *   - OPEN — реклама не открылась вовсе (SDK молчит): ждём немного;
+ *   - CLOSE — открылась, но onClose/onError не пришли: ждём долго, дольше
+ *     любого реального ролика, иначе вернётся «вечная пауза» (п. 1.14).
+ */
+const AD_OPEN_TIMEOUT_MS = 15_000;
+const AD_CLOSE_TIMEOUT_MS = 180_000;
+
+/**
+ * Показ рекламы — критическая секция на одного. Сторожа и флаги показа общие,
+ * и второй вызов затирал бы развязку первого: тот остался бы без onClose, то
+ * есть без снятия паузы.
+ */
+let adBusy = false;
+
 /** Таймаут на любой запрос к SDK: своих таймаутов у методов площадки нет. */
 const SDK_TIMEOUT_MS = 8000;
 
@@ -273,37 +292,51 @@ export const sdk = {
    */
   showInterstitial(opts = {}) {
     // Вне iframe площадки колбэки не придут вовсе — SDK не зовём, иначе каждая
-    // реклама вешала бы игру до 10-секундного сторожа.
+    // реклама вешала бы игру до срабатывания сторожа.
     if (!embedded()) return Promise.resolve();
     if (opts.respectCooldown && !sdk.interstitialReady) return Promise.resolve();
-    lastInterstitialAt = Date.now();
     if (!ysdk?.adv) return Promise.resolve();
+    if (adBusy) {
+      console.warn('[sdk] interstitial: показ уже идёт, второй не начинаем');
+      return Promise.resolve();
+    }
+    // Отсчёт от попытки: даже если реклама не откроется, дёргать SDK чаще раза
+    // в минуту незачем. Реальный показ переставит отсчёт в onOpen.
+    lastInterstitialAt = Date.now();
+    adBusy = true;
     return new Promise((resolve) => {
       let done = false;
+      let guard;
       const finish = () => {
         if (done) return;
         done = true;
+        clearTimeout(guard);
+        adBusy = false;
         resolve();
       };
-      // Страховка: если SDK не вызовет ни один колбэк, продолжаем через 10 с.
-      const guard = setTimeout(finish, 10000);
-      const end = () => {
-        clearTimeout(guard);
-        finish();
-      };
+      // Пока реклама не открылась, ждём недолго: SDK мог промолчать вовсе.
+      guard = setTimeout(finish, AD_OPEN_TIMEOUT_MS);
       try {
         ysdk.adv.showFullscreenAdv({
           callbacks: {
-            onClose: end,
+            onOpen: () => {
+              // Ролик на экране: сторож «не открылась» снимаем, иначе игра
+              // продолжилась бы прямо под рекламой (п. 4.7). Взамен — длинный
+              // сторож на случай, что onClose не придёт никогда.
+              clearTimeout(guard);
+              guard = setTimeout(finish, AD_CLOSE_TIMEOUT_MS);
+              lastInterstitialAt = Date.now();
+            },
+            onClose: finish,
             onError: (e) => {
               console.warn('[sdk] interstitial:', e);
-              end();
+              finish();
             },
           },
         });
       } catch (e) {
         console.warn('[sdk] interstitial:', e?.message ?? e);
-        end();
+        finish();
       }
     });
   },
@@ -322,35 +355,45 @@ export const sdk = {
     // `Promise.resolve(true)`, и подсказку получал даром любой, у кого SDK не
     // поднялся или вырезан блокировщиком (п.4.5).
     if (!ysdk?.adv) return Promise.resolve(false);
+    if (adBusy) {
+      console.warn('[sdk] rewarded: показ уже идёт, второй не начинаем');
+      return Promise.resolve(false);
+    }
+    adBusy = true;
     return new Promise((resolve) => {
       let rewarded = false;
       let done = false;
+      let guard;
       const finish = () => {
         if (done) return;
         done = true;
+        clearTimeout(guard);
+        adBusy = false;
+        // Награду выдаёт только onRewarded самого SDK: закрытый на первой
+        // секунде ролик и любой сбой показа наградой не считаются (п. 4.5).
         resolve(rewarded);
       };
-      const guard = setTimeout(finish, 60000);
-      const end = () => {
-        clearTimeout(guard);
-        finish();
-      };
+      guard = setTimeout(finish, AD_OPEN_TIMEOUT_MS);
       try {
         ysdk.adv.showRewardedVideo({
           callbacks: {
+            onOpen: () => {
+              clearTimeout(guard);
+              guard = setTimeout(finish, AD_CLOSE_TIMEOUT_MS);
+            },
             onRewarded: () => {
               rewarded = true;
             },
-            onClose: end,
+            onClose: finish,
             onError: (e) => {
               console.warn('[sdk] rewarded:', e);
-              end();
+              finish();
             },
           },
         });
       } catch (e) {
         console.warn('[sdk] rewarded:', e?.message ?? e);
-        end();
+        finish();
       }
     });
   },
