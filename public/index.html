@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Угадай игру по иконке и скриншоту</title>
+  <link rel="icon" href="favicon.png" type="image/png">
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Документированная форма подключения для игр, размещённых на сервере
+       Яндекса (п. 1.1 требований): файл отдаёт сама площадка. Локально его
+       подменяет дев-сервер, см. scripts/serve.mjs. -->
+  <script src="/sdk.js"></script>
+</head>
+<body>
+  <div id="boot" class="boot">
+    <div class="boot__spinner" aria-hidden="true"></div>
+    <p id="boot-text">Загрузка…</p>
+  </div>
+
+  <!-- Старт -->
+  <section id="screen-start" class="screen screen--center" hidden>
+    <h1 class="title">Угадай игру по иконке и скриншоту</h1>
+    <p class="subtitle">Докажи, что ты настоящий геймер!</p>
+    <p class="howto">Выбери название из четырёх вариантов. Подсказка 50/50 убирает два неверных.</p>
+
+    <!-- На десктопе .start-body раскладывается в две колонки: слева выбор
+         режима, справа топ-5. На мобиле — одна колонка, топ-5 скрыт (см. CSS). -->
+    <div class="start-body">
+      <div class="start-main">
+        <div class="picker">
+          <div class="picker__row">
+            <span class="picker__label">Показывать</span>
+            <div class="picker__ctrls">
+              <div id="kind" class="seg" role="group" aria-label="Тип картинки">
+                <button class="seg__btn seg__btn--on" type="button" data-kind="mix">Всё</button>
+                <button class="seg__btn" type="button" data-kind="icon">Иконки</button>
+                <button class="seg__btn" type="button" data-kind="shot">Скриншоты</button>
+              </div>
+              <button class="hint-dot" type="button" aria-label="Как работает выбор типа картинок">?
+                <span class="hint-dot__tip" role="tooltip">Тип картинок — только для режима «Обычный». «На время» и «Хардкор» играются по всему набору, поэтому доступны лишь при выборе «Всё».</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="modes">
+          <button id="btn-play" class="mode mode--primary" type="button">
+            <span class="mode__name">Обычный</span>
+            <span class="mode__desc">3 жизни, без спешки</span>
+            <span id="mode-board-normal" class="mode__board">Таблица: Общий · Всё</span>
+          </button>
+          <button id="btn-play-timed" class="mode" type="button">
+            <span class="mode__name">На время</span>
+            <span class="mode__desc">45 секунд, ответ +5с, ошибка −5с</span>
+            <span id="mode-board-timed" class="mode__board">Таблица: На время</span>
+          </button>
+          <button id="btn-play-hard" class="mode mode--hard" type="button">
+            <span class="mode__name">Хардкор</span>
+            <span class="mode__desc">1 жизнь — одна ошибка, и всё</span>
+            <span id="mode-board-hard" class="mode__board">Таблица: Хардкор</span>
+          </button>
+        </div>
+
+        <p id="records" class="records" hidden></p>
+      </div>
+
+      <div id="menu-board" class="board board--menu" hidden>
+        <h3 class="board__title">Лучшие игроки</h3>
+        <ol id="menu-board-list" class="board__list"></ol>
+      </div>
+    </div>
+
+    <div class="links">
+      <button id="btn-board" class="btn btn--link" type="button">Лидерборды</button>
+      <button id="btn-credits" class="btn btn--link" type="button">Об игре</button>
+    </div>
+  </section>
+
+  <!-- Игра -->
+  <section id="screen-game" class="screen screen--game" hidden>
+    <header class="hud">
+      <div id="lives" class="hud__lives" aria-label="Жизни"></div>
+
+      <div class="hud__right">
+        <div class="score">
+          <span id="score-icon" class="score__icon"></span>
+          <span id="score" class="score__value">0</span>
+          <span id="gain" class="score__gain" aria-hidden="true"></span>
+          <span id="gain-time" class="score__gain score__gain--time" aria-hidden="true"></span>
+        </div>
+
+        <button id="btn-hint" class="chip" type="button" aria-label="Подсказка 50/50 за просмотр рекламы">
+          <span id="hint-icon" class="chip__icon"></span>
+          <span class="chip__text">50/50<span class="chip__more"> — убрать два неверных</span></span>
+          <span class="chip__badge">за рекламу</span>
+        </button>
+
+        <button id="btn-home" class="chip chip--icon" type="button" aria-label="Выйти в главное меню">
+          <span id="home-icon" class="chip__icon"></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Таймер режима «на время» -->
+    <div id="timer" class="timer" hidden>
+      <div class="timer__head">
+        <span id="timer-icon" class="timer__icon"></span>
+        <span id="timer-value" class="timer__value">45</span>
+        <span class="timer__unit">сек</span>
+      </div>
+      <div class="timer__bar">
+        <div id="timer-fill" class="timer__fill"></div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="photo">
+        <canvas id="canvas" class="photo__canvas"></canvas>
+      </div>
+      <p id="status" class="status" hidden></p>
+    </div>
+
+    <div class="controls">
+      <div id="options" class="options" role="group" aria-label="Варианты ответа"></div>
+    </div>
+
+    <!-- Итог раунда: правильный ответ и факт об игре -->
+    <div id="reveal" class="reveal" hidden>
+      <div class="reveal__box">
+        <p id="reveal-verdict" class="reveal__verdict"></p>
+        <p id="reveal-answer" class="reveal__answer"></p>
+        <div class="reveal__fact">
+          <span class="reveal__fact-label">Разработчик</span>
+          <p id="reveal-fact" class="reveal__fact-text"></p>
+        </div>
+        <button id="btn-revive" class="btn reveal__next btn--revive" type="button" hidden>
+          Продолжить: 3 жизни
+          <span class="chip__badge">за рекламу</span>
+        </button>
+        <button id="btn-next" class="btn btn--primary reveal__next" type="button">Далее</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Итоги -->
+  <section id="screen-over" class="screen screen--center" hidden>
+    <h2 class="title title--small">Игра окончена</h2>
+    <p class="result">
+      <span id="final-score" class="result__score">0</span>
+      <span class="result__label">очков</span>
+    </p>
+    <dl id="stats" class="stats"></dl>
+    <div id="board" class="board" hidden>
+      <h3 class="board__title">Лучшие игроки</h3>
+      <ol id="board-list" class="board__list"></ol>
+    </div>
+    <button id="btn-again" class="btn btn--primary btn--big" type="button">Ещё раз</button>
+  </section>
+
+  <!-- Лидерборды: 5 таблиц — общий зачёт разбит по типу контента, плюс «на время» и «хардкор» -->
+  <div id="boards" class="modal" hidden>
+    <div class="modal__box">
+      <h3 class="modal__title">Лидерборды</h3>
+      <div class="tabs" role="tablist">
+        <button id="tab-total" class="tab tab--on" type="button" role="tab">Всё</button>
+        <button id="tab-icons" class="tab" type="button" role="tab">Иконки</button>
+        <button id="tab-shots" class="tab" type="button" role="tab">Скрин</button>
+        <button id="tab-timed" class="tab" type="button" role="tab">Время</button>
+        <button id="tab-hardcore" class="tab" type="button" role="tab">Хардкор</button>
+      </div>
+      <ol id="boards-list" class="board__list board__list--modal"></ol>
+      <p id="boards-note" class="modal__note"></p>
+      <button id="btn-boards-close" class="btn btn--primary" type="button">Закрыть</button>
+    </div>
+  </div>
+
+  <!-- Об игре -->
+  <div id="credits" class="modal" hidden>
+    <div class="modal__box">
+      <h3 class="modal__title">Об игре</h3>
+
+      <div class="modal__scroll">
+        <dl class="roles">
+          <dt>Идея, код, дизайн<br>и вынос мусора</dt>
+          <dd>Appalon999</dd>
+
+          <dt>В главных ролях</dt>
+          <dd>больше 1000 видеоигр</dd>
+
+          <dt>Спецэффекты</dt>
+          <dd>canvas и горсть пикселей<br>поверх названия</dd>
+
+          <dt>В роли главного злодея</dt>
+          <dd>логотип, который выдавал ответ</dd>
+
+          <dt>Саундтрек</dt>
+          <dd>звенящая тишина</dd>
+        </dl>
+
+        <p class="modal__note modal__note--tight">Материалы</p>
+        <p class="modal__note">
+          Названия игр, логотипы и изображения принадлежат их правообладателям
+          и используются здесь только для того, чтобы игру можно было опознать.
+        </p>
+      </div>
+      <button id="btn-credits-close" class="btn btn--primary" type="button">Закрыть</button>
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,1014 @@
+/* ==========================================================================
+   «Угадай игру» — тёмная тема в духе игровых лаунчеров (Steam/Epic).
+   Графит + голубой акцент, карточки с тенями, чистый санс-сериф.
+   Оформление своё, не копия автоквиза; движок и разметка — общие по духу.
+   ========================================================================== */
+
+:root {
+  --bg: #10151d;
+  --bg-glow: #17324a;
+  --card: #1b2431;
+  --card-2: #212d3d;
+  --panel: #26333f;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-2: rgba(255, 255, 255, 0.14);
+
+  --text: #e7eef6;
+  --muted: #93a4b8;
+  --dim: #6f8092;
+
+  --accent: #66c0f4;
+  --accent-2: #2a8fd8;
+  --accent-ink: #04121e;
+
+  --good: #58d68d;
+  --bad: #ff6b6b;
+
+  --radius: 14px;
+  --radius-lg: 20px;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.35);
+
+  --maxw: 480px;
+  --maxw-game: 660px;
+}
+
+* { box-sizing: border-box; }
+
+/* Атрибут hidden должен всегда прятать элемент: без !important наши классы
+   с display:flex/grid (.screen, .reveal, .modal, .timer …) перебивают
+   браузерное [hidden]{display:none}, и скрытые оверлеи ловят клики. */
+[hidden] { display: none !important; }
+
+/* overscroll-behavior: none — гасит «оттягивание» страницы и swipe-to-refresh
+   на мобиле (Яндекс требует отсутствие браузерной прокрутки/обновления). */
+/* overflow: hidden нужен и на html, а не только на body: иначе прокрутку гасит
+   лишь наполовину — документ всё ещё может тянуться (п. 1.10.2).
+   touch-action: manipulation убирает задержку и зум по двойному тапу на мобиле,
+   но оставляет обычную прокрутку внутри модалок. */
+html, body {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: manipulation;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(1100px 600px at 50% -10%, var(--bg-glow) 0%, transparent 60%),
+    var(--bg);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  overflow: hidden;
+}
+
+/* Safari до 16.4 не понимает беспрефиксный user-select, поэтому на iOS длинный
+   тап по варианту ответа выделял текст и поднимал меню «Скопировать» — Яндекс
+   считает это нарушением п. 1.6.1.8. Дублируем префиксную форму на всё, чего
+   реально касаются пальцем: наследование от body там не спасало. */
+.option,
+.btn,
+.chip,
+.mode,
+.seg__btn,
+.tab,
+.photo,
+.photo__canvas,
+.title,
+.reveal__answer {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Экран занимает всё окно; центрируем содержимое. */
+.screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 18px calc(20px + env(safe-area-inset-bottom));
+}
+
+.screen--center {
+  align-items: center;
+  /* safe center — центрируем, пока содержимое влезает, и прижимаем к верху,
+     когда нет. Обычный center при переполнении срезает верхушку и делает её
+     недостижимой прокруткой: так у нас пропадал заголовок на невысоких
+     экранах. */
+  justify-content: safe center;
+  text-align: center;
+  gap: 14px;
+  overflow-y: auto;
+}
+
+.screen--center > * { width: 100%; max-width: var(--maxw); }
+/* Название длинное («Угадай игру по иконке и скриншоту») и в колонке 480px
+   разваливалось на три строки, съедая 126px высоты. Даём ему больше ширины —
+   на широком экране укладывается в одну-две строки. */
+.screen--center > .title { max-width: 720px; }
+
+/* ---------- Загрузка ---------- */
+
+.boot {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  padding-bottom: 9vh;
+  color: var(--muted);
+  z-index: 50;
+  /* Арт-заставка на весь экран. На альбомных экранах (десктоп, ландшафт)
+     соотношение почти совпадает — cover без полей. */
+  background: var(--bg) url(../img/hero.jpg) center / cover no-repeat;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+}
+
+/* Портрет: арт ландшафтный — не обрезаем, показываем целиком, чтобы вшитый
+   заголовок «Угадай игру» был виден. Поля-леттербокс — фон игры. */
+@media (max-aspect-ratio: 1 / 1) {
+  .boot { background-size: contain; }
+}
+
+/* Экран ошибки: арт убираем, чтобы текст с подсказкой читался. */
+.boot--error {
+  justify-content: center;
+  padding-bottom: 0;
+  background: var(--bg);
+  text-shadow: none;
+}
+
+.boot__spinner {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 3px solid var(--line-2);
+  border-top-color: var(--accent);
+  animation: spin 0.8s linear infinite;
+}
+
+.boot--error .boot__spinner { display: none; }
+.boot--error #boot-text { color: var(--bad); font-weight: 600; }
+.boot__hint { max-width: 360px; text-align: center; color: var(--muted); font-size: 14px; }
+.boot__link { color: var(--accent); }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- Заголовки ---------- */
+
+.title {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  background: linear-gradient(180deg, #ffffff, #b7d6ee);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.title--small { font-size: 28px; }
+
+.subtitle {
+  margin: 0;
+  color: var(--accent);
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  text-shadow: 0 1px 12px rgba(102, 192, 244, 0.25);
+}
+
+.howto {
+  margin: 0 auto;
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.4;
+  max-width: 340px;
+}
+
+/* ---------- Выбор параметров партии ---------- */
+
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.picker__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  /* Подпись + переключатель + «?» вместе занимают 361px и не влезали уже в
+     360px-телефон: «?» вылезал за правый край. Переносим на вторую строку. */
+  flex-wrap: wrap;
+}
+
+.picker__label { color: var(--muted); font-size: 14px; font-weight: 600; }
+
+/* Сегментированный переключатель типа контента. */
+.seg {
+  display: inline-flex;
+  padding: 3px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+}
+
+.seg__btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  /* п. 1.8 — палец должен попадать: 44px по высоте. */
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.seg__btn--on {
+  background: linear-gradient(180deg, var(--accent), var(--accent-2));
+  color: var(--accent-ink);
+  box-shadow: 0 2px 8px rgba(42, 143, 216, 0.4);
+}
+
+/* Переключатель + «?» справа. */
+.picker__ctrls { display: flex; align-items: center; gap: 12px; }
+
+/* Кружок-подсказка «?» с всплывающим пояснением по наведению/фокусу. */
+.hint-dot {
+  position: relative;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--line-2);
+  background: var(--bg);
+  color: var(--muted);
+  font: 700 12px/1 inherit;
+  cursor: help;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.hint-dot:hover, .hint-dot:focus-visible { color: var(--text); border-color: var(--accent-2); }
+
+.hint-dot__tip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: -4px; /* раскрывается влево от «?», чтобы не уезжать за правый край */
+  width: min(240px, 72vw);
+  padding: 10px 12px;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--line-2);
+  border-radius: 10px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+  font: 500 12.5px/1.4 inherit;
+  text-align: left;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(4px);
+  transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
+  pointer-events: none;
+  z-index: 20;
+}
+.hint-dot:hover .hint-dot__tip, .hint-dot:focus .hint-dot__tip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.select {
+  appearance: none;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--line-2);
+  border-radius: 10px;
+  padding: 8px 30px 8px 12px;
+  cursor: pointer;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position: right 13px center, right 8px center;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.select option { background: var(--card); color: var(--text); }
+
+/* ---------- Раскладка стартового экрана ---------- */
+
+/* По умолчанию (мобила и узкие окна) — одна колонка, как раньше.
+   На десктопе .start-body становится строкой: режимы слева, топ-5 справа
+   (см. медиазапрос min-width:720px в разделе «Адаптив»). */
+.start-body { display: flex; flex-direction: column; gap: 14px; }
+.start-main { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+
+/* ---------- Кнопки-режимы ---------- */
+
+.modes { display: flex; flex-direction: column; gap: 8px; }
+
+.mode {
+  appearance: none;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 10px 16px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line-2);
+  background: var(--card-2);
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.12s, border-color 0.15s, background 0.15s;
+}
+
+.mode:hover { border-color: var(--accent-2); }
+.mode:active { transform: translateY(1px); }
+
+/* Недоступный режим: при выборе типа «Иконки/Скриншоты» «На время» и «Хардкор»
+   гаснут — они играются только по всему набору. */
+.mode:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.mode:disabled:hover { border-color: var(--line-2); }
+.mode--hard:disabled:hover { border-color: rgba(255, 107, 107, 0.5); }
+.mode:disabled:active { transform: none; }
+
+.mode--primary {
+  background: linear-gradient(180deg, var(--accent), var(--accent-2));
+  border-color: transparent;
+  color: var(--accent-ink);
+  box-shadow: 0 8px 22px rgba(42, 143, 216, 0.4);
+}
+
+.mode--hard { border-color: rgba(255, 107, 107, 0.5); }
+.mode--hard:hover { border-color: var(--bad); }
+.mode--hard .mode__name { color: #ff9a9a; }
+
+.mode__name { font-size: 17px; font-weight: 800; }
+.mode__desc { font-size: 12.5px; opacity: 0.85; }
+/* Подпись: в какую таблицу лидербордов уходит счёт этого режима. */
+.mode__board { font-size: 11.5px; font-weight: 700; opacity: 0.6; margin-top: 1px; }
+.mode--primary .mode__board { opacity: 0.72; }
+
+/* ---------- Кнопки общего вида ---------- */
+
+.btn {
+  appearance: none;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
+  padding: 12px 18px;
+  transition: transform 0.12s, background 0.15s, border-color 0.15s;
+}
+
+.btn:active { transform: translateY(1px); }
+
+.btn--primary {
+  background: linear-gradient(180deg, var(--accent), var(--accent-2));
+  border-color: transparent;
+  color: var(--accent-ink);
+  box-shadow: 0 6px 18px rgba(42, 143, 216, 0.35);
+}
+
+.btn--big { padding: 15px 22px; font-size: 17px; }
+
+.btn--link {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  font-weight: 600;
+  padding: 8px 12px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.btn--link:hover { color: var(--accent); }
+
+.links { display: flex; justify-content: center; gap: 8px; }
+
+.records { color: var(--muted); font-size: 14px; }
+.records b { color: var(--text); }
+
+/* ---------- Таблица лидеров ---------- */
+
+.board {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  text-align: left;
+}
+
+.board--menu { box-shadow: var(--shadow-sm); }
+.board__title { margin: 0 0 8px; font-size: 14px; color: var(--muted); font-weight: 700; }
+.board__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.board__list--modal { max-height: 44vh; overflow-y: auto; }
+
+.board__list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: 9px;
+  font-size: 14px;
+  background: var(--bg);
+}
+
+.board__name { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.board__list b { color: var(--text); }
+.board__self { outline: 1px solid var(--accent); }
+.board__self .board__name { color: var(--text); }
+
+/* ==========================================================================
+   Экран игры
+   ========================================================================== */
+
+.screen--game {
+  align-items: center;
+  gap: 12px;
+  max-width: none;
+}
+
+.screen--game > * { width: 100%; max-width: var(--maxw-game); }
+
+/* ---------- Верхняя панель ---------- */
+
+.hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  /* На узких телефонах (320–390px: iPhone SE, Galaxy S8, iPhone 12–14) правая
+     группа не влезала и кнопка «домой» уезжала за край. Содержимое не
+     сжималось: чип «50/50 · за рекламу» держит свою ширину. Разрешаем перенос —
+     группа уходит на вторую строку целиком, ничего не теряя. Бейдж «за рекламу»
+     прятать нельзя: игрок должен видеть, что подсказка стоит просмотра. */
+  flex-wrap: wrap;
+}
+
+.hud__lives { display: flex; gap: 4px; }
+.hud__life { color: var(--bad); line-height: 0; }
+.hud__life--lost { color: var(--dim); opacity: 0.5; }
+
+.hud__right { display: flex; align-items: center; gap: 8px; margin-left: auto; min-width: 0; }
+/* min-width: 0 — иначе флекс-элемент не даёт себя сжать даже при переносе. */
+.chip { min-width: 0; }
+.chip__text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.score {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  font-weight: 800;
+}
+.score__icon { color: var(--accent); display: inline-flex; }
+.score__value { font-variant-numeric: tabular-nums; }
+
+.score__gain {
+  position: absolute;
+  top: -6px;
+  right: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--good);
+  opacity: 0;
+  pointer-events: none;
+}
+.score__gain--time { top: 16px; color: var(--accent); }
+.score__gain--show { animation: floatUp 0.9s ease-out; }
+
+@keyframes floatUp {
+  0% { opacity: 0; transform: translateY(6px); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-14px); }
+}
+
+/* Чипы-кнопки: подсказка и домой. */
+.chip {
+  appearance: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  background: var(--card);
+  border: 1px solid var(--line-2);
+  border-radius: 11px;
+  padding: 8px 11px;
+  transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+}
+.chip:hover { border-color: var(--accent-2); }
+.chip:disabled { opacity: 0.45; cursor: default; }
+.chip { min-height: 44px; }
+.chip--icon { padding: 8px; min-width: 44px; min-height: 44px; justify-content: center; }
+.chip__icon { color: var(--accent); display: inline-flex; }
+.chip__more { color: var(--muted); font-weight: 600; }
+
+.chip__badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--accent);
+  background: rgba(102, 192, 244, 0.14);
+  border-radius: 6px;
+  padding: 2px 6px;
+}
+
+/* ---------- Таймер ---------- */
+
+.timer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.timer__head { display: flex; align-items: baseline; gap: 6px; justify-content: center; font-weight: 800; }
+.timer__icon { color: var(--accent); align-self: center; display: inline-flex; }
+.timer__value { font-size: 20px; font-variant-numeric: tabular-nums; }
+.timer__unit { color: var(--muted); font-size: 13px; font-weight: 600; }
+.timer__bar { height: 8px; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.timer__fill {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, var(--accent-2), var(--accent));
+  transition: width 0.2s linear;
+}
+.timer--low .timer__value { color: var(--bad); }
+.timer--low .timer__fill { background: linear-gradient(90deg, #d64545, var(--bad)); }
+
+/* ---------- Картинка вопроса ---------- */
+
+/* justify-content: center — картинка стоит по центру свободной полосы, а не
+   прижата к верху: иначе между ней и вариантами ответа зияла пустая полоса
+   (заметнее всего на промо-кадрах и широких экранах). */
+.stage { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; flex: 1; min-height: 0; }
+
+.photo {
+  --ar: 1 / 1;
+  width: 100%;
+  aspect-ratio: var(--ar);
+  max-height: 46vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(120% 120% at 50% 0%, var(--card-2), var(--card));
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.photo__canvas { width: 100%; height: 100%; display: block; }
+
+.photo--in { animation: cardIn 0.32s ease-out; }
+@keyframes cardIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.status { color: var(--muted); font-size: 14px; text-align: center; }
+
+/* ---------- Варианты ответа ---------- */
+
+.controls { margin-top: auto; }
+
+.options { display: grid; grid-template-columns: 1fr; gap: 9px; }
+
+.option {
+  appearance: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  background: var(--card-2);
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
+  padding: 14px 16px;
+  text-align: center;
+  transition: transform 0.1s, background 0.15s, border-color 0.15s, opacity 0.15s;
+}
+.option { min-height: 44px; }
+.option:hover:not(:disabled) { border-color: var(--accent); background: var(--panel); }
+.option:active:not(:disabled) { transform: translateY(1px); }
+.option:disabled { cursor: default; }
+
+.option--correct {
+  background: rgba(88, 214, 141, 0.18);
+  border-color: var(--good);
+  color: #d6ffe6;
+}
+.option--wrong {
+  background: rgba(255, 107, 107, 0.16);
+  border-color: var(--bad);
+  color: #ffdede;
+}
+/* Убранный подсказкой вариант: гасим и выключаем нажатие. Одной прозрачности
+   мало — вариант оставался кликабельным, и купленная за рекламу подсказка
+   ничего не убирала. */
+.option--hidden { opacity: 0.28; pointer-events: none; }
+
+/* ---------- Итог раунда ---------- */
+
+.reveal {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(6, 10, 16, 0.55);
+  backdrop-filter: blur(2px);
+  padding: 16px;
+  /* Отменяем ширину от .screen--game > * : это полноэкранный оверлей, а не
+     контентный блок. Иначе он зажимается в 660px и прилипает влево. */
+  width: auto;
+  max-width: none;
+}
+
+.reveal__box {
+  width: 100%;
+  max-width: 460px;
+  background: var(--card);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 18px;
+  animation: sheetUp 0.28s ease-out;
+}
+
+@keyframes sheetUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reveal__verdict { margin: 0 0 4px; font-size: 20px; font-weight: 800; }
+.reveal__verdict--good { color: var(--good); }
+.reveal__verdict--bad { color: var(--bad); }
+.reveal__answer { margin: 0 0 12px; font-size: 15px; color: var(--muted); }
+.reveal__answer b { color: var(--text); }
+
+.reveal__fact {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 11px 13px;
+  margin-bottom: 14px;
+}
+.reveal__fact-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); font-weight: 700; }
+.reveal__fact-text { margin: 4px 0 0; font-size: 14px; line-height: 1.45; color: var(--text); }
+
+.reveal__next { width: 100%; }
+.reveal__next + .reveal__next { margin-top: 8px; }
+.btn--revive {
+  background: rgba(102, 192, 244, 0.12);
+  border-color: var(--accent);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* ---------- Итоги ---------- */
+
+.result { margin: 0; display: flex; align-items: baseline; justify-content: center; gap: 8px; }
+.result__score { font-size: 52px; font-weight: 800; color: var(--accent); }
+.result__label { color: var(--muted); font-size: 16px; }
+
+.stats { display: grid; grid-template-columns: auto auto; gap: 6px 18px; justify-content: center; margin: 4px 0; }
+.stats dt { color: var(--muted); font-size: 14px; text-align: right; }
+.stats dd { margin: 0; font-weight: 700; font-size: 14px; text-align: left; }
+
+/* ---------- Модальные окна ---------- */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6, 10, 16, 0.6);
+  padding: 16px;
+}
+
+.modal__box {
+  width: 100%;
+  max-width: 440px;
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--card);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 18px;
+}
+
+.modal__title { margin: 0; font-size: 20px; font-weight: 800; }
+.modal__scroll { overflow-y: auto; }
+.modal__note { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 8px 0 0; }
+.modal__note--tight { margin-top: 14px; color: var(--accent); font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; }
+.credits__url { color: var(--dim); }
+
+.tabs { display: flex; gap: 4px; background: var(--bg); padding: 3px; border-radius: 11px; }
+.tab {
+  flex: 1;
+  min-width: 0;
+  appearance: none;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 1.1;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  padding: 9px 4px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+.tab--on { background: var(--panel); color: var(--text); }
+
+/* Титры-роли. */
+.roles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; margin: 0; }
+.roles dt { color: var(--accent); font-size: 12px; font-weight: 700; text-align: right; }
+.roles dd { margin: 0; font-size: 13px; }
+.roles__joke { color: var(--muted); font-size: 13px; font-style: italic; margin: 12px 0 0; }
+
+.icon { display: block; }
+
+/* ==========================================================================
+   Адаптив
+   ========================================================================== */
+
+/* Планшет/десктоп: крупнее и варианты в две колонки.
+   Порог по высоте — 560px (а не 640): во встроенном вью Яндекса рекламный
+   блок справа сжимает iframe игры примерно до 620–640px, и при пороге 640
+   раскладка не включалась (были две колонки только в фулскрине). 560 берёт
+   встроенный вью с запасом, но не задевает ландшафт-телефоны — они ниже
+   (высота ≤ ~430px) и остаются одной колонкой. */
+@media (min-width: 720px) and (min-height: 560px) {
+  .title { font-size: 48px; }
+  .subtitle { font-size: 26px; }
+  .options { grid-template-columns: 1fr 1fr; gap: 11px; }
+  .option { font-size: 17px; padding: 16px; }
+  .photo { max-height: 52vh; }
+  .reveal { align-items: center; }
+
+  /* Делим стартовый экран на две колонки: слева выбор режима, справа топ-5.
+     max-width перебивает 480px из «.screen--center > *» (правило ниже по коду). */
+  .start-body {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 22px;
+    max-width: 840px;
+    text-align: left;
+  }
+  /* Топ-5 — фиксированная правая колонка; когда он скрыт (нет записей),
+     режимы занимают всю ширину. */
+  .board--menu { flex: 0 0 300px; align-self: stretch; }
+}
+
+/* Низкие экраны (ландшафт на телефоне): ужимаем меню, прячем таблицу в меню.
+   Главное — выравнивание сверху вместо центра: при контенте выше экрана
+   центрирование обрезало бы и заголовок сверху, и ссылки снизу (как было в
+   родителе). Внутренняя прокрутка (.screen--center overflow-y:auto) добирает
+   остаток. Порог опущен с 620 до 540, чтобы не ужимать встроенный десктоп-вью
+   Яндекса (~630px) — под него теперь работает двухколоночная раскладка выше. */
+/* Порог поднят с 540 до 600: в маленьком окне браузера (600x560, 667x560)
+   меню всё ещё не влезало — ссылки внизу оказывались за краем. */
+@media (max-height: 600px) {
+  .screen--center { justify-content: flex-start; }
+  .title { font-size: 28px; }
+  .subtitle, .howto { display: none; }
+  .board--menu { display: none; }
+  .screen { padding-top: 12px; padding-bottom: 12px; }
+  .modes { gap: 8px; }
+  .mode { padding: 11px 16px; }
+  .mode__desc, .mode__board { display: none; }
+}
+
+/* На телефонах топ-5 «Лучшие игроки» делал стартовый экран слишком длинным —
+   прячем его на узких экранах. Полные таблицы остаются по кнопке «Лидерборды».
+   На десктопе блок сохраняется. */
+@media (max-width: 560px) {
+  .board--menu { display: none; }
+}
+
+/* Подпись «— убрать два неверных» — украшение: на телефоне она раздувает
+   верхнюю панель, и кнопка «домой» (после увеличения зоны нажатия до 44px по
+   п. 1.8) вылезала за правый край. Прячем на всех телефонных ширинах, а не
+   только ниже 400px. */
+@media (max-width: 520px) {
+  .chip__more { display: none; }
+}
+
+/* ==========================================================================
+   Ландшафт на телефоне — игровой экран
+   ==========================================================================
+   Игровой экран жил только в портретной логике: HUD, квадратная картинка
+   (46vh) и четыре ответа в столбик. На телефоне лёжа (высота ~370–430px) это
+   больше 500px контента в 411px окна — нижний вариант ответа уезжал за край,
+   а картинка сплющивалась в полоску. Модерация Яндекса отбила по п. 1.10.1.
+   Раскладываем в две колонки: слева картинка во всю высоту, справа ответы. */
+@media (orientation: landscape) and (max-height: 560px) {
+  .screen--game {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr);
+    align-content: start;
+    gap: 6px 14px;
+    padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+  }
+
+  /* Дети грида сами делят место — ширина из портретной версии тут мешает. */
+  .screen--game > * { width: auto; max-width: none; }
+
+  .hud { grid-column: 1 / -1; grid-row: 1; }
+  .timer { grid-column: 1 / -1; grid-row: 2; }
+  .stage { grid-column: 1; grid-row: 3; min-height: 0; }
+
+  .controls {
+    grid-column: 2;
+    grid-row: 3;
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+    min-height: 0;
+  }
+  .options { width: 100%; gap: 6px; grid-template-columns: 1fr; }
+  /* Ужимаем шрифт и поля, но не высоту: 44px по п. 1.8 в колонку помещаются
+     (4 варианта по 44 + зазоры ≈ 194px при доступных ~345px). */
+  .option { padding: 9px 12px; font-size: 14px; border-radius: 10px; min-height: 44px; }
+
+  /* Картинку ограничиваем по высоте окна, а не по колонке: height:100% здесь
+     не резолвится (у грид-трека нет определённой высоты для потомка), и рамка
+     раздувалась до квадрата, вылезая за нижний край. Вычитаем HUD, таймер,
+     паддинги и гэпы — худший случай, с видимым таймером. Канвас всё равно
+     вписывает картинку целиком (contain), так что пропорции рамки не важны. */
+  .photo {
+    width: 100%;
+    height: auto;
+    align-self: center;
+    max-height: calc(100vh - 124px);
+    max-height: calc(100dvh - 124px);
+  }
+
+  .status { font-size: 12px; }
+  .chip__badge { display: none; }
+
+  /* Итог раунда: в портрете это «шторка» снизу, лёжа она перекрыла бы окно
+     целиком — центрируем и ужимаем. */
+  .reveal { align-items: center; padding: 10px; }
+  .reveal__box { max-width: 520px; padding: 12px 14px; }
+  .reveal__verdict { font-size: 17px; }
+  .reveal__answer { margin-bottom: 8px; font-size: 14px; }
+  .reveal__fact { padding: 8px 10px; margin-bottom: 10px; }
+  .reveal__fact-text { font-size: 13px; }
+  .reveal__next { padding: 10px 14px; }
+}
+
+/* Невысокий ландшафт — стартовый экран.
+   Во встроенном вью Яндекса (~1000x630, справа рекламный блок) ряд ссылок
+   «Лидерборды / Об игре» не влезал на 3px и оказывался под сгибом — та же
+   обрезка по п. 1.10.1. Порог 540 из блока выше сюда не дотягивался, поэтому
+   ужимаем мягче и раньше. */
+@media (orientation: landscape) and (max-height: 700px) {
+  .screen--center { gap: 10px; }
+  .screen { padding-top: 14px; padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
+  .title { font-size: 38px; }
+  .subtitle { font-size: 20px; }
+  .modes { gap: 9px; }
+  .mode { padding: 12px 16px; }
+  /* Высоту мелких элементов возвращаем к компактной: 44px по п. 1.8 здесь не
+     влезают. У игрока с рекордом появляется строка «Твой рекорд: …», и меню
+     становилось 647px при окне 630 — заголовок срезало сверху, ссылки снизу
+     (п. 1.10.1). Зона нажатия остаётся 44x44 за счёт накладки. */
+  .seg__btn { min-height: 36px; }
+  .btn--link { min-height: 36px; }
+  .chip { min-height: 36px; }
+  .picker { padding: 10px; }
+  .records { font-size: 12px; }
+}
+
+/* Совсем низкий ландшафт (телефон лёжа, ~390px): даже после компактного
+   режима выше ряд ссылок вылезал за нижний край на несколько пикселей.
+   Дожимаем отступы — контент садится в окно целиком, без прокрутки. */
+/* Без привязки к ориентации: полоса «узко и низко» (ширина 320–430 при высоте
+   320–400) бывает не только лёжа — например, в маленьком окне встроенного
+   браузера. */
+@media (max-height: 440px) {
+  .screen { padding-top: 8px; padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
+  .screen--center { gap: 7px; }
+  .title { font-size: 24px; }
+  .modes { gap: 6px; }
+  .mode { padding: 9px 14px; }
+  .picker__row { padding: 6px 10px; }
+  .links { margin-top: 2px; }
+  .btn--link { padding: 6px 10px; }
+}
+
+/* п. 1.8 — зона нажатия не меньше 44x44.
+   В ландшафте на телефоне высоту раздувать нельзя: вернётся обрезка, за
+   которую нас завернули по п. 1.10.1. Поэтому там элементы остаются мелкими
+   визуально, а попадать пальцем помогает прозрачная накладка — абсолютная,
+   на раскладку не влияет. */
+.seg__btn,
+.hint-dot,
+.btn--link,
+.chip,
+.chip--icon { position: relative; }
+
+.seg__btn::after,
+.hint-dot::after,
+.btn--link::after,
+.chip::after,
+.chip--icon::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Ландшафт на телефоне: возвращаем компактность, зона нажатия остаётся. */
+@media (orientation: landscape) and (max-height: 560px) {
+  .seg__btn { min-height: 34px; }
+  .btn--link { min-height: 34px; }
+  .chip { min-height: 34px; }
+  .chip--icon { min-width: 36px; min-height: 36px; }
+}
+
+/* Невысокий портрет: iPhone SE (375x667), Galaxy S8 (360x640) и всё ниже ~700px.
+   Заголовок в три строки по 42px плюс подзаголовок и пояснение не оставляли
+   места: меню требовало до 696px при 667px окна, из-за чего срезало заголовок
+   сверху и ссылки снизу (п. 1.10.1). Ужимаем текстовый блок — управление и
+   размеры кнопок не трогаем. */
+@media (orientation: portrait) and (max-height: 700px) {
+  .screen--center { gap: 10px; }
+  .title { font-size: 28px; }
+  .subtitle { font-size: 17px; }
+  .howto { display: none; }
+}
+
+/* Совсем мало места по высоте: убираем подпись «Показывать» — переключатель и
+   без неё понятен, а ряд перестаёт занимать две строки. */
+@media (max-height: 400px) {
+  .picker__label { display: none; }
+  .picker { padding: 8px; }
+  .screen--center { gap: 6px; }
+  .mode { padding: 7px 12px; }
+  .option { padding: 6px 10px; }
+}

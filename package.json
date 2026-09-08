@@ -1,0 +1,30 @@
+{
+  "name": "game-icon-quiz",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Угадай игру по ярлыку-иконке или скриншоту — викторина для Яндекс Игр",
+  "scripts": {
+    "meta": "node scripts/fetch-meta.mjs",
+    "shots": "node scripts/fetch-shots.mjs",
+    "icons": "node scripts/fetch-icons.mjs",
+    "optimize": "node scripts/optimize-images.mjs",
+    "build": "node scripts/build.mjs",
+    "serve": "node scripts/serve.mjs",
+    "pack": "node scripts/pack.mjs",
+    "shots-ui": "node scripts/screenshots.mjs",
+    "promo-video": "node scripts/promo-video.mjs",
+    "promo-video-wide": "node scripts/promo-video.mjs horizontal",
+    "stress": "node scripts/stress-test.mjs 100",
+    "stress-live": "node scripts/stress-test.mjs 6 1 --live",
+    "verify": "node scripts/verify-moderation.mjs",
+    "sweep": "node scripts/sweep-layout.mjs"
+  },
+  "devDependencies": {
+    "sharp": "^0.35.3"
+  },
+  "dependencies": {
+    "puppeteer-core": "^25.4.0",
+    "tesseract.js": "^7.0.0"
+  }
+}
