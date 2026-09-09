@@ -556,10 +556,9 @@ async function finish() {
   // без него «Ещё раз» крутил бы рекламу чаще раза в минуту (п. 4 требований).
   await sdk.showInterstitial({ respectCooldown: true });
   if (run !== runId) return;
-  const [, isRecord] = await Promise.all([
-    sdk.submitScore(game.board, game.score),
-    sdk.saveBest(game.board, game.score),
-  ]);
+  // Рекорд и лидерборд — одним вызовом: отправка сравнивает результат с тем,
+  // что было ДО партии, и порядок этих двух записей менять нельзя.
+  const isRecord = await sdk.recordResult(game.board, game.score);
   const best = await sdk.loadBest();
   if (run !== runId) return;
 
@@ -624,8 +623,7 @@ function goHome() {
   stopTimer();
   gameplayStop();
   if (game.score > 0) {
-    sdk.submitScore(game.board, game.score);
-    sdk.saveBest(game.board, game.score).then(refreshMenu);
+    sdk.recordResult(game.board, game.score).then(refreshMenu);
   }
   game.abandon();
   el.reveal.hidden = true;

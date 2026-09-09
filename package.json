@@ -20,6 +20,7 @@
     "verify": "node scripts/verify-moderation.mjs",
     "check-ads": "node scripts/check-ads.mjs",
     "check-audio": "node scripts/check-audio.mjs",
+    "check-leaderboard": "node scripts/check-leaderboard.mjs",
     "review": "node scripts/contact-sheet.mjs",
     "check-blur": "node scripts/check-blur.mjs",
     "ocr-blur": "node scripts/ocr-blur.mjs",

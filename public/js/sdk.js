@@ -164,6 +164,28 @@ async function attachLeaderboards() {
   }
 }
 
+/**
+ * Результат игрока, уже лежащий в таблице. Нужен перед отправкой: сравнить
+ * новую партию с тем, что записано, площадка сама не умеет.
+ * @returns {Promise<number|null>} 0 — игрока в таблице ещё нет, это первый
+ *   результат; null — строку прочитать не удалось, сравнивать не с чем.
+ */
+async function playerEntryScore(name) {
+  try {
+    const entry = await withTimeout(
+      callLeaderboard('getPlayerEntry', 'getLeaderboardPlayerEntry', name),
+      'getPlayerEntry',
+    );
+    return Number(entry?.score) || 0;
+  } catch (e) {
+    // «Игрока нет в таблице» — не сбой, а обычный первый заход: пусть шлёт.
+    const reason = e?.code ?? e?.message ?? String(e);
+    if (/NOT_PRESENT/i.test(String(reason))) return 0;
+    console.warn('[sdk] getPlayerEntry:', reason);
+    return null;
+  }
+}
+
 /** Рекорд вне площадки: SDK нет, храним в браузере. */
 function readLocalBest() {
   try {
@@ -446,9 +468,17 @@ export const sdk = {
 
   /**
    * Отправляет результат в лидерборд таблицы. Требует авторизации игрока.
+   *
+   * Отправляем только то, что лучше уже записанного. Площадка максимума не
+   * хранит: `setScore` перезаписывает строку игрока любым присланным числом,
+   * в том числе меньшим — и слабая партия сбрасывала рекорд, набитый раньше
+   * (15000 в топе превращались в 300 после неудачного забега).
+   *
    * @param {'total'|'icons'|'shots'|'timed'|'hardcore'} board ключ таблицы
+   * @param {number} [knownBest] личный рекорд ДО этой партии. Запасное
+   *   сравнение на случай, когда свою строку в таблице прочитать не удалось.
    */
-  async submitScore(board, score) {
+  async submitScore(board, score, knownBest) {
     const name = LEADERBOARD[board];
     if (!leaderboards || !name || score <= 0) return;
     try {
@@ -458,11 +488,38 @@ export const sdk = {
         console.info('[sdk] submitScore: игрок не вошёл в аккаунт, результат не отправлен');
         return;
       }
+      // Своя строка в таблице авторитетнее личного рекорда: игрок мог играть
+      // на другом устройстве или ещё до того, как рекорд стали хранить.
+      const current = await playerEntryScore(name);
+      const floor = current ?? knownBest ?? (await sdk.loadBest())[board] ?? 0;
+      if (score <= floor) {
+        console.info(`[sdk] submitScore: ${name} — ${score} не лучше ${floor}, не отправляем`);
+        return;
+      }
       await withTimeout(callLeaderboard('setScore', 'setLeaderboardScore', name, score), 'setScore');
       console.info(`[sdk] submitScore: ${name} ← ${score}`);
     } catch (e) {
       console.warn('[sdk] submitScore:', e?.message ?? e);
     }
+  },
+
+  /**
+   * Итог партии: личный рекорд в облако и результат в лидерборд.
+   *
+   * Одним методом, а не двумя вызовами со стороны игры: рекорд ДО партии надо
+   * прочитать раньше, чем его перепишет saveBest, — иначе лидерборду не с чем
+   * сравнивать, если своя строка не прочиталась.
+   *
+   * @param {'total'|'icons'|'shots'|'timed'|'hardcore'} board ключ таблицы
+   * @returns {Promise<boolean>} побит ли личный рекорд
+   */
+  async recordResult(board, score) {
+    const prevBest = (await sdk.loadBest())[board] ?? 0;
+    const [isRecord] = await Promise.all([
+      sdk.saveBest(board, score),
+      sdk.submitScore(board, score, prevBest),
+    ]);
+    return isRecord;
   },
 
   /**
