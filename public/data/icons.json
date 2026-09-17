@@ -1,6 +1,6 @@
 {
   "generatedAt": "2026-07-28T23:09:08.938Z",
-  "count": 823,
+  "count": 822,
   "icons": [
     {
       "file": "counter-strike-global-offensive.png",
@@ -7776,24 +7776,6 @@
       "author": "BigHungryChicken",
       "blur": [],
       "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "farthest-frontier.png",
-      "gameId": "farthest-frontier",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/7f9d5084b8246feed7719e125b3834f6.ico",
-      "author": "EchoesNorthbound",
-      "blur": [
-        {
-          "x": 0,
-          "y": 0.356,
-          "w": 1,
-          "h": 0.118
-        }
-      ],
-      "clean": false,
       "needsReview": false,
       "skip": false
     },

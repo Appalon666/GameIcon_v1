@@ -1,6 +1,6 @@
 {
   "generatedAt": "2026-07-28T19:39:10.912Z",
-  "count": 1035,
+  "count": 1033,
   "games": [
     {
       "id": "counter-strike-global-offensive",
@@ -3989,17 +3989,6 @@
       "year": 2016
     },
     {
-      "id": "world-of-guns-gun-disassembly",
-      "name": "World of Guns: Gun Disassembly",
-      "genre": "Симулятор",
-      "tier": 3,
-      "appid": 262410,
-      "developer": "Noble Empire Corp.",
-      "owners": 3500000,
-      "fact": "",
-      "year": 2014
-    },
-    {
       "id": "the-red-solstice",
       "name": "The Red Solstice",
       "genre": "Стратегия",
@@ -6032,17 +6021,6 @@
       "owners": 3500000,
       "fact": "",
       "year": 2020
-    },
-    {
-      "id": "secret-in-story",
-      "name": "Secret in Story",
-      "genre": "Приключения",
-      "tier": 3,
-      "appid": 613010,
-      "developer": "Naivus Luo",
-      "owners": 3500000,
-      "fact": "",
-      "year": 2017
     },
     {
       "id": "house-flipper",

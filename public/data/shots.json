@@ -1,6 +1,6 @@
 {
   "generatedAt": "2026-07-28T23:15:15.091Z",
-  "count": 991,
+  "count": 984,
   "shots": [
     {
       "file": "counter-strike-global-offensive-1.jpg",
@@ -597,8 +597,17 @@
       "gameId": "satisfactory",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/526870",
-      "blur": [],
-      "clean": true
+      "blur": [
+        {
+          "x": 0.77,
+          "y": 0,
+          "w": 0.23,
+          "h": 0.11
+        }
+      ],
+      "clean": false,
+      "skip": false,
+      "needsReview": false
     },
     {
       "file": "life-is-strange-2-1.jpg",
@@ -894,21 +903,6 @@
       "source": "https://store.steampowered.com/app/203160",
       "blur": [],
       "clean": true
-    },
-    {
-      "file": "castle-crashers-1.jpg",
-      "gameId": "castle-crashers",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/204360",
-      "blur": [
-        {
-          "x": 0,
-          "y": 0,
-          "w": 0.38,
-          "h": 0.15
-        }
-      ],
-      "clean": false
     },
     {
       "file": "saints-row-iv-re-elected-1.jpg",
@@ -1568,21 +1562,6 @@
       "source": "https://store.steampowered.com/app/976730",
       "blur": [],
       "clean": true
-    },
-    {
-      "file": "dota-underlords-1.jpg",
-      "gameId": "dota-underlords",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/1046930",
-      "blur": [
-        {
-          "x": 0.744,
-          "y": 0.032,
-          "w": 0.256,
-          "h": 0.082
-        }
-      ],
-      "clean": false
     },
     {
       "file": "eternal-return-1.jpg",
@@ -2847,21 +2826,6 @@
       "clean": false
     },
     {
-      "file": "papers-please-1.jpg",
-      "gameId": "papers-please",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/239030",
-      "blur": [
-        {
-          "x": 0.22,
-          "y": 0.1,
-          "w": 0.56,
-          "h": 0.58
-        }
-      ],
-      "clean": false
-    },
-    {
       "file": "getting-over-it-with-bennett-foddy-1.jpg",
       "gameId": "getting-over-it-with-bennett-foddy",
       "kind": "shot",
@@ -2956,21 +2920,6 @@
       "source": "https://store.steampowered.com/app/262060",
       "blur": [],
       "clean": true
-    },
-    {
-      "file": "world-of-guns-gun-disassembly-1.jpg",
-      "gameId": "world-of-guns-gun-disassembly",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/262410",
-      "blur": [
-        {
-          "x": 0.86,
-          "y": 0.021,
-          "w": 0.109,
-          "h": 0.103
-        }
-      ],
-      "clean": false
     },
     {
       "file": "the-red-solstice-1.jpg",
@@ -4460,21 +4409,6 @@
       "source": "https://store.steampowered.com/app/1151340",
       "blur": [],
       "clean": true
-    },
-    {
-      "file": "secret-in-story-1.jpg",
-      "gameId": "secret-in-story",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/613010",
-      "blur": [
-        {
-          "x": 0.34,
-          "y": 0.21,
-          "w": 0.62,
-          "h": 0.16
-        }
-      ],
-      "clean": false
     },
     {
       "file": "house-flipper-1.jpg",
@@ -6740,21 +6674,6 @@
       "clean": true
     },
     {
-      "file": "catan-universe-1.jpg",
-      "gameId": "catan-universe",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/544730",
-      "blur": [
-        {
-          "x": 0.224,
-          "y": 0.06,
-          "w": 0.776,
-          "h": 0.673
-        }
-      ],
-      "clean": false
-    },
-    {
       "file": "soulcalibur-vi-1.jpg",
       "gameId": "soulcalibur-vi",
       "kind": "shot",
@@ -7380,21 +7299,6 @@
       "source": "https://store.steampowered.com/app/1147560",
       "blur": [],
       "clean": true
-    },
-    {
-      "file": "omori-1.jpg",
-      "gameId": "omori",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/1150690",
-      "blur": [
-        {
-          "x": 0.25,
-          "y": 0.02,
-          "w": 0.48,
-          "h": 0.24
-        }
-      ],
-      "clean": false
     },
     {
       "file": "horizon-zero-dawn-complete-edition-1.jpg",
