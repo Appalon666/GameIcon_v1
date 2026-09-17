@@ -10,9 +10,12 @@
 
 export const LIVES = 3;
 export const OPTIONS = 4;
-const BASE_POINTS = 10;
-const STREAK_BONUS = 2;
-const MAX_STREAK_BONUS = 10;
+/* Очки крупным масштабом: сотня за ответ и бонус за серию в тех же пропорциях.
+   Мелкий масштаб (10/2/10) обесценил бы рекорды, уже набитые в облачных
+   таблицах, — догонять их пришлось бы вдесятеро дольше. */
+const BASE_POINTS = 100;
+const STREAK_BONUS = 20;
+const MAX_STREAK_BONUS = 100;
 
 /** Режимы игры. */
 export const MODE = {
