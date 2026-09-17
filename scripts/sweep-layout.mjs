@@ -5,9 +5,21 @@
  * и высот плюс список реальных телефонов и планшетов, и каждый размер
  * проверяется на всех экранах игры.
  *
- * Проверяется худший случай: в localStorage подставлен рекорд, из-за которого
- * на стартовом экране появляется лишняя строка — именно с ней меню переставало
- * влезать во встроенный вью Яндекса.
+ * Проверяется худший случай, и он не один:
+ *   - в localStorage подставлен рекорд, из-за которого на стартовом экране
+ *     появляется лишняя строка — именно с ней меню переставало влезать во
+ *     встроенный вью Яндекса;
+ *   - в варианты ответа подставлены самые длинные названия набора. Партия
+ *     берёт вопросы вперемешку, и ждать, что самый длинный выпадет сам, нельзя:
+ *     на коротких названиях проход был зелёным, а на длинных четвёртый вариант
+ *     уходил за край на 44px.
+ *
+ * Ищем три разных беды, а не одну:
+ *   - элемент вышел за кадр (п. 1.10.1);
+ *   - элемент вышел за коробку РОДИТЕЛЯ, оставаясь в кадре, — так текст уезжает
+ *     под соседний блок, и проверка «всё в кадре» этого не видит в принципе;
+ *   - внутри экрана появилась прокрутка (п. 1.10.2). Списки в модальных окнах
+ *     крутиться вправе, остальное — нет.
  *
  * Быстро работает за счёт того, что страница грузится один раз на состояние, а
  * размеры окна перебираются reflow'ом без перезагрузки.
@@ -39,26 +51,76 @@ const DEVICES = [
   ['ноутбук', 1366, 768], ['монитор', 2560, 1440],
 ];
 
-/** Ищет вылезшие за край элементы и прокрутку на текущем экране. */
+/** Ищет вылезшее за кадр, вылезшее за родителя и прокрутку на текущем экране. */
 function inspect() {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
   const out = [];
+  // Прокрутка, разрешённая по смыслу: список лидербордов и длинный текст «Об
+  // игре» живут в окне и крутятся внутри себя. Запрет п. 1.10.2 — про страницу.
+  const okScroll = ['modal__scroll', 'board__list--modal'];
+  const label = (n) => {
+    if (n.id) return `#${n.id}`;
+    const cls = (n.className || '').toString().trim().split(/\s+/)[0];
+    return cls ? `.${cls}` : n.tagName.toLowerCase();
+  };
+
   for (const sel of ['#screen-start', '#screen-game', '#screen-over', '#reveal', '#boards', '#credits']) {
     const scr = document.querySelector(`${sel}:not([hidden])`);
     if (!scr) continue;
-    for (const n of scr.querySelectorAll('button, .option, .photo, .timer, .hud, .title, .modal__box, .board__list, .picker, .records, .result')) {
-      if (n.offsetParent === null && getComputedStyle(n).position !== 'fixed') continue;
+    for (const n of [scr, ...scr.querySelectorAll('*')]) {
+      const cs = getComputedStyle(n);
+      if (cs.display === 'none' || cs.visibility === 'hidden') continue;
       const r = n.getBoundingClientRect();
       if (r.width < 1 || r.height < 1) continue;
-      if (r.right > vw + 1 || r.bottom > vh + 1 || r.left < -1 || r.top < -1) {
-        out.push(`${sel.slice(1)}>${n.id || (n.className || '').toString().split(' ')[0]}`);
+
+      // (1) за кадром. Содержимое прокручиваемого блока за кадр по-честному не
+      // выходит — оно уезжает внутрь своего скроллера, и getBoundingClientRect
+      // показывает его настоящее место, а не видимое. Проверять надо сам
+      // скроллер: он в списке и меряется наравне со всеми.
+      let scrolled = false;
+      for (let a = n.parentElement; a && a !== document.body; a = a.parentElement) {
+        const acs = getComputedStyle(a);
+        if (/auto|scroll/.test(acs.overflowY) || /auto|scroll/.test(acs.overflowX)) { scrolled = true; break; }
       }
+      if (!scrolled && (r.right > vw + 1 || r.bottom > vh + 1 || r.left < -1 || r.top < -1)) {
+        out.push(`${label(n)} за кадром`);
+      }
+
+      // (2) прокрутка внутри экрана
+      if (!okScroll.some((c) => n.classList.contains(c))) {
+        if ((cs.overflowY === 'auto' || cs.overflowY === 'scroll') && n.scrollHeight > n.clientHeight + 1) {
+          out.push(`${label(n)} прокрутка +${n.scrollHeight - n.clientHeight}px`);
+        }
+        if ((cs.overflowX === 'auto' || cs.overflowX === 'scroll') && n.scrollWidth > n.clientWidth + 1) {
+          out.push(`${label(n)} гор. прокрутка +${n.scrollWidth - n.clientWidth}px`);
+        }
+      }
+
+      // (3) за коробку родителя. Абсолютные и фиксированные считаются от другой
+      // коробки, а родитель со своим overflow сам решает, что делать с лишним.
+      if (cs.position === 'fixed' || cs.position === 'absolute') continue;
+      const p = n.parentElement;
+      if (!p || p === document.body || p === document.documentElement) continue;
+      const pcs = getComputedStyle(p);
+      if (pcs.overflowY !== 'visible' || pcs.overflowX !== 'visible') continue;
+      const pr = p.getBoundingClientRect();
+      const d = Math.max(pr.top - r.top, r.bottom - pr.bottom, pr.left - r.left, r.right - pr.right);
+      if (d > 2) out.push(`${label(n)} из ${label(p)} на ${Math.round(d)}px`);
     }
   }
+
+  // (4) картинка схлопнулась. Формально ничего не вылезло, а играть нельзя:
+  // угадывать нечего. Ловится только отдельным правилом.
+  const photo = document.querySelector('#screen-game:not([hidden]) .photo');
+  if (photo) {
+    const h = photo.getBoundingClientRect().height;
+    if (h < 60) out.push(`картинка сжата до ${Math.round(h)}px`);
+  }
+
   const de = document.documentElement;
-  if (de.scrollWidth > de.clientWidth + 1) out.push('гориз. прокрутка');
-  if (de.scrollHeight > de.clientHeight + 1) out.push('верт. прокрутка');
+  if (de.scrollWidth > de.clientWidth + 1) out.push('гориз. прокрутка страницы');
+  if (de.scrollHeight > de.clientHeight + 1) out.push('верт. прокрутка страницы');
   // Дубли элементов в отчёте не нужны — важен сам факт.
   return [...new Set(out)];
 }
@@ -97,6 +159,8 @@ const named = DEVICES.map(([n, w, h]) => [n, w, h]);
 const sizes = [...named, ...grid];
 console.log(`Размеров: ${sizes.length} (${named.length} названных устройств + сетка ${WIDTHS.length}x${HEIGHTS.length})`);
 
+/** Сколько состояний прогоняется — на него делим в итоговой строке. */
+const STATES = 7;
 const found = [];
 
 console.log('· меню (с рекордом)…');
@@ -124,6 +188,27 @@ await page.click('#btn-play');
 await page.waitForSelector('#screen-game:not([hidden]) .option', { timeout: 20000 });
 await sleep(600);
 found.push(...(await sweep(page, 'вопрос', sizes)));
+
+console.log('· вопрос с самыми длинными названиями…');
+await page.setViewport({ width: 800, height: 800, deviceScaleFactor: 1 });
+await sleep(200);
+// Партия берёт вопросы вперемешку, и ждать, что самый длинный выпадет за
+// десяток ходов, нельзя — ставим худший случай руками. Названия берутся из
+// самого набора: захардкоженный список отстанет от данных в первый же сбор.
+const longest = await page.evaluate(async (n) => {
+  const games = await fetch('data/games.json', { cache: 'no-cache' }).then((r) => r.json());
+  const list = Array.isArray(games) ? games : games.games;
+  return [...list].sort((a, b) => b.name.length - a.name.length).slice(0, n).map((g) => g.name);
+}, 4);
+console.log(`  худшее название: ${longest[0].length} символов`);
+await page.evaluate((names) => {
+  // Меняем только подпись: ответ игра сверяет по dataset.gameId, партия цела.
+  document.querySelectorAll('#options .option').forEach((b, i) => {
+    b.textContent = names[i % names.length];
+  });
+}, longest);
+await sleep(250);
+found.push(...(await sweep(page, 'вопрос (длинные названия)', sizes)));
 
 console.log('· разбор ответа…');
 await page.setViewport({ width: 800, height: 800, deviceScaleFactor: 1 });
@@ -158,7 +243,7 @@ if (await page.$('#screen-over:not([hidden])')) {
 
 await browser.close();
 
-console.log(`\n=== ИТОГ: проблемных сочетаний ${found.length} из ${sizes.length * 6} ===`);
+console.log(`\n=== ИТОГ: проблемных сочетаний ${found.length} из ${sizes.length * STATES} ===`);
 if (!found.length) {
   console.log('Ни на одном размере ничего не вылезает.');
 } else {

@@ -186,6 +186,27 @@ async function playerEntryScore(name) {
   }
 }
 
+/**
+ * Читает рекорды: из облака площадки, вне площадки — из localStorage.
+ * Возвращает `null`, если прочитать **не удалось**, и это не то же самое, что
+ * «рекордов нет»: нули в ответе на сбой дают право переписать ими облако.
+ *
+ * Успешное чтение держим в памяти — рекорд меняется только отсюда же, и иначе
+ * каждая партия стоила бы лишних запросов. Неудачу не запоминаем: следующая
+ * партия попробует ещё раз.
+ */
+async function readBest() {
+  if (bestCache) return bestCache;
+  try {
+    if (!ysdk) return (bestCache = readLocalBest());
+    const data = await withTimeout(getPlayer().then((p) => p.getData([BEST_KEY])), 'getData');
+    return (bestCache = coerceBest(data?.[BEST_KEY]));
+  } catch (e) {
+    console.warn('[sdk] loadBest:', e?.message ?? e);
+    return null;
+  }
+}
+
 /** Рекорд вне площадки: SDK нет, храним в браузере. */
 function readLocalBest() {
   try {
@@ -428,18 +449,7 @@ export const sdk = {
    * Вне площадки (локальная разработка) падаем на localStorage.
    */
   async loadBest() {
-    // Рекорд меняется только отсюда же, поэтому после первого чтения держим
-    // его в памяти: иначе каждая партия стоила бы лишних запросов в облако.
-    if (bestCache) return bestCache;
-    try {
-      if (!ysdk) return (bestCache = readLocalBest());
-      const data = await withTimeout(getPlayer().then((p) => p.getData([BEST_KEY])), 'getData');
-      bestCache = coerceBest(data?.[BEST_KEY]);
-    } catch (e) {
-      console.warn('[sdk] loadBest:', e?.message ?? e);
-      bestCache = emptyBest();
-    }
-    return bestCache;
+    return (await readBest()) ?? emptyBest();
   },
 
   /**
@@ -448,17 +458,29 @@ export const sdk = {
    * @returns {Promise<boolean>} побит ли рекорд
    */
   async saveBest(board, score) {
-    const best = await sdk.loadBest();
+    const best = await readBest();
+    // Не прочитали — не пишем. setData кладёт объект целиком, поэтому запись
+    // поверх непрочитанного затёрла бы рекорды остальных четырёх таблиц:
+    // один таймаут getData стоил бы игроку всей коллекции.
+    if (!best) {
+      console.warn(`[sdk] saveBest: рекорды не прочитаны, ${board}=${score} не сохраняем`);
+      return false;
+    }
     if (score <= (best[board] ?? 0)) return false;
-    bestCache = { ...best, [board]: score };
+
+    const next = { ...best, [board]: score };
     try {
       if (!ysdk) {
-        localStorage.setItem(BEST_KEY, JSON.stringify(bestCache));
+        localStorage.setItem(BEST_KEY, JSON.stringify(next));
+        bestCache = next;
         return true;
       }
       // flush=true: не ждать, пока SDK соберёт пачку изменений — партия
       // закончилась, игрок может закрыть вкладку прямо сейчас.
-      await withTimeout(getPlayer().then((p) => p.setData({ [BEST_KEY]: bestCache }, true)), 'setData');
+      await withTimeout(getPlayer().then((p) => p.setData({ [BEST_KEY]: next }, true)), 'setData');
+      // Кэш двигаем только после удачной записи: иначе не сохранившийся рекорд
+      // считался бы сохранённым до конца сессии и блокировал повторную попытку.
+      bestCache = next;
       return true;
     } catch (e) {
       console.warn('[sdk] saveBest:', e?.message ?? e);
@@ -491,7 +513,14 @@ export const sdk = {
       // Своя строка в таблице авторитетнее личного рекорда: игрок мог играть
       // на другом устройстве или ещё до того, как рекорд стали хранить.
       const current = await playerEntryScore(name);
-      const floor = current ?? knownBest ?? (await sdk.loadBest())[board] ?? 0;
+      const floor = current ?? knownBest ?? (await readBest())?.[board];
+      // Ни строки в таблице, ни облачного рекорда — сравнить не с чем.
+      // setScore пишет что дадут, поэтому молчим: пропущенная отправка стоит
+      // одной партии, а отправка вслепую — всего накопленного рекорда.
+      if (floor == null) {
+        console.warn(`[sdk] submitScore: ${name} — не с чем сравнить, не отправляем`);
+        return;
+      }
       if (score <= floor) {
         console.info(`[sdk] submitScore: ${name} — ${score} не лучше ${floor}, не отправляем`);
         return;
@@ -514,7 +543,9 @@ export const sdk = {
    * @returns {Promise<boolean>} побит ли личный рекорд
    */
   async recordResult(board, score) {
-    const prevBest = (await sdk.loadBest())[board] ?? 0;
+    // Именно readBest, а не loadBest: последний подставляет нули, когда чтение
+    // не удалось, и такой «рекорд 0» разрешил бы отправку слабой партии.
+    const prevBest = (await readBest())?.[board];
     const [isRecord] = await Promise.all([
       sdk.saveBest(board, score),
       sdk.submitScore(board, score, prevBest),

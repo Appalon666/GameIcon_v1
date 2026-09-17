@@ -12,7 +12,10 @@
  *   - худший и равный до площадки не доходят вовсе;
  *   - гость (getMode() === 'lite') не отправляет ничего;
  *   - если строку не прочитать (сбой сети), сравниваем с личным рекордом;
- *   - две партии подряд: слабая не затирает сильную.
+ *   - две партии подряд: слабая не затирает сильную;
+ *   - если не прочитать **облачные рекорды**, не пишем ни в облако, ни в
+ *     таблицу: `setData` кладёт объект целиком, и запись поверх непрочитанного
+ *     стирает рекорды остальных таблиц.
  *
  * Заглушка SDK ведёт себя как площадка: перезаписывает без вопросов и умеет
  * отвечать «игрока в таблице нет» и «сеть отвалилась» — исходов, которых от
@@ -41,7 +44,12 @@ const check = (item, ok, detail) => {
  *   entryFail  — 'network', чтобы getPlayerEntry падал не «нет строки», а сбоем.
  */
 const STUB = `
-window.__lb = { entries: {}, calls: [], mode: 'logged-in', entryFail: null, data: {}, ready: false };
+window.__lb = {
+  entries: {}, calls: [], mode: 'logged-in', entryFail: null, data: {}, dataCalls: [], ready: false,
+  // Флаг переживает перезагрузку: сбой getData надо задать ДО старта игры,
+  // иначе модуль успеет прочитать рекорды и запомнить их.
+  dataFail: sessionStorage.getItem('__lb_dataFail') === '1',
+};
 const lb = window.__lb;
 /** Площадка не знает про «лучший результат»: пишет ровно то, что прислали. */
 const setScore = (name, score) => {
@@ -68,8 +76,10 @@ window.YaGames = {
     },
     getPlayer: () => Promise.resolve({
       getMode: () => lb.mode,
-      getData: () => Promise.resolve({ ...lb.data }),
-      setData: (data) => { Object.assign(lb.data, data); return Promise.resolve(); },
+      getData: () => (lb.dataFail
+        ? Promise.reject(new Error('сеть недоступна'))
+        : Promise.resolve({ ...lb.data })),
+      setData: (data) => { lb.dataCalls.push(data); Object.assign(lb.data, data); return Promise.resolve(); },
       getUniqueID: () => 'stub',
     }),
     leaderboards: {
@@ -214,6 +224,51 @@ async function main() {
     first === true && second === false,
     `первая партия ${first}, вторая ${second}`,
   );
+
+  // --- Облачные рекорды не читаются: сбой не даёт права на запись.
+  // Нужна чистая загрузка: рекорды читаются один раз за сессию и кэшируются,
+  // а до этого места модуль их уже прочитал.
+  await frame.evaluate(() => sessionStorage.setItem('__lb_dataFail', '1'));
+  await page.goto(`${ORIGIN}/__host`, { waitUntil: 'domcontentloaded' });
+  const frame2 = await page.waitForFrame(
+    (f) => f.url().startsWith(`${ORIGIN}/`) && !f.url().includes('__host'),
+  );
+  await frame2.waitForSelector('#screen-start:not([hidden])', { timeout: 60000 });
+  const call2 = (code) => frame2.evaluate(`import('/js/sdk.js').then((m) => (${code}))`);
+
+  const saved = await call2(`m.sdk.saveBest('total', 5000)`);
+  const writes = await frame2.evaluate(() => window.__lb.dataCalls.length);
+  check(
+    'Рекорды не прочитались: облако не переписываем',
+    saved === false && writes === 0,
+    writes === 0 ? 'setData не звался' : `в облако ушло ${writes} записей`,
+  );
+
+  await frame2.evaluate(() => {
+    window.__lb.entryFail = 'network';
+  });
+  await call2(`m.sdk.recordResult('icons', 300)`);
+  const blind = await frame2.evaluate(() => window.__lb.calls.length);
+  check(
+    'Ни рекордов, ни строки: в таблицу не шлём вслепую',
+    blind === 0,
+    blind === 0 ? 'сравнить было не с чем' : `ушло ${blind} отправок`,
+  );
+
+  // Обратная сторона: строку прочитать удалось — отправка обязана пройти,
+  // иначе правка превратилась бы в «не шлём никогда».
+  await frame2.evaluate(() => {
+    window.__lb.entryFail = null;
+    window.__lb.entries.leadshots = 100;
+  });
+  await call2(`m.sdk.recordResult('shots', 5000)`);
+  const live = await frame2.evaluate(() => window.__lb.entries.leadshots);
+  check(
+    'Рекорды не прочитались, но строка есть: сильный результат доходит',
+    live === 5000,
+    `в таблице ${live}`,
+  );
+  await frame2.evaluate(() => sessionStorage.removeItem('__lb_dataFail'));
 
   await browser.close();
 
