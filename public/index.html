@@ -219,7 +219,12 @@
       <h3 class="board__title">Лучшие игроки</h3>
       <ol id="board-list" class="board__list"></ol>
     </div>
-    <button id="btn-again" class="btn btn--primary btn--big" type="button">Ещё раз</button>
+    <!-- Два выхода с итогов: новая партия и меню. Раньше был только «Ещё
+         раз», и в меню с итогов было не попасть. -->
+    <div class="over__actions">
+      <button id="btn-again" class="btn btn--primary btn--big" type="button">Ещё раз</button>
+      <button id="btn-menu" class="btn btn--big" type="button">В меню</button>
+    </div>
   </section>
 
   <!-- Лидерборды: 5 таблиц — общий зачёт разбит по типу контента, плюс «на время» и «хардкор» -->
@@ -299,7 +304,7 @@
           <dd>таймер на 10 секунд,<br>режет без жалости</dd>
 
           <dt>Саундтрек</dt>
-          <dd>«Menu Music», mrpoly<br>лицензия CC0</dd>
+          <dd>«Dumus», pauliuw<br>лицензия CC0</dd>
         </dl>
         <p class="roles__joke">При съёмках ни один ярлык не пострадал.</p>
 

@@ -104,7 +104,8 @@ const shots = read('public/data/shots.json');
     // (п. 3.5), и ровно то, чего у соседнего проекта не хватило, когда
     // модерация запросила права. Адрес не отрисовывается, не кликается и лежит
     // в стандартном поле метаданных. Проверяем, что он там ОДИН и именно тот.
-    const LICENSE_URL = 'https://opengameart.org/content/menu-music';
+    // Страница трека «Dumus» (pauliuw, набор Music Loops) — тот же адрес стоит в теге comment файла.
+    const LICENSE_URL = 'https://opengameart.org/content/music-loops';
     try {
       const found = execFileSync('python', ['-c',
         "import zipfile,re;d=zipfile.ZipFile('dist/game.zip').read('audio/theme.mp3').decode('latin-1');" +

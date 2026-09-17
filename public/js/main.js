@@ -63,6 +63,7 @@ const el = {
   playTimed: $('btn-play-timed'),
   playHard: $('btn-play-hard'),
   again: $('btn-again'),
+  menuBtn: $('btn-menu'),
   boards: $('boards'),
   boardsList: $('boards-list'),
   boardsAround: $('boards-around'),
@@ -722,6 +723,14 @@ function fillBoardList(list, entries) {
   }
 }
 
+/** С экрана итогов в меню. Партия уже записана в finish(), второй раз не шлём. */
+function backToMenu() {
+  runId++;
+  warmFirstQuestion();
+  show(el.start);
+  refreshMenu();
+}
+
 function goHome() {
   warmFirstQuestion();
   runId++;
@@ -795,6 +804,7 @@ async function openBoards(board) {
   }
 
   el.boardsList.textContent = '';
+  el.boardsNote.hidden = false;
   el.boardsNote.textContent = 'Загружаю…';
 
   const { entries, around = [], available, error } = await sdk.topScores(board, 10);
@@ -815,8 +825,10 @@ async function openBoards(board) {
   } else if (!entries.length) {
     el.boardsNote.textContent = 'Пока никто не играл в этой таблице. Будь первым!';
   } else {
-    el.boardsNote.textContent = 'Чтобы попасть в таблицу, войди в аккаунт Яндекса.';
+    // Подсказка про аккаунт — только гостю: вошедшему игроку она врала.
+    el.boardsNote.textContent = (await sdk.isGuest()) ? 'Чтобы попасть в таблицу, войди в аккаунт Яндекса.' : '';
   }
+  el.boardsNote.hidden = el.boardsNote.textContent === '';
 }
 
 /* ---------- Запуск ---------- */
@@ -924,6 +936,7 @@ async function boot() {
   el.playTimed.addEventListener('click', () => startGame(MODE.TIMED));
   el.playHard.addEventListener('click', () => startGame(MODE.HARDCORE));
   el.again.addEventListener('click', () => startGame(game.mode));
+  el.menuBtn.addEventListener('click', backToMenu);
   el.hint.addEventListener('click', onHint);
   el.next.addEventListener('click', onNext);
   el.revive.addEventListener('click', onRevive);

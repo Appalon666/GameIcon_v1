@@ -524,6 +524,15 @@ body {
 
 .btn--big { padding: 15px 22px; font-size: 17px; }
 
+/* Итоги: «Ещё раз» и «В меню» в ряд, на узком экране — столбиком. */
+.over__actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.over__actions > .btn { flex: 1 1 160px; }
+/* Совсем низкое окно (320x320): столбик из двух кнопок вылезал на 33px —
+   держим их в один ряд и ужимаем. */
+@media (max-height: 360px) {
+  .over__actions > .btn { flex: 1 1 120px; padding: 9px 12px; font-size: 15px; }
+}
+
 /* ---------- Панель задач ---------- */
 
 /* Во всю ширину экрана у нижнего края: отрицательные поля выводят её за

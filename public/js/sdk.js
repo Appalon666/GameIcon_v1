@@ -411,6 +411,16 @@ export const sdk = {
     fireAndForget('GameplayAPI.stop', () => ysdk.features?.GameplayAPI?.stop());
   },
 
+  /** Гость ли игрок (без аккаунта Яндекса): площадка не принимает от него результаты. */
+  async isGuest() {
+    if (!ysdk) return false;
+    try {
+      return (await getPlayer()).getMode() === 'lite';
+    } catch {
+      return false;
+    }
+  },
+
   /** Прошло ли достаточно времени с прошлой межстраничной рекламы. */
   get interstitialReady() {
     return Date.now() - lastInterstitialAt >= INTERSTITIAL_COOLDOWN_MS;
