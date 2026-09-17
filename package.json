@@ -10,6 +10,7 @@
     "icons": "node scripts/fetch-icons.mjs",
     "optimize": "node scripts/optimize-images.mjs",
     "bundle": "node scripts/bundle.mjs",
+    "desk": "node scripts/make-desk.mjs",
     "build": "node scripts/build.mjs",
     "serve": "node scripts/serve.mjs",
     "pack": "node scripts/pack.mjs",
