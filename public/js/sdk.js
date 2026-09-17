@@ -82,10 +82,37 @@ function embedded() {
  * партию наглухо: экран итогов ждал его вечно.
  */
 function withTimeout(promise, label, ms = SDK_TIMEOUT_MS) {
+  // Отдельная ветка на случай, когда гонку выиграл таймаут: отказ исходного
+  // промиса придёт позже и обрабатывать его будет уже некому — в консоли он
+  // всплывёт как unhandled rejection (рек. 6.4, п. 1.14).
+  Promise.resolve(promise).catch(() => {});
   return Promise.race([
     promise,
     new Promise((_, reject) => setTimeout(() => reject(new Error(`${label}: таймаут ${ms} мс`)), ms)),
   ]);
+}
+
+/**
+ * Вызов площадки, ответа которого никто не ждёт: ready(), метки геймплея,
+ * запуск ролика. Синхронный try ловит только брошенное исключение, а методы
+ * SDK возвращают промис: вне iframe площадки он отклоняется («No parent to
+ * post message»), и без своего catch отказ летит в консоль необработанным.
+ *
+ * @param {string} label что зовём — попадёт в предупреждение
+ * @param {() => unknown} run сам вызов
+ * @param {() => void} [onFail] что сделать при отказе, кроме записи в консоль
+ */
+function fireAndForget(label, run, onFail) {
+  const fail = (e) => {
+    console.warn(`[sdk] ${label}:`, e?.message ?? e);
+    onFail?.();
+  };
+  try {
+    const res = run();
+    if (res && typeof res.then === 'function') res.then(undefined, fail);
+  } catch (e) {
+    fail(e);
+  }
 }
 
 /**
@@ -285,11 +312,7 @@ export const sdk = {
       pending.ready = true;
       return;
     }
-    try {
-      ysdk.features?.LoadingAPI?.ready();
-    } catch (e) {
-      console.warn('[sdk] LoadingAPI.ready:', e?.message ?? e);
-    }
+    fireAndForget('LoadingAPI.ready', () => ysdk.features?.LoadingAPI?.ready());
   },
 
   /**
@@ -303,11 +326,7 @@ export const sdk = {
       pending.gameplay = 'start';
       return;
     }
-    try {
-      ysdk.features?.GameplayAPI?.start();
-    } catch (e) {
-      console.warn('[sdk] GameplayAPI.start:', e?.message ?? e);
-    }
+    fireAndForget('GameplayAPI.start', () => ysdk.features?.GameplayAPI?.start());
   },
 
   gameplayStop() {
@@ -315,11 +334,7 @@ export const sdk = {
       pending.gameplay = 'stop';
       return;
     }
-    try {
-      ysdk.features?.GameplayAPI?.stop();
-    } catch (e) {
-      console.warn('[sdk] GameplayAPI.stop:', e?.message ?? e);
-    }
+    fireAndForget('GameplayAPI.stop', () => ysdk.features?.GameplayAPI?.stop());
   },
 
   /** Прошло ли достаточно времени с прошлой межстраничной рекламы. */
@@ -359,28 +374,28 @@ export const sdk = {
       };
       // Пока реклама не открылась, ждём недолго: SDK мог промолчать вовсе.
       guard = setTimeout(finish, AD_OPEN_TIMEOUT_MS);
-      try {
-        ysdk.adv.showFullscreenAdv({
-          callbacks: {
-            onOpen: () => {
-              // Ролик на экране: сторож «не открылась» снимаем, иначе игра
-              // продолжилась бы прямо под рекламой (п. 4.7). Взамен — длинный
-              // сторож на случай, что onClose не придёт никогда.
-              clearTimeout(guard);
-              guard = setTimeout(finish, AD_CLOSE_TIMEOUT_MS);
-              lastInterstitialAt = Date.now();
+      fireAndForget(
+        'interstitial',
+        () =>
+          ysdk.adv.showFullscreenAdv({
+            callbacks: {
+              onOpen: () => {
+                // Ролик на экране: сторож «не открылась» снимаем, иначе игра
+                // продолжилась бы прямо под рекламой (п. 4.7). Взамен — длинный
+                // сторож на случай, что onClose не придёт никогда.
+                clearTimeout(guard);
+                guard = setTimeout(finish, AD_CLOSE_TIMEOUT_MS);
+                lastInterstitialAt = Date.now();
+              },
+              onClose: finish,
+              onError: (e) => {
+                console.warn('[sdk] interstitial:', e);
+                finish();
+              },
             },
-            onClose: finish,
-            onError: (e) => {
-              console.warn('[sdk] interstitial:', e);
-              finish();
-            },
-          },
-        });
-      } catch (e) {
-        console.warn('[sdk] interstitial:', e?.message ?? e);
-        finish();
-      }
+          }),
+        finish,
+      )
     });
   },
 
@@ -417,27 +432,27 @@ export const sdk = {
         resolve(rewarded);
       };
       guard = setTimeout(finish, AD_OPEN_TIMEOUT_MS);
-      try {
-        ysdk.adv.showRewardedVideo({
-          callbacks: {
-            onOpen: () => {
-              clearTimeout(guard);
-              guard = setTimeout(finish, AD_CLOSE_TIMEOUT_MS);
+      fireAndForget(
+        'rewarded',
+        () =>
+          ysdk.adv.showRewardedVideo({
+            callbacks: {
+              onOpen: () => {
+                clearTimeout(guard);
+                guard = setTimeout(finish, AD_CLOSE_TIMEOUT_MS);
+              },
+              onRewarded: () => {
+                rewarded = true;
+              },
+              onClose: finish,
+              onError: (e) => {
+                console.warn('[sdk] rewarded:', e);
+                finish();
+              },
             },
-            onRewarded: () => {
-              rewarded = true;
-            },
-            onClose: finish,
-            onError: (e) => {
-              console.warn('[sdk] rewarded:', e);
-              finish();
-            },
-          },
-        });
-      } catch (e) {
-        console.warn('[sdk] rewarded:', e?.message ?? e);
-        finish();
-      }
+          }),
+        finish,
+      )
     });
   },
 
