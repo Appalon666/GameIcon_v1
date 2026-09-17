@@ -12,7 +12,7 @@
 import { join } from 'node:path';
 import { mkdir } from 'node:fs/promises';
 import puppeteer from 'puppeteer-core';
-import { ROOT, chromePath } from './lib.mjs';
+import { ROOT, chromePath, promoBundleBody, respondPromoBundle } from './lib.mjs';
 
 const CHROME = chromePath();
 const URL = `http://localhost:${process.env.PORT || 8080}/`;
@@ -66,6 +66,12 @@ async function captureCorrect(page, path) {
 
 async function run(browser, dev) {
   const page = await browser.newPage();
+  // Промо — только по играм из PROMO_GAMES: игре подменяются данные.
+  const bundle = await promoBundleBody();
+  await page.setRequestInterception(true);
+  page.on('request', (req) => {
+    if (!respondPromoBundle(req, bundle)) req.continue();
+  });
   await page.setViewport({
     width: dev.width,
     height: dev.height,

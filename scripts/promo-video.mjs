@@ -34,7 +34,7 @@ import { join, dirname } from 'node:path';
 import { mkdir, rm, writeFile, readFile } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import puppeteer from 'puppeteer-core';
-import { ROOT, sleep, chromePath, ffmpegPath, h264Args, h264Name } from './lib.mjs';
+import { ROOT, sleep, chromePath, ffmpegPath, h264Args, h264Name, promoBundleBody, respondPromoBundle } from './lib.mjs';
 
 const CHROME = chromePath();
 const PAGE_URL = `http://localhost:${process.env.PORT || 8080}/`;
@@ -132,8 +132,12 @@ const SDK_STUB = '/* промо-запись: игра идёт в локаль�
  */
 async function interceptScripts(page) {
   const mainJs = await readFile(join(ROOT, 'public', 'js', 'main.js'), 'utf8');
+  // Данные — урезанный набор PROMO_GAMES: в ролик не должен попасть случайный
+  // кадр с чужой плашкой или логотипом магазина.
+  const bundle = await promoBundleBody();
   await page.setRequestInterception(true);
   page.on('request', (req) => {
+    if (respondPromoBundle(req, bundle)) return;
     const path = new URL(req.url()).pathname;
     if (path === '/sdk.js') {
       return req.respond({ status: 200, contentType: 'text/javascript; charset=utf-8', body: SDK_STUB });

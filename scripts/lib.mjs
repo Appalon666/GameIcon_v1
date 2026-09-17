@@ -130,6 +130,45 @@ export function chromePath() {
 }
 
 export const DATA = join(ROOT, 'public', 'data');
+
+/**
+ * Игры для промо-материалов: известные, с чистыми кадрами — без крови, чужих
+ * плашек и логотипов магазинов. Промо-кадры и ролики снимаются только по ним:
+ * случайный кадр из тысячи уже приносил на карточку «Steam Edition» и
+ * «Community Contributor». Отобраны глазами по контактному листу 17.09.2026.
+ */
+export const PROMO_GAMES = [
+  'stardew-valley', 'terraria', 'hollow-knight', 'rocket-league', 'euro-truck-simulator-2',
+  'cities-skylines', 'hogwarts-legacy', 'rust', 'fall-guys-ultimate-knockout', 'apex-legends',
+  'valheim', 'kerbal-space-program', 'the-sims-4', 'forza-horizon-5', 'hades', 'stray',
+  'it-takes-two', 'overcooked-2', 'human-fall-flat', 'raft', 'monster-hunter-world', 'elden-ring',
+  'portal', 'portal-2', 'baldurs-gate-3', 'warframe', 'no-mans-sky',
+  'the-elder-scrolls-v-skyrim-special-edition', 'fallout-4', 'oxygen-not-included', 'war-thunder',
+  'pubg-battlegrounds', 'deep-rock-galactic', 'beat-saber', 'dead-cells', 'ori-and-the-will-of-the-wisps',
+  'factorio', 'garrys-mod', 'half-life-2',
+];
+
+/** Тело data/bundle.json, урезанное до игр из PROMO_GAMES. */
+export async function promoBundleBody() {
+  const raw = JSON.parse(await readFile(join(DATA, 'bundle.json'), 'utf8'));
+  const keep = new Set(PROMO_GAMES);
+  return JSON.stringify({
+    v: raw.v,
+    games: raw.games.filter((g) => keep.has(g[0])),
+    icons: raw.icons.filter((r) => keep.has(r[0])),
+    shots: raw.shots.filter((r) => keep.has(r[0])),
+  });
+}
+
+/**
+ * Отвечает на запрос data/bundle.json урезанным набором. true — запрос был за
+ * данными и ответ отдан; false — пусть обработчик решает сам.
+ */
+export function respondPromoBundle(req, body) {
+  if (new URL(req.url()).pathname !== '/data/bundle.json') return false;
+  req.respond({ status: 200, contentType: 'application/json; charset=utf-8', body });
+  return true;
+}
 export const IMG = join(ROOT, 'public', 'img');
 export const CACHE = join(ROOT, 'scripts', '.cache');
 
