@@ -472,8 +472,13 @@ async function onNext() {
   }
 
   if (game.asked > 0 && game.asked % ADS_EVERY === 0) {
+    // Под роликом можно уйти в меню и начать новую партию. Проверки на
+    // «игровой экран виден» тут мало: экран-то виден, только партия уже другая,
+    // и nextQuestion сдвинул бы ей вопрос, которого игрок не видел.
+    const run = runId;
     busy = true;
     await withAd(() => sdk.showInterstitial({ respectCooldown: true }));
+    if (run !== runId) return;
     busy = false;
   }
 
@@ -495,9 +500,14 @@ async function withAd(showFn) {
 async function onRevive() {
   if (busy || !game.canRevive) return;
 
+  // Ролик идёт секунды, и всё это время партию можно бросить и начать новую.
+  // Проснувшись не в своей партии, продолжение обязано молча закончиться:
+  // иначе купленная жизнь и следующий вопрос достались бы чужому забегу.
+  const run = runId;
   busy = true;
   el.revive.disabled = true;
   const rewarded = await withAd(() => sdk.showRewarded());
+  if (run !== runId) return;
   el.revive.disabled = false;
 
   if (!rewarded) {
@@ -521,9 +531,14 @@ async function onRevive() {
 async function onHint() {
   if (busy || !game.question || game.question.resolved || game.question.hintUsed) return;
 
+  // Тот же сторож, что и в onRevive: подсказка обязана достаться тому вопросу,
+  // за который игрок смотрел ролик, а не тому, что выпал после.
+  const run = runId;
+  const question = game.question;
   busy = true;
   el.hint.disabled = true;
   const rewarded = await withAd(() => sdk.showRewarded());
+  if (run !== runId || game.question !== question) return;
 
   if (!rewarded) {
     // Молчать нельзя: игрок решит, что кнопка сломана.
