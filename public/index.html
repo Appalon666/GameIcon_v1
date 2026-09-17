@@ -27,6 +27,10 @@
          режима, справа топ-5. На мобиле — одна колонка, топ-5 скрыт (см. CSS). -->
     <div class="start-body">
       <div class="start-main">
+        <div class="winbar" aria-hidden="true">
+          <span class="winbar__dots"><i></i><i></i><i></i></span>
+          <span class="winbar__name">Выбор режима</span>
+        </div>
         <div class="picker">
           <div class="picker__row">
             <span class="picker__label">Показывать</span>
@@ -120,14 +124,24 @@
     </div>
 
     <div class="stage">
-      <div class="photo">
-        <canvas id="canvas" class="photo__canvas"></canvas>
+      <!-- Иконка и скриншот показываются одинаково — ярлыком на «столе».
+           Форму рамки задают пропорции самой картинки (см. .photo в CSS). -->
+      <div class="shortcut">
+        <div class="photo">
+          <canvas id="canvas" class="photo__canvas"></canvas>
+        </div>
+        <!-- Подпись ярлыка и есть загаданное название: до ответа она заклеена,
+             после — «переименовывается» в правильный ответ. -->
+        <p id="shortcut-label" class="shortcut__label"><span class="redact"></span></p>
       </div>
       <p id="status" class="status" hidden></p>
     </div>
 
     <div class="controls">
-      <div id="options" class="options" role="group" aria-label="Варианты ответа"></div>
+      <div class="menu">
+        <p class="menu__head" aria-hidden="true">Переименовать ярлык</p>
+        <div id="options" class="options" role="group" aria-label="Варианты ответа"></div>
+      </div>
     </div>
 
     <!-- Итог раунда: правильный ответ и факт об игре -->

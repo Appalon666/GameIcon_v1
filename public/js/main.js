@@ -49,6 +49,7 @@ const el = {
   soundIconMenu: $('sound-icon-menu'),
   gain: $('gain'),
   canvas: $('canvas'),
+  shortcutLabel: $('shortcut-label'),
   status: $('status'),
   reveal: $('reveal'),
   revealVerdict: $('reveal-verdict'),
@@ -347,6 +348,7 @@ async function nextQuestion() {
     // Пока картинка грузится, игра занята (busy) и нажатие на 50/50 всё равно
     // проглатывается — честнее показать это кнопкой, чем промолчать.
     el.hint.disabled = true;
+    renderShortcut();
     renderLives();
     // Таймер вопроса заводится заново — показываем полный запас сразу, пока
     // грузится картинка, иначе в HUD доживали бы секунды прошлого вопроса.
@@ -362,10 +364,11 @@ async function nextQuestion() {
       // партии, а варианты оставались от текущего вопроса: угадать нельзя.
       if (game.question !== q) return;
       currentImg = img;
-      el.canvas.parentElement.style.setProperty(
-        '--ar',
-        `${currentImg.naturalWidth} / ${currentImg.naturalHeight}`,
-      );
+      // Пропорции кадра двумя числами, а не дробью: из них CSS считает и
+      // aspect-ratio рамки, и её предел по ширине (см. .photo).
+      const frameStyle = el.canvas.parentElement.style;
+      frameStyle.setProperty('--arw', String(currentImg.naturalWidth));
+      frameStyle.setProperty('--arh', String(currentImg.naturalHeight));
       drawItem(el.canvas, currentImg, q.item.blur);
       playPhotoIntro();
       preloadNext();
@@ -386,6 +389,31 @@ async function nextQuestion() {
   setStatus('Не удалось загрузить картинку. Проверь соединение.');
   el.hint.disabled = true;
   busy = false;
+}
+
+/** Полоска-заклейка поверх названия. */
+function redactBar() {
+  const bar = document.createElement('span');
+  bar.className = 'redact';
+  return bar;
+}
+
+/**
+ * Готовит «ярлык» под новый вопрос: подпись под картинкой заклеена — там и
+ * стоит ответ. Иконка и скриншот оформлены одинаково, разбора по типу нет.
+ */
+function renderShortcut() {
+  el.shortcutLabel.className = 'shortcut__label';
+  el.shortcutLabel.replaceChildren(redactBar());
+}
+
+/**
+ * Снимает заклейку: ярлык «переименовывается» в правильный ответ. Название
+ * появляется ровно там, где было спрятано, — под картинкой.
+ */
+function nameShortcut(name) {
+  el.shortcutLabel.className = 'shortcut__label shortcut__label--named';
+  el.shortcutLabel.textContent = name;
 }
 
 function playPhotoIntro() {
@@ -428,6 +456,7 @@ function onAnswer(gameId) {
 /** Окно с правильным ответом и разработчиком. */
 function showReveal(res) {
   const g = game.gameById.get(res.correctId);
+  nameShortcut(g.name);
 
   el.revealVerdict.textContent = res.correct ? 'Верно!' : res.timeOut ? 'Время вышло' : 'Мимо';
   el.revealVerdict.className = `reveal__verdict ${
@@ -440,7 +469,7 @@ function showReveal(res) {
   name.textContent = g.name;
   const sub = [g.genre, g.year].filter(Boolean).join(' · ');
   el.revealAnswer.append(
-    document.createTextNode(res.correct ? 'Это ' : 'Правильный ответ: '),
+    document.createTextNode('Ответ: '),
     name,
     document.createTextNode(sub ? ` · ${sub}` : ''),
   );

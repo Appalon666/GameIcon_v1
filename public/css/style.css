@@ -1,28 +1,45 @@
 /* ==========================================================================
-   «Угадай игру» — тёмная тема в духе игровых лаунчеров (Steam/Epic).
-   Графит + голубой акцент, карточки с тенями, чистый санс-сериф.
-   Оформление своё, не копия автоквиза; движок и разметка — общие по духу.
+   «Угадай игру» — метафора рабочего стола.
+
+   Загаданное и есть ярлык: иконка стоит на «столе», обведена рамкой выделения,
+   а подпись под ней заклеена — её и надо угадать. Скриншот в той же логике
+   показан окном со строкой заголовка. Варианты ответа — контекстное меню
+   «Переименовать ярлык», и правильный ответ буквально переименовывает ярлык.
+
+   Палитра нарочно уведена от тёмных тем игровых лаунчеров: там сине-голубой
+   (#66c0f4 — фирменный цвет Steam), здесь синий выделения (hue ~225) на
+   графите с индиговыми обоями. Совпадение по цвету читается как подражание
+   чужому бренду, а это и повод для придирки модерации, и просто чужое лицо.
    ========================================================================== */
 
 :root {
-  --bg: #10151d;
-  --bg-glow: #17324a;
-  --card: #1b2431;
-  --card-2: #212d3d;
-  --panel: #26333f;
-  --line: rgba(255, 255, 255, 0.08);
-  --line-2: rgba(255, 255, 255, 0.14);
+  --bg: #0e1118;
+  --card: #1a202c;
+  --card-2: #212936;
+  --panel: #2a3342;
 
-  --text: #e7eef6;
-  --muted: #93a4b8;
-  --dim: #6f8092;
+  /* Хром «окон»: строка заголовка светлее полотна, как в настоящем окне. */
+  --winbar: #2c3546;
+  --line: rgba(255, 255, 255, 0.07);
+  --line-2: rgba(255, 255, 255, 0.13);
 
-  --accent: #66c0f4;
-  --accent-2: #2a8fd8;
-  --accent-ink: #04121e;
+  --text: #e8ecf3;
+  --muted: #98a3b7;
+  --dim: #6b7688;
 
-  --good: #58d68d;
-  --bad: #ff6b6b;
+  /* --accent светит на тёмном (рамки, иконки, текст), --accent-fill заливает
+     кнопки. Разными токенами, потому что один цвет обе роли не тянет: яркий
+     синий даёт белому тексту всего 3:1, а тёмный теряется на фоне. */
+  --accent: #6c8cff;
+  --accent-2: #3f63e0;
+  --accent-fill: linear-gradient(180deg, #4f6fe6, #33509f);
+  --accent-ink: #ffffff;
+  /* Заливка рамки выделения — то же, чем ОС подсвечивает выбранный ярлык. */
+  --sel: rgba(108, 140, 255, 0.16);
+  --sel-2: rgba(108, 140, 255, 0.28);
+
+  --good: #4fd598;
+  --bad: #ff6b81;
 
   --radius: 14px;
   --radius-lg: 20px;
@@ -57,8 +74,12 @@ body {
   margin: 0;
   font-family: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
   color: var(--text);
+  /* Обои рабочего стола: два косых источника света плюс подсветка снизу.
+     Картинкой не делаем намеренно — лишний запрос и вес ради фона. */
   background:
-    radial-gradient(1100px 600px at 50% -10%, var(--bg-glow) 0%, transparent 60%),
+    radial-gradient(900px 620px at 12% -8%, rgba(72, 100, 210, 0.30), transparent 62%),
+    radial-gradient(780px 540px at 94% 6%, rgba(126, 72, 186, 0.20), transparent 60%),
+    radial-gradient(1000px 700px at 50% 112%, rgba(34, 58, 120, 0.34), transparent 66%),
     var(--bg);
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
@@ -188,7 +209,7 @@ body {
   font-weight: 800;
   font-size: 22px;
   letter-spacing: -0.01em;
-  text-shadow: 0 1px 12px rgba(102, 192, 244, 0.25);
+  text-shadow: 0 1px 12px rgba(108, 140, 255, 0.25);
 }
 
 .howto {
@@ -205,11 +226,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 12px;
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
+  padding: 0 0 12px;
+  border-bottom: 1px solid var(--line);
 }
 
 .picker__row {
@@ -252,9 +270,9 @@ body {
 }
 
 .seg__btn--on {
-  background: linear-gradient(180deg, var(--accent), var(--accent-2));
+  background: var(--accent-fill);
   color: var(--accent-ink);
-  box-shadow: 0 2px 8px rgba(42, 143, 216, 0.4);
+  box-shadow: 0 2px 8px rgba(51, 80, 159, 0.4);
 }
 
 /* Переключатель + «?» справа. */
@@ -349,7 +367,32 @@ body {
    На десктопе .start-body становится строкой: режимы слева, топ-5 справа
    (см. медиазапрос min-width:720px в разделе «Адаптив»). */
 .start-body { display: flex; flex-direction: column; gap: 14px; }
-.start-main { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+
+/* Окно выбора режима. Внутренние отступы даём полями детей, а не паддингом
+   контейнера: строка заголовка обязана идти от края до края, как у настоящего
+   окна, а паддинг отодвинул бы и её. */
+.start-main {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding-bottom: 14px;
+  background: linear-gradient(180deg, var(--card-2), var(--card));
+  border: 1px solid var(--line-2);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.start-main > :not(.winbar) { margin-inline: 12px; }
+
+.winbar__name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 /* ---------- Кнопки-режимы ---------- */
 
@@ -390,10 +433,10 @@ body {
 .mode:disabled:active { transform: none; }
 
 .mode--primary {
-  background: linear-gradient(180deg, var(--accent), var(--accent-2));
+  background: var(--accent-fill);
   border-color: transparent;
   color: var(--accent-ink);
-  box-shadow: 0 8px 22px rgba(42, 143, 216, 0.4);
+  box-shadow: 0 8px 22px rgba(51, 80, 159, 0.4);
 }
 
 .mode--hard { border-color: rgba(255, 107, 107, 0.5); }
@@ -426,10 +469,10 @@ body {
 .btn:active { transform: translateY(1px); }
 
 .btn--primary {
-  background: linear-gradient(180deg, var(--accent), var(--accent-2));
+  background: var(--accent-fill);
   border-color: transparent;
   color: var(--accent-ink);
-  box-shadow: 0 6px 18px rgba(42, 143, 216, 0.35);
+  box-shadow: 0 6px 18px rgba(51, 80, 159, 0.35);
 }
 
 .btn--big { padding: 15px 22px; font-size: 17px; }
@@ -631,7 +674,7 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.03em;
   color: var(--accent);
-  background: rgba(102, 192, 244, 0.14);
+  background: rgba(108, 140, 255, 0.14);
   border-radius: 6px;
   padding: 2px 6px;
 }
@@ -664,20 +707,105 @@ body {
    (заметнее всего на промо-кадрах и широких экранах). */
 .stage { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; flex: 1; min-height: 0; }
 
-.photo {
-  --ar: 1 / 1;
+/* Обёртка ярлыка. Своей высоты не задаёт намеренно: размер картинки считают
+   ярусы адаптива ниже, и лишний предел посередине ломал бы их расчёт. Всё,
+   что она делает, — ставит картинку и подпись столбиком. */
+.shortcut {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* flex: 1 обязателен: без него обёртка садится по содержимому, картинка
+     внутри ужимается ВТОРОЙ раз подряд и выходит вдвое меньше, чем место под
+     неё. На 360x400 это давало кадр в 53px при свободных 87. */
+  flex: 1 1 auto;
+  gap: 8px;
   width: 100%;
-  aspect-ratio: var(--ar);
-  max-height: 46vh;
-  max-height: 46dvh;
+  min-height: 0;
+}
+
+/* Строка заголовка окна. Осталась только у окна выбора режима на старте:
+   на игровом экране скриншот показывался «открытым окном», и коробка окна
+   тянулась на всю свободную высоту, а кадр в неё не дорастал — под картинкой
+   висела пустая полоса. Скриншот теперь такой же ярлык, как иконка. */
+.winbar {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: none;
+  width: 100%;
+  height: 30px;
+  padding: 0 11px;
+  background: linear-gradient(180deg, var(--winbar), rgba(0, 0, 0, 0.14));
+  border-bottom: 1px solid var(--line);
+}
+.winbar__dots { display: inline-flex; gap: 5px; flex: none; }
+.winbar__dots i { width: 9px; height: 9px; border-radius: 50%; background: rgba(255, 255, 255, 0.17); }
+
+/* Заклейка поверх названия. Ширина у всех игр одна: длина названия — сама по
+   себе подсказка, и узкая полоска под иконкой сужала бы перебор вариантов. */
+.redact {
+  display: block;
+  width: 168px;
+  max-width: 100%;
+  height: 16px;
+  border-radius: 3px;
+  background:
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.10) 0 4px, transparent 4px 8px),
+    var(--panel);
+  box-shadow: inset 0 0 0 1px var(--line-2);
+}
+
+.shortcut__label {
+  margin: 0;
+  max-width: 100%;
+  /* Длинные названия («Sekiro: Shadows Die Twice - GOTY Edition») вылезали из
+     рамки на узких экранах: переносить их разрешено где угодно. */
+  overflow-wrap: anywhere;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: center;
+  color: var(--text);
+}
+/* Ответ открыт — ярлык переименован: подпись залита синим, как свежее имя
+   файла сразу после переименования. */
+.shortcut__label--named {
+  background: var(--accent-fill);
+  color: var(--accent-ink);
+}
+.shortcut__label--named .redact { display: none; }
+
+/* Картинка в рамке выделения — одно оформление и для иконки, и для скриншота.
+   Рамка идёт по пропорциям кадра: --arw/--arh ставит main.js из натурального
+   размера картинки.
+
+   Предел по высоте (--maxh) обязателен, иначе картинка съедает экран. Но один
+   только max-height даёт перекос: высоту он режет, а ширину оставляет во всю
+   колонку — рамка выходит шире кадра, и по бокам зияют поля (на 915x412 было
+   по 22px). Поэтому тем же пределом ограничиваем и ширину, пересчитав его
+   через пропорции. Заодно это и есть правило «иконка квадратная»: при 1:1
+   предел по ширине равен пределу по высоте. */
+.photo {
+  --arw: 1;
+  --arh: 1;
+  --maxh: 46vh;
+  --maxh: 46dvh;
+  width: 100%;
+  aspect-ratio: var(--arw) / var(--arh);
+  max-height: var(--maxh);
+  max-width: calc(var(--maxh) * var(--arw) / var(--arh));
   display: flex;
   align-items: center;
   justify-content: center;
-  background:
-    radial-gradient(120% 120% at 50% 0%, var(--card-2), var(--card));
-  border: 1px solid var(--line-2);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
+  /* Поля скромные: aspect-ratio считается по border-box, и у широкого кадра
+     поля слева и справа выходят шире верхнего примерно на padding*(ar-1). */
+  padding: 8px;
+  border: 2px dashed rgba(108, 140, 255, 0.75);
+  border-radius: 14px;
+  background: var(--sel);
   overflow: hidden;
 }
 
@@ -695,39 +823,82 @@ body {
 
 .controls { margin-top: auto; }
 
-.options { display: grid; grid-template-columns: 1fr; gap: 9px; }
+/* Варианты ответа оформлены контекстным меню «Переименовать ярлык»: выбор
+   названия и есть переименование ярлыка, по которому игрок «щёлкнул». */
+.menu {
+  width: 100%;
+  padding: 6px;
+  background: linear-gradient(180deg, var(--card-2), var(--card));
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+.menu__head {
+  margin: 0 0 6px;
+  padding: 3px 9px 7px;
+  border-bottom: 1px solid var(--line);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  /* --dim на полотне меню даёт 3.15:1 — под порогом для 11px. */
+  color: var(--muted);
+}
+
+.options { display: grid; grid-template-columns: 1fr; gap: 2px; }
 
 .option {
   appearance: none;
   cursor: pointer;
   font: inherit;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text);
-  background: var(--card-2);
-  border: 1px solid var(--line-2);
-  border-radius: 12px;
-  padding: 14px 16px;
-  text-align: center;
-  transition: transform 0.1s, background 0.15s, border-color 0.15s, opacity 0.15s;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 13px 14px 13px 32px;
+  text-align: left;
+  position: relative;
+  transition: background 0.12s, border-color 0.15s, opacity 0.15s;
 }
 .option { min-height: 44px; }
-@media (hover: hover) {
-  .option:hover:not(:disabled) { border-color: var(--accent); background: var(--panel); }
+
+/* Треугольник пункта меню. Рисуем рамками, а не символом: глиф ▸ в системных
+   шрифтах гуляет по ширине и базовой линии, и на Android он уезжал вниз. */
+.option::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  margin-top: -5px;
+  width: 0;
+  height: 0;
+  border-left: 6px solid var(--muted);
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  transition: border-left-color 0.15s;
 }
-.option:active:not(:disabled) { transform: translateY(1px); }
+
+@media (hover: hover) {
+  .option:hover:not(:disabled) { background: var(--sel-2); }
+  .option:hover:not(:disabled)::before { border-left-color: var(--accent); }
+}
+.option:active:not(:disabled) { background: var(--sel-2); }
 .option:disabled { cursor: default; }
 
 .option--correct {
-  background: rgba(88, 214, 141, 0.18);
+  background: rgba(79, 213, 152, 0.20);
   border-color: var(--good);
-  color: #d6ffe6;
+  color: #ccffe6;
 }
+.option--correct::before { border-left-color: var(--good); }
 .option--wrong {
-  background: rgba(255, 107, 107, 0.16);
+  background: rgba(255, 107, 129, 0.18);
   border-color: var(--bad);
-  color: #ffdede;
+  color: #ffdbe2;
 }
+.option--wrong::before { border-left-color: var(--bad); }
 /* Убранный подсказкой вариант: гасим и выключаем нажатие. Одной прозрачности
    мало — вариант оставался кликабельным, и купленная за рекламу подсказка
    ничего не убирала. */
@@ -742,8 +913,10 @@ body {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  background: rgba(6, 10, 16, 0.55);
-  backdrop-filter: blur(2px);
+  /* Ни затемнения в полсилы, ни размытия: и то и другое било по картинке,
+     а разбирать ошибку игрок должен глядя на неё. Лёгкая вуаль нужна только
+     чтобы варианты под шторкой не спорили с ней за внимание. */
+  background: linear-gradient(180deg, transparent 0%, rgba(6, 10, 16, 0.30) 45%, rgba(6, 10, 16, 0.72) 100%);
   padding: 16px;
   /* Отменяем ширину от .screen--game > * : это полноэкранный оверлей, а не
      контентный блок. Иначе он зажимается в 660px и прилипает влево. */
@@ -754,11 +927,11 @@ body {
 .reveal__box {
   width: 100%;
   max-width: 460px;
-  background: var(--card);
+  background: linear-gradient(180deg, var(--card-2), var(--card));
   border: 1px solid var(--line-2);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
-  padding: 18px;
+  border-radius: 14px;
+  box-shadow: var(--shadow), 0 0 0 1px rgba(0, 0, 0, 0.35);
+  padding: 14px 16px 16px;
   animation: sheetUp 0.28s ease-out;
 }
 
@@ -767,26 +940,25 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-.reveal__verdict { margin: 0 0 4px; font-size: 20px; font-weight: 800; }
+.reveal__verdict { margin: 0 0 2px; font-size: 19px; font-weight: 800; }
 .reveal__verdict--good { color: var(--good); }
 .reveal__verdict--bad { color: var(--bad); }
-.reveal__answer { margin: 0 0 12px; font-size: 15px; color: var(--muted); }
+.reveal__answer { margin: 0 0 10px; font-size: 15px; color: var(--muted); }
 .reveal__answer b { color: var(--text); }
 
 .reveal__fact {
-  background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 11px 13px;
-  margin-bottom: 14px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 12px;
 }
-.reveal__fact-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); font-weight: 700; }
-.reveal__fact-text { margin: 4px 0 0; font-size: 14px; line-height: 1.45; color: var(--text); }
+.reveal__fact-label { flex: none; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); font-weight: 700; }
+.reveal__fact-text { margin: 0; font-size: 14px; line-height: 1.4; color: var(--text); }
 
 .reveal__next { width: 100%; }
 .reveal__next + .reveal__next { margin-top: 8px; }
 .btn--revive {
-  background: rgba(102, 192, 244, 0.12);
+  background: rgba(108, 140, 255, 0.12);
   border-color: var(--accent);
   color: var(--accent);
   display: flex;
@@ -880,6 +1052,7 @@ body {
    Адаптив
    ========================================================================== */
 
+
 /* Планшет/десктоп: крупнее и варианты в две колонки.
    Порог по высоте — 560px (а не 640): во встроенном вью Яндекса рекламный
    блок справа сжимает iframe игры примерно до 620–640px, и при пороге 640
@@ -889,20 +1062,22 @@ body {
 @media (min-width: 720px) and (min-height: 560px) {
   .title { font-size: 48px; }
   .subtitle { font-size: 26px; }
-  .options { grid-template-columns: 1fr 1fr; gap: 11px; }
-  .option { font-size: 17px; padding: 16px; }
-  .photo { max-height: 52vh; max-height: 52dvh; }
-  .reveal { align-items: center; }
+  .options { grid-template-columns: 1fr 1fr; gap: 2px; }
+  .option { font-size: 17px; padding: 15px 16px 15px 36px; }
+  .option::before { left: 16px; }
+  .photo { --maxh: 52vh; --maxh: 52dvh; }
 
   /* Делим стартовый экран на две колонки: слева выбор режима, справа топ-5.
      max-width перебивает 480px из «.screen--center > *» (правило ниже по коду). */
   .start-body {
     flex-direction: row;
     align-items: flex-start;
+    justify-content: center;
     gap: 22px;
     max-width: 840px;
     text-align: left;
   }
+  .start-main { flex: 0 1 460px; }
   /* Топ-5 — фиксированная правая колонка; когда он скрыт (нет записей),
      режимы занимают всю ширину. */
   .board--menu { flex: 0 0 300px; align-self: stretch; }
@@ -953,7 +1128,7 @@ body {
 @media (max-width: 360px) {
   .picker__ctrls { min-width: 0; }
   .seg { min-width: 0; }
-  .seg__btn { padding: 7px 8px; }
+  .seg__btn { padding: 7px 6px; }
 }
 
 /* Ширина 320–360 (iPhone SE первых поколений, Galaxy S8 в разделённом экране):
@@ -1004,13 +1179,16 @@ body {
    строки, четыре варианта забирают 336px, и картинке остаётся 56px. */
 @media (max-width: 520px) and (max-height: 500px),
        (max-width: 380px) and (max-height: 620px) {
-  .options { gap: 5px; }
+  .options { gap: 2px; }
   .option {
-    padding: 6px 10px;
+    padding: 6px 10px 6px 24px;
     font-size: 13px;
     line-height: 1.25;
-    border-radius: 10px;
+    border-radius: 8px;
   }
+  .option::before { left: 10px; }
+  .menu { padding: 4px; }
+  .menu__head { margin-bottom: 4px; padding: 2px 7px 5px; }
   .hud { gap: 6px; }
   .stage { gap: 4px; }
 }
@@ -1048,10 +1226,12 @@ body {
     align-items: center;
     min-height: 0;
   }
-  .options { width: 100%; gap: 6px; grid-template-columns: 1fr; }
+  .options { width: 100%; gap: 2px; grid-template-columns: 1fr; }
   /* Ужимаем шрифт и поля, но не высоту: 44px по п. 1.8 в колонку помещаются
      (4 варианта по 44 + зазоры ≈ 194px при доступных ~345px). */
-  .option { padding: 9px 12px; font-size: 14px; border-radius: 10px; min-height: 44px; }
+  .option { padding: 9px 12px 9px 26px; font-size: 14px; border-radius: 8px; min-height: 44px; }
+  .option::before { left: 11px; }
+  .menu { padding: 5px; }
 
   /* Картинку ограничиваем по высоте окна, а не по колонке: height:100% здесь
      не резолвится (у грид-трека нет определённой высоты для потомка), и рамка
@@ -1062,16 +1242,18 @@ body {
     width: 100%;
     height: auto;
     align-self: center;
-    max-height: calc(100vh - 124px);
-    max-height: calc(100dvh - 124px);
+    /* Вычитаемое выросло со 124 до 176: между .stage и картинкой появилась
+       рамка выделения (поля 2x8) с подписью ярлыка под ней. */
+    --maxh: calc(100vh - 176px);
+    --maxh: calc(100dvh - 176px);
   }
 
   .status { font-size: 12px; }
   .chip__badge { display: none; }
 
-  /* Итог раунда: в портрете это «шторка» снизу, лёжа она перекрыла бы окно
-     целиком — центрируем и ужимаем. */
-  .reveal { align-items: center; padding: 10px; }
+  /* Итог раунда лёжа: та же шторка снизу, только ужатая. Центрировать её
+     нельзя — посреди экрана она ложится ровно на картинку. */
+  .reveal { padding: 10px; }
   .reveal__box { max-width: 520px; padding: 12px 14px; }
   .reveal__verdict { font-size: 17px; }
   .reveal__answer { margin-bottom: 8px; font-size: 14px; }
@@ -1107,7 +1289,20 @@ body {
      здесь резолвится: у .stage высота определённа (flex-basis от контейнера). */
   /* max-width обязателен рядом с height: при `width: auto` ширину задаёт
      aspect-ratio, и широкий скриншот (16:9) вылезал из колонки вбок на 12px. */
-  .photo { width: auto; max-width: 100%; height: 100%; max-height: none; align-self: center; }
+  /* height:100% у картинки резолвится только если высота есть и у рамки
+     выделения между ней и .stage — иначе предел не наследуется и кадр
+     раздувается за нижний край. */
+  .shortcut { height: 100%; }
+  /* Предел по высоте тут спорит с height:100%: ширину задаёт высота через
+     aspect-ratio, и 46dvh обрезали бы кадр вбок. */
+  .photo {
+    width: auto;
+    max-width: 100%;
+    height: 100%;
+    max-height: none;
+    align-self: center;
+    padding: 3px;
+  }
 
   /* min-height: auto обязателен: ярус выше ставит .controls нулевой предел,
      чтобы колонка ужималась, и здесь этот предел давал ровно ту беду, про
@@ -1115,8 +1310,11 @@ body {
      вылезали уже из неё, а не из экрана. Место отдаёт картинка (.stage), она
      для того и flex: 1 1 auto с нулевым пределом. */
   .controls { display: block; margin-top: 0; flex: 0 0 auto; min-height: auto; }
-  .options { grid-template-columns: 1fr 1fr; gap: 4px; }
-  .option { padding: 4px 8px; font-size: 12px; line-height: 1.2; border-radius: 9px; }
+  .options { grid-template-columns: 1fr 1fr; gap: 3px; }
+  .option { padding: 4px 8px 4px 20px; font-size: 12px; line-height: 1.2; border-radius: 7px; }
+  .option::before { left: 8px; border-left-width: 4px; }
+  .menu { padding: 4px; }
+  .menu__head { display: none; }
 }
 
 /* Невысокий ландшафт — стартовый экран.
@@ -1229,4 +1427,59 @@ body {
   .mode { padding: 5px 12px; }
   .mode__desc { font-size: 11.5px; }
   .picker { padding: 6px; }
+}
+
+
+/* ==========================================================================
+   Украшения метафоры — что отдаём на тесных экранах
+   ==========================================================================
+   Строка заголовка у окна режимов, подпись под ярлыком, коробка контекстного
+   меню и треугольники пунктов — всё это оформление, добавленное поверх рабочей
+   вёрстки. Когда места мало, платит за них картинка, а она и есть вопрос:
+   поэтому отдаём их первыми.
+
+   Ярус стоит в самом конце файла намеренно. Правила здесь перебивают ярусы
+   «узко и низко» и «ландшафт» выше по коду, а специфичность у них одинаковая —
+   решает порядок. Из середины «Адаптива» этот блок молча проигрывал, и поля
+   меню продолжали есть высоту. */
+
+@media (max-height: 780px) {
+  .start-main > .winbar { display: none; }
+  .start-main { gap: 10px; padding-bottom: 10px; }
+}
+
+/* Подпись ярлыка стоит 30px. На 320x630 и 430x430 их не было, и картинка
+   схлопывалась до 15–48px. Телефон в портрете (390x844) и десктоп выше порога
+   подпись сохраняют — там она и есть половина всей задумки. */
+@media (max-height: 640px) {
+  .shortcut__label { display: none; }
+  .shortcut { gap: 0; }
+}
+
+@media (max-height: 460px) {
+  .menu__head { display: none; }
+  .menu {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+}
+
+@media (max-height: 420px) {
+  .start-main { gap: 8px; padding-bottom: 8px; }
+}
+
+/* Поля окна режимов: переключателю «Всё / Иконки / Скриншоты» не хватало 4–8px
+   и он вылезал за правый край. */
+@media (max-width: 400px) {
+  .start-main > :not(.winbar) { margin-inline: 10px; }
+}
+
+/* Треугольник пункта меню отнимает у текста 18px ширины. На узком экране это
+   лишняя строка в каждом варианте — четыре варианта растут, картинка тает.
+   Ниже 380px по ширине и ниже 460px по высоте возвращаем тексту всю строку. */
+@media (max-width: 380px), (max-height: 460px) {
+  .option { padding-left: 10px; padding-right: 10px; text-align: center; }
+  .option::before { display: none; }
 }
