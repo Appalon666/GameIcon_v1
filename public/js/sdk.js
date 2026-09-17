@@ -4,6 +4,80 @@
  * как заглушки, чтобы игру можно было спокойно тестировать в браузере.
  */
 
+import { MAX_POINTS_PER_QUESTION } from './game.js';
+
+/**
+ * Подпись партии в extraData лидерборда.
+ *
+ * Площадка принимает от клиента любое число: одна строчка в консоли браузера
+ * ставит рекорд без единой партии, и проверить это негде — у Яндекса нет
+ * серверной логики, только хранилище. Поэтому вместе с очками кладём сводку
+ * партии и подпись от неё, а при показе таблицы верим только строкам, у
+ * которых подпись сходится и цифры укладываются в правила. Соль лежит в
+ * клиенте: кто разберёт код, подпись повторит, — это барьер против консоли и
+ * готовых скриптов, не против разработчика.
+ *
+ * Формат extraData: `1|q|c|t|m|k|sig` — версия, вопросов, верных, секунд,
+ * режим (первая буква), тип картинок (первая буква), подпись.
+ */
+const SIGN_VERSION = 1;
+const SIGN_SALT = 'rename-the-shortcut-2026-09';
+/** Быстрее этого человек не отвечает: картинке надо загрузиться и показаться. */
+const MIN_SECONDS_PER_QUESTION = 1;
+
+/** FNV-1a по байтам UTF-8, 32 бита в hex. Две прогонки с разными сидами дают 64. */
+function fnv1a(str, seed) {
+  let h = seed >>> 0;
+  for (const byte of new TextEncoder().encode(str)) {
+    h ^= byte;
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  return h.toString(16).padStart(8, '0');
+}
+
+function signature(score, fields) {
+  const base = [score, ...fields, SIGN_SALT].join('|');
+  return fnv1a(base, 0x811c9dc5) + fnv1a(base, 0x9747b28c);
+}
+
+/** Сводка партии → поля extraData (без подписи). */
+function summaryFields({ questions, correct, seconds, mode, kind }) {
+  return [SIGN_VERSION, questions, correct, seconds, String(mode)[0], String(kind)[0]];
+}
+
+/**
+ * Укладываются ли очки в правила: верных не больше вопросов, очков не больше
+ * «верных × максимум за вопрос», времени не меньше секунды на вопрос.
+ */
+function plausible(score, { questions, correct, seconds }) {
+  return (
+    Number.isInteger(questions) && questions >= 1 &&
+    Number.isInteger(correct) && correct >= 0 && correct <= questions &&
+    Number.isFinite(seconds) && seconds >= questions * MIN_SECONDS_PER_QUESTION &&
+    score >= 0 && score <= correct * MAX_POINTS_PER_QUESTION
+  );
+}
+
+/** extraData для отправки: сводка и подпись. Экспорт — для проверок. */
+export function signExtraData(score, stats) {
+  const fields = summaryFields(stats);
+  return [...fields, signature(score, fields)].join('|');
+}
+
+/**
+ * Проверка строки таблицы. Без extraData — из консоли; подпись не сходится —
+ * подделана; подпись сходится, а цифры невозможные — тоже подделана.
+ * @returns {boolean}
+ */
+export function verifyEntry(score, extraData) {
+  if (typeof extraData !== 'string') return false;
+  const parts = extraData.split('|');
+  if (parts.length !== 7 || Number(parts[0]) !== SIGN_VERSION) return false;
+  const fields = [SIGN_VERSION, Number(parts[1]), Number(parts[2]), Number(parts[3]), parts[4], parts[5]];
+  if (signature(Number(score), fields) !== parts[6]) return false;
+  return plausible(Number(score), { questions: fields[1], correct: fields[2], seconds: fields[3] });
+}
+
 /**
  * Технические имена лидербордов — их нужно создать в консоли разработчика
  * ровно с такими именами. Пять таблиц: обычный режим разбит по типу контента
@@ -514,10 +588,18 @@ export const sdk = {
    * @param {'total'|'icons'|'shots'|'timed'|'hardcore'} board ключ таблицы
    * @param {number} [knownBest] личный рекорд ДО этой партии. Запасное
    *   сравнение на случай, когда свою строку в таблице прочитать не удалось.
+   * @param {object} stats сводка партии (Game.summary()) — уходит подписанной
+   *   в extraData; без неё или с невозможными цифрами не отправляем
    */
-  async submitScore(board, score, knownBest) {
+  async submitScore(board, score, knownBest, stats) {
     const name = LEADERBOARD[board];
     if (!leaderboards || !name || score <= 0) return;
+    // Быстрее секунды на вопрос или больше очков, чем даёт правило, — это не
+    // партия, а бот на нашем интерфейсе. Такое не отправляем и не показали бы.
+    if (!stats || !plausible(score, stats)) {
+      console.warn(`[sdk] submitScore: ${name} — сводка партии неправдоподобна, не отправляем`, stats);
+      return;
+    }
     try {
       const player = await getPlayer();
       if (player.getMode() === 'lite') {
@@ -540,7 +622,10 @@ export const sdk = {
         console.info(`[sdk] submitScore: ${name} — ${score} не лучше ${floor}, не отправляем`);
         return;
       }
-      await withTimeout(callLeaderboard('setScore', 'setLeaderboardScore', name, score), 'setScore');
+      await withTimeout(
+        callLeaderboard('setScore', 'setLeaderboardScore', name, score, signExtraData(score, stats)),
+        'setScore',
+      );
       console.info(`[sdk] submitScore: ${name} ← ${score}`);
     } catch (e) {
       console.warn('[sdk] submitScore:', e?.message ?? e);
@@ -555,30 +640,38 @@ export const sdk = {
    * сравнивать, если своя строка не прочиталась.
    *
    * @param {'total'|'icons'|'shots'|'timed'|'hardcore'} board ключ таблицы
+   * @param {object} stats сводка партии (Game.summary()) для подписи
    * @returns {Promise<boolean>} побит ли личный рекорд
    */
-  async recordResult(board, score) {
+  async recordResult(board, score, stats) {
     // Именно readBest, а не loadBest: последний подставляет нули, когда чтение
     // не удалось, и такой «рекорд 0» разрешил бы отправку слабой партии.
     const prevBest = (await readBest())?.[board];
     const [isRecord] = await Promise.all([
       sdk.saveBest(board, score),
-      sdk.submitScore(board, score, prevBest),
+      sdk.submitScore(board, score, prevBest, stats),
     ]);
     return isRecord;
   },
 
   /**
-   * Топ игроков в лидерборде таблицы.
+   * Топ игроков в лидерборде таблицы и соседи игрока по ней.
+   *
+   * Строки без верной подписи (см. verifyEntry) чужие — прячем: на площадке
+   * они остаются, но таблицу показывает только наша игра. Своя строка видна
+   * всегда, с флагом verified=false — игрок видит, что его результат не
+   * подтверждён.
+   *
    * @param {'total'|'icons'|'shots'|'timed'|'hardcore'} board ключ таблицы
-   * @returns {Promise<{entries: Array, available: boolean, error?: string}>}
-   *   available=false, если лидерборды недоступны — например, игра открыта не
-   *   на площадке. В error — причина, её показываем в окне лидербордов.
+   * @returns {Promise<{entries: Array, around: Array, hidden: number, available: boolean, error?: string}>}
+   *   entries — топ, around — соседи игрока за пределами топа, hidden —
+   *   сколько строк спрятано. available=false, если лидерборды недоступны —
+   *   например, игра открыта не на площадке; в error — причина.
    */
   async topScores(board, limit = 10) {
     const name = LEADERBOARD[board];
     if (!leaderboards || !name) {
-      return { entries: [], available: false, error: 'объект лидербордов недоступен' };
+      return { entries: [], around: [], hidden: 0, available: false, error: 'объект лидербордов недоступен' };
     }
     try {
       // Игрок нужен, чтобы подсветить его строку. Не загрузился — просто
@@ -589,20 +682,37 @@ export const sdk = {
         callLeaderboard('getEntries', 'getLeaderboardEntries', name, {
           quantityTop: limit,
           includeUser: true,
+          // Соседи игрока по таблице — для блока «Рядом с тобой».
+          quantityAround: 2,
         }),
         'getEntries',
       );
-      const entries = (res?.entries ?? []).map((e) => ({
-        rank: e.rank,
-        score: e.score,
-        name: e.player?.publicName || 'Игрок',
-        self: Boolean(myId && e.player?.uniqueID === myId),
-      }));
-      return { entries, available: true };
+      // Топ и соседи приходят одним списком; строка игрока может быть в обоих.
+      const seen = new Set();
+      const all = [];
+      for (const e of res?.entries ?? []) {
+        const id = e.player?.uniqueID ?? `rank-${e.rank}`;
+        if (seen.has(id)) continue;
+        seen.add(id);
+        all.push({
+          rank: e.rank,
+          score: e.score,
+          name: e.player?.publicName || 'Игрок',
+          self: Boolean(myId && e.player?.uniqueID === myId),
+          verified: verifyEntry(e.score, e.extraData),
+        });
+      }
+      const shown = all.filter((e) => e.verified || e.self).sort((a, b) => a.rank - b.rank);
+      return {
+        entries: shown.filter((e) => e.rank <= limit),
+        around: shown.filter((e) => e.rank > limit),
+        hidden: all.length - shown.length,
+        available: true,
+      };
     } catch (e) {
       const error = e?.message ?? String(e);
       console.warn('[sdk] topScores:', error);
-      return { entries: [], available: false, error };
+      return { entries: [], around: [], hidden: 0, available: false, error };
     }
   },
 };

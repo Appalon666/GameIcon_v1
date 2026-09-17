@@ -45,16 +45,17 @@ const check = (item, ok, detail) => {
  */
 const STUB = `
 window.__lb = {
-  entries: {}, calls: [], mode: 'logged-in', entryFail: null, data: {}, dataCalls: [], ready: false,
+  entries: {}, extra: {}, table: {}, calls: [], mode: 'logged-in', entryFail: null, data: {}, dataCalls: [], ready: false,
   // Флаг переживает перезагрузку: сбой getData надо задать ДО старта игры,
   // иначе модуль успеет прочитать рекорды и запомнить их.
   dataFail: sessionStorage.getItem('__lb_dataFail') === '1',
 };
 const lb = window.__lb;
 /** Площадка не знает про «лучший результат»: пишет ровно то, что прислали. */
-const setScore = (name, score) => {
-  lb.calls.push({ name, score });
+const setScore = (name, score, extraData) => {
+  lb.calls.push({ name, score, extraData });
   lb.entries[name] = score;
+  lb.extra[name] = extraData;
   return Promise.resolve();
 };
 const getPlayerEntry = (name) => {
@@ -85,7 +86,7 @@ window.YaGames = {
     leaderboards: {
       setScore,
       getPlayerEntry,
-      getEntries: () => Promise.resolve({ entries: [] }),
+      getEntries: (name) => Promise.resolve({ entries: lb.table[name] ?? [] }),
     },
     adv: {
       showFullscreenAdv: ({ callbacks }) => { callbacks.onOpen?.(); callbacks.onClose?.(); },
@@ -106,6 +107,7 @@ const NAME = {
   icons: 'leadicons',
   shots: 'leadshots',
   timed: 'leadtimetotal',
+  hardcore: 'leadhardcore',
 };
 
 async function main() {
@@ -143,6 +145,8 @@ async function main() {
 
   /** Зовёт метод sdk.js напрямую — модуль тот же, что уже работает в игре. */
   const sdkCall = (code) => frame.evaluate(`import('/js/sdk.js').then((m) => (${code}))`);
+  /** Сводка партии для подписи: вопросов, верных, секунд. */
+  const ST = (q, c, t) => `{ questions: ${q}, correct: ${c}, seconds: ${t}, mode: 'normal', kind: 'mix' }`;
   /** Что лежит в таблице и что до неё дошло. */
   const state = (name) =>
     frame.evaluate(
@@ -157,15 +161,15 @@ async function main() {
   // проверки не мешают друг другу.
 
   // --- total: строки нет → появилась → лучше → хуже → столько же.
-  await sdkCall(`m.sdk.submitScore('total', 15000)`);
+  await sdkCall(`m.sdk.submitScore('total', 15000, undefined, ${ST(80, 80, 200)})`);
   let s = await state(NAME.total);
   check('Первый результат попадает в таблицу', s.entry === 15000, `в таблице ${s.entry}`);
 
-  await sdkCall(`m.sdk.submitScore('total', 21000)`);
+  await sdkCall(`m.sdk.submitScore('total', 21000, undefined, ${ST(110, 110, 300)})`);
   s = await state(NAME.total);
   check('Лучший результат обновляет строку', s.entry === 21000, `в таблице ${s.entry}`);
 
-  await sdkCall(`m.sdk.submitScore('total', 300)`);
+  await sdkCall(`m.sdk.submitScore('total', 300, undefined, ${ST(5, 3, 20)})`);
   s = await state(NAME.total);
   check(
     'Худший результат НЕ затирает рекорд',
@@ -173,7 +177,7 @@ async function main() {
     s.entry === 21000 ? 'до площадки не дошёл' : `рекорд 21000 стал ${s.entry}`,
   );
 
-  await sdkCall(`m.sdk.submitScore('total', 21000)`);
+  await sdkCall(`m.sdk.submitScore('total', 21000, undefined, ${ST(110, 110, 300)})`);
   s = await state(NAME.total);
   check('Равный результат не шлётся зря', s.sent.length === 2, `отправок: ${s.sent.join(', ')}`);
 
@@ -181,7 +185,7 @@ async function main() {
   await frame.evaluate(() => {
     window.__lb.mode = 'lite';
   });
-  await sdkCall(`m.sdk.submitScore('icons', 5000)`);
+  await sdkCall(`m.sdk.submitScore('icons', 5000, undefined, ${ST(30, 30, 90)})`);
   s = await state(NAME.icons);
   check('Гость без аккаунта ничего не отправляет', s.sent.length === 0, `отправок: ${s.sent.length}`);
   await frame.evaluate(() => {
@@ -193,7 +197,7 @@ async function main() {
     window.__lb.entries.leadshots = 9000;
     window.__lb.entryFail = 'network';
   });
-  await sdkCall(`m.sdk.submitScore('shots', 400, 9000)`);
+  await sdkCall(`m.sdk.submitScore('shots', 400, 9000, ${ST(5, 4, 20)})`);
   s = await state(NAME.shots);
   check(
     'Сбой чтения строки: худший результат всё равно не шлётся',
@@ -201,7 +205,7 @@ async function main() {
     s.sent.length === 0 ? 'сравнили с личным рекордом' : `ушло ${s.sent.join(', ')}`,
   );
 
-  await sdkCall(`m.sdk.submitScore('shots', 12000, 9000)`);
+  await sdkCall(`m.sdk.submitScore('shots', 12000, 9000, ${ST(70, 70, 200)})`);
   s = await state(NAME.shots);
   check('Сбой чтения строки: лучший результат доходит', s.entry === 12000, `в таблице ${s.entry}`);
   await frame.evaluate(() => {
@@ -209,8 +213,8 @@ async function main() {
   });
 
   // --- Живой сценарий: две партии подряд тем же путём, каким ходит игра.
-  const first = await sdkCall(`m.sdk.recordResult('timed', 15000)`);
-  const second = await sdkCall(`m.sdk.recordResult('timed', 300)`);
+  const first = await sdkCall(`m.sdk.recordResult('timed', 15000, ${ST(80, 80, 200)})`);
+  const second = await sdkCall(`m.sdk.recordResult('timed', 300, ${ST(5, 3, 20)})`);
   s = await state(NAME.timed);
   const best = await sdkCall(`m.sdk.loadBest()`);
   check(
@@ -224,6 +228,83 @@ async function main() {
     first === true && second === false,
     `первая партия ${first}, вторая ${second}`,
   );
+
+  // --- Подпись партии: что уходит в extraData и что из таблицы показываем.
+  const lastSent = await frame.evaluate(() => window.__lb.calls.at(-1));
+  check(
+    'Отправка несёт подпись партии в extraData',
+    typeof lastSent?.extraData === 'string' && lastSent.extraData.split('|').length === 7,
+    `extraData: ${lastSent?.extraData}`,
+  );
+
+  await sdkCall(`m.sdk.submitScore('hardcore', 5000, 0, ${ST(25, 25, 10)})`);
+  s = await state(NAME.hardcore);
+  check(
+    'Партия быстрее секунды на вопрос не отправляется',
+    s.sent.length === 0,
+    s.sent.length === 0 ? '25 вопросов за 10 секунд — бот, не человек' : `ушло ${s.sent.join(', ')}`,
+  );
+  await sdkCall(`m.sdk.submitScore('hardcore', 5000, 0, ${ST(25, 25, 60)})`);
+  s = await state(NAME.hardcore);
+  check('Та же партия за 60 секунд доходит', s.entry === 5000, `в таблице ${s.entry}`);
+
+  // Таблица со всем зоопарком: консоль, подделка, невозможные цифры, честный,
+  // своя строка без подписи и соседи за пределами топа.
+  const legit = await sdkCall(`m.signExtraData(15000, ${ST(80, 80, 200)})`);
+  const impossible = await sdkCall(`m.signExtraData(5000, ${ST(1, 1, 5)})`);
+  const neighbour = await sdkCall(`m.signExtraData(900, ${ST(6, 5, 30)})`);
+  await frame.evaluate(
+    (legit, impossible, neighbour) => {
+      window.__lb.table.leadtotal = [
+        { rank: 1, score: 999999, player: { uniqueID: 'u1', publicName: 'Консоль' } },
+        { rank: 2, score: 50000, extraData: '1|100|100|300|n|m|deadbeefdeadbeef', player: { uniqueID: 'u2', publicName: 'Подделка' } },
+        { rank: 3, score: 21000, player: { uniqueID: 'stub', publicName: 'Я' } },
+        { rank: 4, score: 15000, extraData: legit, player: { uniqueID: 'u4', publicName: 'Честный' } },
+        { rank: 5, score: 5000, extraData: impossible, player: { uniqueID: 'u5', publicName: 'Невозможный' } },
+        { rank: 11, score: 900, extraData: neighbour, player: { uniqueID: 'u11', publicName: 'Сосед' } },
+        { rank: 12, score: 800, player: { uniqueID: 'u12', publicName: 'Сосед из консоли' } },
+      ];
+    },
+    legit,
+    impossible,
+    neighbour,
+  );
+  const top = await sdkCall(`m.sdk.topScores('total', 10)`);
+  const shownNames = top.entries.map((e) => e.name).join(', ');
+  check(
+    'В топе только подписанные строки и своя',
+    shownNames === 'Я, Честный' && top.hidden === 4,
+    `показаны: ${shownNames}; спрятано ${top.hidden}`,
+  );
+  check(
+    'Своя строка без подписи помечена',
+    top.entries[0]?.self === true && top.entries[0]?.verified === false,
+    `self=${top.entries[0]?.self}, verified=${top.entries[0]?.verified}`,
+  );
+  check(
+    '«Рядом с тобой» — только подписанные соседи',
+    top.around.map((e) => e.name).join(', ') === 'Сосед',
+    `соседи: ${top.around.map((e) => e.name).join(', ')}`,
+  );
+
+  // То же глазами игрока: окно лидербордов.
+  await frame.click('#btn-board');
+  await frame.waitForFunction(() => document.querySelectorAll('#boards-list li').length > 0, { timeout: 10000 });
+  const dom = await frame.evaluate(() => ({
+    rows: document.querySelectorAll('#boards-list li').length,
+    flag: document.querySelector('#boards-list .board__flag')?.textContent ?? '',
+    around: document.querySelectorAll('#boards-around li').length,
+    aroundShown: !document.getElementById('boards-around').hidden,
+  }));
+  check(
+    'Окно лидербордов: две строки в топе, пометка у своей, один сосед',
+    dom.rows === 2 && dom.flag === 'не подтверждено' && dom.around === 1 && dom.aroundShown,
+    `строк ${dom.rows}, пометка «${dom.flag}», соседей ${dom.around}`,
+  );
+  await frame.click('#btn-boards-close');
+  await frame.evaluate(() => {
+    window.__lb.table = {};
+  });
 
   // --- Облачные рекорды не читаются: сбой не даёт права на запись.
   // Нужна чистая загрузка: рекорды читаются один раз за сессию и кэшируются,
@@ -247,7 +328,7 @@ async function main() {
   await frame2.evaluate(() => {
     window.__lb.entryFail = 'network';
   });
-  await call2(`m.sdk.recordResult('icons', 300)`);
+  await call2(`m.sdk.recordResult('icons', 300, ${ST(5, 3, 20)})`);
   const blind = await frame2.evaluate(() => window.__lb.calls.length);
   check(
     'Ни рекордов, ни строки: в таблицу не шлём вслепую',
@@ -261,7 +342,7 @@ async function main() {
     window.__lb.entryFail = null;
     window.__lb.entries.leadshots = 100;
   });
-  await call2(`m.sdk.recordResult('shots', 5000)`);
+  await call2(`m.sdk.recordResult('shots', 5000, ${ST(30, 30, 90)})`);
   const live = await frame2.evaluate(() => window.__lb.entries.leadshots);
   check(
     'Рекорды не прочитались, но строка есть: сильный результат доходит',

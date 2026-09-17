@@ -236,7 +236,13 @@
         <button id="tab-timed" class="tab" type="button" role="tab">Время</button>
         <button id="tab-hardcore" class="tab" type="button" role="tab">Хардкор</button>
       </div>
-      <ol id="boards-list" class="board__list board__list--modal"></ol>
+      <!-- Топ и «Рядом с тобой» — в одном прокручиваемом блоке, чтобы окно
+           не перерастало экран на низких окнах. -->
+      <div class="modal__scroll">
+        <ol id="boards-list" class="board__list"></ol>
+        <p id="boards-around-head" class="board__around" hidden>Рядом с тобой</p>
+        <ol id="boards-around" class="board__list" hidden></ol>
+      </div>
       <p id="boards-note" class="modal__note"></p>
       <button id="btn-boards-close" class="btn btn--primary" type="button">Закрыть</button>
     </div>

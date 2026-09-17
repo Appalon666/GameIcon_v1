@@ -618,15 +618,19 @@ body {
 
 .board__title { margin: 0 0 8px; font-size: 14px; color: var(--muted); font-weight: 700; }
 .board__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
-/* overscroll-behavior: contain — без него докрутка до конца списка передаётся
-   странице и оттягивает её целиком; на видео модерации это неотличимо от
-   запрещённой прокрутки (п. 1.10.2). */
-.board__list--modal {
-  max-height: 44vh;
-  max-height: 44dvh;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+/* Окно лидербордов: списки живут в .modal__scroll (прокрутка внутри окна,
+   overscroll-behavior: contain — докрутка не оттягивает страницу, п. 1.10.2).
+   Ниже — подзаголовок блока «Рядом с тобой» и пометка у своей строки, не
+   прошедшей проверку подписи (см. verifyEntry в sdk.js). */
+.board__around {
+  margin: 12px 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
+.board__flag { flex: none; color: var(--bad); font-size: 12px; font-weight: 700; }
 
 .board__list li {
   display: flex;

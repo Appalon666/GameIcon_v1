@@ -65,6 +65,8 @@ const el = {
   again: $('btn-again'),
   boards: $('boards'),
   boardsList: $('boards-list'),
+  boardsAround: $('boards-around'),
+  boardsAroundHead: $('boards-around-head'),
   boardsNote: $('boards-note'),
   boardsOpen: $('btn-board'),
   boardsClose: $('btn-boards-close'),
@@ -650,7 +652,7 @@ async function finish() {
   if (run !== runId) return;
   // Рекорд и лидерборд — одним вызовом: отправка сравнивает результат с тем,
   // что было ДО партии, и порядок этих двух записей менять нельзя.
-  const isRecord = await sdk.recordResult(game.board, game.score);
+  const isRecord = await sdk.recordResult(game.board, game.score, game.summary());
   const best = await sdk.loadBest();
   if (run !== runId) return;
 
@@ -706,7 +708,16 @@ function fillBoardList(list, entries) {
     name.textContent = `${entry.rank}. ${entry.name}`;
     const score = document.createElement('b');
     score.textContent = String(entry.score);
-    li.append(name, score);
+    li.append(name);
+    // Чужие строки без подписи сюда не доходят (см. sdk.topScores); своя
+    // показывается всегда — с пометкой, что результат не подтверждён.
+    if (entry.self && !entry.verified) {
+      const flag = document.createElement('span');
+      flag.className = 'board__flag';
+      flag.textContent = 'не подтверждено';
+      li.append(flag);
+    }
+    li.append(score);
     list.append(li);
   }
 }
@@ -718,7 +729,7 @@ function goHome() {
   stopTimer();
   gameplayStop();
   if (game.score > 0) {
-    sdk.recordResult(game.board, game.score).then(refreshMenu);
+    sdk.recordResult(game.board, game.score, game.summary()).then(refreshMenu);
   }
   game.abandon();
   el.reveal.hidden = true;
@@ -786,10 +797,14 @@ async function openBoards(board) {
   el.boardsList.textContent = '';
   el.boardsNote.textContent = 'Загружаю…';
 
-  const { entries, available, error } = await sdk.topScores(board, 10);
+  const { entries, around = [], available, error } = await sdk.topScores(board, 10);
   if (boardKey !== board) return;
 
   fillBoardList(el.boardsList, entries);
+  // Соседи по таблице: игроку важнее, кого он догоняет, чем далёкий топ.
+  fillBoardList(el.boardsAround, around);
+  el.boardsAroundHead.hidden = around.length === 0;
+  el.boardsAround.hidden = around.length === 0;
   if (!available) {
     // Техническую причину пишем в консоль: игроку английский текст ошибки SDK
     // показывать нельзя — все надписи в игре русские (п. 1.5).

@@ -16,6 +16,8 @@ export const OPTIONS = 4;
 const BASE_POINTS = 100;
 const STREAK_BONUS = 20;
 const MAX_STREAK_BONUS = 100;
+/** Больше этого за один вопрос не набрать — потолок правдоподобия для лидерборда (см. sdk.js). */
+export const MAX_POINTS_PER_QUESTION = BASE_POINTS + MAX_STREAK_BONUS;
 
 /** Режимы игры. */
 export const MODE = {
@@ -217,6 +219,8 @@ export class Game {
     this.over = false;
     /** Возрождение за рекламу — один раз за партию и только в обычном режиме. */
     this.reviveUsed = false;
+    /** Когда партия началась — для сводки в лидерборд: секунд на вопрос. */
+    this.startedAt = Date.now();
   }
 
   /**
@@ -372,6 +376,21 @@ export class Game {
     this.over = true;
     this.question = null;
     this.upcoming = null;
+  }
+
+  /**
+   * Сводка партии для лидерборда. Площадка по ней ничего не проверяет, а мы —
+   * да (см. sdk.js): подпись и правдоподобие цифр при показе таблицы.
+   * @returns {{questions:number, correct:number, seconds:number, mode:string, kind:string}}
+   */
+  summary() {
+    return {
+      questions: this.asked,
+      correct: this.correctCount,
+      seconds: Math.max(0, Math.round((Date.now() - this.startedAt) / 1000)),
+      mode: this.mode,
+      kind: this.kind,
+    };
   }
 
   /**
