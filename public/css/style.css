@@ -527,7 +527,6 @@ body {
   opacity: 0;
   pointer-events: none;
 }
-.score__gain--time { top: 16px; color: var(--accent); }
 .score__gain--show { animation: floatUp 0.9s ease-out; }
 
 @keyframes floatUp {

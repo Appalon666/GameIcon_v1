@@ -51,7 +51,7 @@
           </button>
           <button id="btn-play-timed" class="mode" type="button">
             <span class="mode__name">На время</span>
-            <span class="mode__desc">45 секунд, ответ +5с, ошибка −5с</span>
+            <span class="mode__desc">10 секунд на вопрос, ошибка — конец</span>
             <span id="mode-board-timed" class="mode__board">Таблица: На время</span>
           </button>
           <button id="btn-play-hard" class="mode mode--hard" type="button">
@@ -89,7 +89,6 @@
           <span id="score-icon" class="score__icon"></span>
           <span id="score" class="score__value">0</span>
           <span id="gain" class="score__gain" aria-hidden="true"></span>
-          <span id="gain-time" class="score__gain score__gain--time" aria-hidden="true"></span>
         </div>
 
         <button id="btn-hint" class="chip" type="button" aria-label="Подсказка 50/50 за просмотр рекламы">
@@ -112,7 +111,7 @@
     <div id="timer" class="timer" hidden>
       <div class="timer__head">
         <span id="timer-icon" class="timer__icon"></span>
-        <span id="timer-value" class="timer__value">45</span>
+        <span id="timer-value" class="timer__value">10</span>
         <span class="timer__unit">сек</span>
       </div>
       <div class="timer__bar">

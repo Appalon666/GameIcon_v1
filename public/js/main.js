@@ -48,7 +48,6 @@ const el = {
   soundMenu: $('btn-sound-menu'),
   soundIconMenu: $('sound-icon-menu'),
   gain: $('gain'),
-  gainTime: $('gain-time'),
   canvas: $('canvas'),
   status: $('status'),
   reveal: $('reveal'),
@@ -148,9 +147,9 @@ function renderTimer() {
   const seconds = game.timeLeft / 1000;
   el.timerValue.textContent = String(Math.ceil(seconds));
 
-  const share = Math.min(1, game.timeLeft / TIME.START);
+  const share = Math.min(1, game.timeLeft / TIME.PER_QUESTION);
   el.timerFill.style.width = `${(share * 100).toFixed(1)}%`;
-  el.timer.classList.toggle('timer--low', seconds <= 5);
+  el.timer.classList.toggle('timer--low', seconds <= 3);
   el.timer.setAttribute('aria-label', `Осталось секунд: ${Math.ceil(seconds)}`);
 }
 
@@ -264,7 +263,6 @@ function onTimeOver() {
   showReveal({
     correct: false,
     gained: 0,
-    gainedTime: 0,
     correctId: game.question.correctId,
     over: true,
     timeOut: true,
@@ -279,11 +277,9 @@ function flashGain(node, text) {
   node.classList.add('score__gain--show');
 }
 
-function renderScore(gained = 0, gainedTime = 0, lostTime = 0) {
+function renderScore(gained = 0) {
   el.score.textContent = String(game.score);
   if (gained > 0) flashGain(el.gain, `+${gained}`);
-  if (gainedTime > 0) flashGain(el.gainTime, `+${gainedTime / 1000}с`);
-  if (lostTime > 0) flashGain(el.gainTime, `−${lostTime / 1000}с`);
 }
 
 function setStatus(text) {
@@ -352,6 +348,9 @@ async function nextQuestion() {
     // проглатывается — честнее показать это кнопкой, чем промолчать.
     el.hint.disabled = true;
     renderLives();
+    // Таймер вопроса заводится заново — показываем полный запас сразу, пока
+    // грузится картинка, иначе в HUD доживали бы секунды прошлого вопроса.
+    renderTimer();
     renderScore();
     renderOptions(q);
     setStatus('');
@@ -370,7 +369,6 @@ async function nextQuestion() {
       drawItem(el.canvas, currentImg, q.item.blur);
       playPhotoIntro();
       preloadNext();
-      renderTimer();
       questionLive = true;
       for (const btn of optionButtons()) btn.disabled = false;
       resumeGameplay();
@@ -423,7 +421,7 @@ function onAnswer(gameId) {
 
   renderLives();
   renderTimer();
-  renderScore(res.gained, res.gainedTime, res.lostTime);
+  renderScore(res.gained);
   showReveal(res);
 }
 

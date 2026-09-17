@@ -10,15 +10,15 @@
 
 export const LIVES = 3;
 export const OPTIONS = 4;
-const BASE_POINTS = 100;
-const STREAK_BONUS = 20;
-const MAX_STREAK_BONUS = 100;
+const BASE_POINTS = 10;
+const STREAK_BONUS = 2;
+const MAX_STREAK_BONUS = 10;
 
 /** Режимы игры. */
 export const MODE = {
   /** Три жизни, времени нет. */
   NORMAL: 'normal',
-  /** Общий таймер: верный ответ добавляет время, подсказка отнимает. */
+  /** 10 секунд на вопрос: не успел или ошибся — партия окончена. */
   TIMED: 'timed',
   /** Одна жизнь: первая ошибка заканчивает партию. Возрождения нет. */
   HARDCORE: 'hardcore',
@@ -65,11 +65,12 @@ export function boardFor(mode, kind) {
   return BOARD.TOTAL;
 }
 
-/** Время в режиме «на время», мс. */
+/**
+ * Время в режиме «на время», мс. Отсчёт идёт не на всю партию, а на каждый
+ * вопрос: таймер заводится заново с приходом новой картинки.
+ */
 export const TIME = {
-  START: 45_000,
-  CORRECT_BONUS: 5_000,
-  WRONG_COST: 5_000,
+  PER_QUESTION: 10_000,
 };
 
 /**
@@ -150,7 +151,7 @@ export class Game {
     // Сколько жизней у режима (для отрисовки сердец). В «на время» их нет.
     this.maxLives = mode === MODE.HARDCORE ? HARDCORE_LIVES : LIVES;
     this.lives = mode === MODE.TIMED ? 0 : this.maxLives;
-    this.timeLeft = mode === MODE.TIMED ? TIME.START : 0;
+    this.timeLeft = mode === MODE.TIMED ? TIME.PER_QUESTION : 0;
     this.score = 0;
     this.streak = 0;
     this.bestStreak = 0;
@@ -330,7 +331,7 @@ export class Game {
   }
 
   /**
-   * Списывает прошедшее время в режиме «на время».
+   * Списывает прошедшее время в режиме «на время» из запаса текущего вопроса.
    * @param {number} ms сколько прошло с прошлого вызова
    * @returns {boolean} закончилось ли время именно сейчас
    */
@@ -397,6 +398,9 @@ export class Game {
     this.upcoming = null;
     if (!item) return null;
 
+    // Каждому вопросу — свой полный запас времени.
+    if (this.isTimed) this.timeLeft = TIME.PER_QUESTION;
+
     const wrong = this.pickDistractors(item.gameId);
     const options = shuffle([item.gameId, ...wrong]).map((id) => this.gameById.get(id));
 
@@ -450,8 +454,7 @@ export class Game {
 
   /**
    * Обрабатывает ответ игрока.
-   * @returns {{correct:boolean, gained:number, gainedTime:number, lostTime:number,
-   *            correctId:string, lives:number, over:boolean}}
+   * @returns {{correct:boolean, gained:number, correctId:string, lives:number, over:boolean}}
    */
   answer(gameId) {
     const q = this.question;
@@ -461,8 +464,6 @@ export class Game {
     q.answeredId = gameId;
     const correct = gameId === q.correctId;
     let gained = 0;
-    let gainedTime = 0;
-    let lostTime = 0;
 
     if (correct) {
       gained = BASE_POINTS + Math.min(this.streak * STREAK_BONUS, MAX_STREAK_BONUS);
@@ -470,19 +471,13 @@ export class Game {
       this.streak++;
       this.bestStreak = Math.max(this.bestStreak, this.streak);
       this.correctCount++;
-      if (this.isTimed) {
-        gainedTime = TIME.CORRECT_BONUS;
-        this.timeLeft += gainedTime;
-      }
     } else {
       this.streak = 0;
       if (this.isTimed) {
-        lostTime = Math.min(TIME.WRONG_COST, this.timeLeft);
-        this.timeLeft -= lostTime;
-        if (this.timeLeft <= 0) {
-          this.timeLeft = 0;
-          this.over = true;
-        }
+        // Жизней в «на время» нет: ресурс режима — секунды, и неверный ответ
+        // стоит ровно столько же, сколько просроченный, то есть партию.
+        this.timeLeft = 0;
+        this.over = true;
       } else {
         this.lives--;
         if (this.lives <= 0) {
@@ -495,8 +490,6 @@ export class Game {
     return {
       correct,
       gained,
-      gainedTime,
-      lostTime,
       correctId: q.correctId,
       lives: this.lives,
       over: this.over,
