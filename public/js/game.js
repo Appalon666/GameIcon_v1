@@ -112,8 +112,8 @@ export function shuffle(arr) {
 
 export class Game {
   /**
-   * @param {Array} items записи медиа (иконки/скриншоты) из icons.json + shots.json
-   * @param {Array} games записи игр из games.json
+   * @param {Array} items записи медиа (иконки/скриншоты) из data/bundle.json
+   * @param {Array} games записи игр оттуда же
    */
   constructor(items, games) {
     this.gameById = new Map(games.map((g) => [g.id, g]));
@@ -145,9 +145,11 @@ export class Game {
 
   /**
    * @param {'normal'|'timed'|'hardcore'} mode
-   * @param {{kind?: string, genre?: string|null}} [opts]
+   * @param {{kind?: string, genre?: string|null, upcoming?: object|null}} [opts]
+   *   upcoming — заготовка первого вопроса из scoutFirst(): её картинка уже
+   *   прогрета, и партия начнётся именно с неё
    */
-  reset(mode = MODE.NORMAL, { kind = KIND.MIX, genre = null } = {}) {
+  reset(mode = MODE.NORMAL, { kind = KIND.MIX, genre = null, upcoming = null } = {}) {
     this.mode = mode;
     this.kind = kind;
     this.genre = genre;
@@ -199,6 +201,18 @@ export class Game {
     this.usedGames = new Set();
     /** Медиа, заготовленное для следующего вопроса (нужно для предзагрузки). */
     this.upcoming = null;
+    // Заготовку изымаем из колоды и помечаем игру как попавшуюся — ровно то,
+    // что сделал бы takeFromDeck, — иначе тот же кадр мог бы выпасть в партии
+    // второй раз. Чужая заготовка (другой тип контента) просто не находится.
+    if (upcoming) {
+      const deck = this.decks.get(this.gameById.get(upcoming.gameId)?.tier ?? 3);
+      const at = deck ? deck.cars.indexOf(upcoming) : -1;
+      if (at >= 0) {
+        deck.cars.splice(at, 1);
+        this.usedGames.add(upcoming.gameId);
+        this.upcoming = upcoming;
+      }
+    }
     this.question = null;
     this.over = false;
     /** Возрождение за рекламу — один раз за партию и только в обычном режиме. */
@@ -439,6 +453,20 @@ export class Game {
     if (this.over || !this.items.length) return null;
     if (!this.upcoming) this.upcoming = this.drawItem(this.asked + 1);
     return this.upcoming;
+  }
+
+  /**
+   * Медиа, с которого начнётся следующая партия за этот тип контента, — чтобы
+   * прогреть картинку ещё в меню. Текущая партия не трогается: черновик тянет
+   * отдельный экземпляр на тех же данных, а reset() потом принимает заготовку
+   * через opts.upcoming. Объекты медиа общие, поэтому колода её узнаёт.
+   * @param {string} kind
+   * @returns {object|null}
+   */
+  scoutFirst(kind) {
+    const scout = new Game(this.allItems, [...this.gameById.values()]);
+    scout.reset(MODE.NORMAL, { kind });
+    return scout.peekNext();
   }
 
   /**

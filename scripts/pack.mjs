@@ -17,7 +17,8 @@
 import { execFile } from 'node:child_process';
 import { join } from 'node:path';
 import { cp, mkdir, rm, stat } from 'node:fs/promises';
-import { ROOT, readJSON, writeJSON } from './lib.mjs';
+import { ROOT } from './lib.mjs';
+import { buildBundle, describeBundle } from './bundle.mjs';
 
 const SCRIPTS = join(ROOT, 'scripts');
 
@@ -31,17 +32,19 @@ const OUT = join(DIST, 'game.zip');
 const STAGE = join(DIST, 'stage');
 
 /**
- * Поля записей медиа, которые нужны пайплайну, но не игре: адрес, откуда
- * скачан файл, автор с той же площадки и пометка ручной проверки.
+ * Сырые данные пайплайна, которые в архив не едут: игра читает только
+ * data/bundle.json (см. scripts/bundle.mjs), а в этих трёх — адреса источников,
+ * авторы и пометки ручной проверки.
  *
- * В архив они попадать не должны. Требования запрещают в игре ссылки и домены
- * на сторонние ресурсы (п. 8.4.2), а «в игре» — это весь архив, а не только
- * то, что видно на экране: модератор листает файлы. В icons.json и shots.json
- * лежало 1837 адресов cdn2.steamgriddb.com и store.steampowered.com — ровно те
- * два домена, за которые уже приходило замечание по модалке «Об игре».
- * В репозитории поля остаются: происхождение каждого файла восстановимо.
+ * Требования запрещают в игре ссылки и домены на сторонние ресурсы (п. 8.4.2),
+ * а «в игре» — это весь архив, а не только то, что видно на экране: модератор
+ * листает файлы. В icons.json и shots.json лежало 1837 адресов
+ * cdn2.steamgriddb.com и store.steampowered.com — ровно те два домена, за
+ * которые уже приходило замечание по модалке «Об игре». Раньше поля вычищали
+ * по одному на пути в архив; теперь файлы в него просто не кладутся.
+ * В репозитории они остаются: происхождение каждого файла восстановимо.
  */
-const DROP_FIELDS = ['source', 'author', 'needsReview'];
+const RAW_DATA = ['games.json', 'icons.json', 'shots.json'];
 
 const run = (cmd, args, opts = {}) =>
   new Promise((resolve, reject) => {
@@ -51,26 +54,16 @@ const run = (cmd, args, opts = {}) =>
   });
 
 /**
- * Готовит STAGE: копия public/ с очищенными данными. Возвращает число
- * вычищенных полей — для отчёта в консоль.
+ * Готовит STAGE: копия public/ со свежим bundle.json и без сырых данных.
+ * Возвращает сводку по сборке данных — для отчёта в консоль.
  */
 async function stagePublic() {
+  // Пересобираем всегда: bundle в public/ мог отстать от правок данных.
+  const bundle = await buildBundle();
   await rm(STAGE, { recursive: true, force: true });
   await cp(PUBLIC, STAGE, { recursive: true });
-
-  let dropped = 0;
-  for (const [file, key] of [['icons.json', 'icons'], ['shots.json', 'shots']]) {
-    const path = join(STAGE, 'data', file);
-    const data = await readJSON(path);
-    if (!data?.[key]) continue;
-    data[key] = data[key].map((it) => {
-      const clean = { ...it };
-      for (const f of DROP_FIELDS) if (f in clean) { delete clean[f]; dropped++; }
-      return clean;
-    });
-    await writeJSON(path, data);
-  }
-  return dropped;
+  for (const file of RAW_DATA) await rm(join(STAGE, 'data', file), { force: true });
+  return bundle;
 }
 
 async function zipWithZip() {
@@ -107,8 +100,8 @@ async function main() {
   await mkdir(DIST, { recursive: true });
   await rm(OUT, { force: true });
 
-  const dropped = await stagePublic();
-  console.log(`[pack] из данных архива убрано служебных полей: ${dropped}`);
+  const bundle = await stagePublic();
+  console.log(`[pack] ${describeBundle(bundle)}; сырые данные в архив не кладём`);
 
   try {
     await zipWithZip();

@@ -82,10 +82,11 @@ const shots = read('public/data/shots.json');
   // Данные — тоже часть игры. Раньше проверка смотрела только код и разметку,
   // а в icons.json и shots.json спокойно ехали 1837 адресов cdn2.steamgriddb.com
   // и store.steampowered.com: модератор листает файлы архива, а не только экран.
-  // В public/ поля происхождения остаются, из архива их убирает pack.mjs —
-  // поэтому здесь проверяется именно архив.
+  // Сырые данные с адресами остаются в public/, в архив едет только
+  // data/bundle.json (см. scripts/bundle.mjs) — поэтому здесь проверяется
+  // именно архив, а что сырых файлов в нём нет, смотрит проверка архива ниже.
   if (fs.existsSync('dist/game.zip')) {
-    for (const name of ['data/icons.json', 'data/shots.json', 'data/games.json']) {
+    for (const name of ['data/bundle.json']) {
       // Поиск делает сам python и печатает только найденные адреса: печать
       // содержимого целиком падала на кириллице (консоль Windows в cp1251).
       let found = '';
@@ -203,6 +204,12 @@ const shots = read('public/data/shots.json');
       "import zipfile,sys; print('\\n'.join(zipfile.ZipFile('dist/game.zip').namelist()))"]).toString();
     const names = listing.split('\n').map((s) => s.trim()).filter(Boolean);
     if (!names.includes('index.html')) bad.push('index.html не в корне архива');
+    // Игра читает только bundle.json; сырые данные пайплайна с адресами
+    // источников (п. 8.4.2) в архиве — ошибка сборки.
+    if (!names.includes('data/bundle.json')) bad.push('в архиве нет data/bundle.json');
+    for (const f of ['data/games.json', 'data/icons.json', 'data/shots.json']) {
+      if (names.includes(f)) bad.push(`в архиве сырой ${f}`);
+    }
     if (names.some((n) => n.includes('\\'))) bad.push('в путях обратные слэши');
     for (const f of ['schedule-i-1.jpg', 'postal-2-1.jpg', 'wolfenstein-ii-the-new-colossus-1.jpg', 'mirror-1.jpg']) {
       if (names.some((n) => n.endsWith(f))) bad.push(`в архиве остался ${f}`);

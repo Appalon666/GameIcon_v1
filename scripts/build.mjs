@@ -12,6 +12,7 @@
 import { join } from 'node:path';
 import { access, stat, readdir } from 'node:fs/promises';
 import { DATA, IMG, readJSON } from './lib.mjs';
+import { buildBundle, describeBundle } from './bundle.mjs';
 
 const OPTIONS = 4;
 const exists = (p) => access(p).then(() => true).catch(() => false);
@@ -89,6 +90,10 @@ async function main() {
     process.exit(1);
   }
   console.log('\n[build] данные целостны ✓');
+
+  // Данные целы — собираем из них то, что читает игра. Здесь, а не только в
+  // pack: дев-сервер и проверки должны видеть тот же bundle, что уедет в архив.
+  console.log(`[build] ${describeBundle(await buildBundle())}`);
 }
 
 main().catch((e) => {

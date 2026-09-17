@@ -118,10 +118,40 @@ function show(screen) {
   for (const s of [el.start, el.game, el.over]) s.hidden = s !== screen;
 }
 
+/**
+ * Без cache: 'no-cache' намеренно — тот же файл заранее тянет
+ * <link rel="preload"> в index.html, и запрос должен совпасть с ним по режиму,
+ * иначе браузер скачает его второй раз. На площадке у каждой версии игры свой
+ * путь, так что устаревший кеш ей не грозит.
+ */
 async function loadJSON(url) {
-  const res = await fetch(url, { cache: 'no-cache' });
+  const res = await fetch(url);
   if (!res.ok) throw new Error(`${url}: ${res.status}`);
   return res.json();
+}
+
+/** Версия data/bundle.json, которую понимает эта сборка (см. scripts/bundle.mjs). */
+const BUNDLE_VERSION = 1;
+/** Файл медиа по id игры: имена в наборе идут по шаблону, сборка это проверяет. */
+const FILE_OF = { [KIND.ICON]: (id) => `${id}.png`, [KIND.SHOT]: (id) => `${id}-1.jpg` };
+
+/**
+ * Разворачивает табличный bundle.json в объекты, с которыми работает игра:
+ *   games: [id, name, genre, tier, developer, year]
+ *   icons / shots: [gameId, blur?]
+ * В сборку попадают только медиа, проверенные глазами (тем же отбором, что
+ * стоит в Game), поэтому clean ставим всем.
+ */
+function unpackBundle(raw) {
+  if (raw?.v !== BUNDLE_VERSION) {
+    throw new Error(`data/bundle.json: версия ${raw?.v}, ожидается ${BUNDLE_VERSION} — пересобери: npm run bundle`);
+  }
+  const games = raw.games.map(([id, name, genre, tier, developer, year]) => ({
+    id, name, genre, tier, developer, year,
+  }));
+  const media = (rows, kind) =>
+    rows.map(([gameId, blur]) => ({ gameId, kind, file: FILE_OF[kind](gameId), blur: blur ?? [], clean: true }));
+  return { games, items: [...media(raw.icons, KIND.ICON), ...media(raw.shots, KIND.SHOT)] };
 }
 
 /* ---------- Отрисовка состояния ---------- */
@@ -429,6 +459,23 @@ function preloadNext() {
   loadImage(srcOf(next)).catch(() => {});
 }
 
+/** Заготовка первого вопроса: медиа, чью картинку греем, пока игрок в меню. */
+let warm = null;
+
+/**
+ * Греет картинку первого вопроса заранее. Партия начинается с загрузки кадра,
+ * и на 3G это 0.4–1.5 с пустой рамки после нажатия «Играть». Пока игрок
+ * читает меню, время есть: тянем вопрос для выбранного типа и кладём его
+ * картинку в кеш браузера. startGame отдаёт заготовку в reset(), чтобы первым
+ * выпал именно этот кадр, а не другой из той же колоды. Текущую партию черновик
+ * не трогает, поэтому звать можно и с экрана итогов.
+ */
+function warmFirstQuestion() {
+  if (!game) return;
+  warm = game.scoutFirst(selKind);
+  if (warm) loadImage(srcOf(warm)).catch(() => {});
+}
+
 function onAnswer(gameId) {
   if (busy || !game.question || game.question.resolved) return;
   // Вариант, убранный подсказкой, ответом не считается.
@@ -622,6 +669,8 @@ async function finish() {
   }
 
   show(el.over);
+  // «Ещё раз» стартует сразу — пусть первый кадр следующей партии уже лежит в кеше.
+  warmFirstQuestion();
 
   const { entries } = await sdk.topScores(game.board, 5);
   if (run !== runId) return;
@@ -660,6 +709,7 @@ function fillBoardList(list, entries) {
 }
 
 function goHome() {
+  warmFirstQuestion();
   runId++;
   questionLive = false;
   stopTimer();
@@ -675,7 +725,9 @@ function goHome() {
 /** @param {'normal'|'timed'|'hardcore'} mode */
 function startGame(mode) {
   runId++;
-  game.reset(mode, { kind: selKind });
+  // Заготовка из меню становится первым вопросом; второй раз её не отдаём.
+  game.reset(mode, { kind: selKind, upcoming: warm });
+  warm = null;
   if (!game.ready) {
     setStatus('Для этого типа мало данных. Выбери другой.');
     return;
@@ -765,19 +817,19 @@ function bootError(title, hint) {
 async function boot() {
   document.addEventListener('contextmenu', (e) => e.preventDefault());
 
+  // Данные от SDK не зависят — качаем их параллельно с его подъёмом, а не
+  // после: до ready() игра ждёт самого медленного из двух, а не их сумму.
+  const dataP = loadJSON('data/bundle.json').then(unpackBundle);
+  // Отказ разберём ниже, у await; эта ветка лишь не даёт ему до тех пор
+  // считаться необработанным.
+  dataP.catch(() => {});
   await sdk.init();
   document.documentElement.lang = sdk.lang;
 
   let games;
-  let items = [];
+  let items;
   try {
-    ({ games } = await loadJSON('data/games.json'));
-    // Иконки и скриншоты — независимые наборы; каждого может не быть.
-    const [icons, shots] = await Promise.all([
-      loadJSON('data/icons.json').catch(() => ({ icons: [] })),
-      loadJSON('data/shots.json').catch(() => ({ shots: [] })),
-    ]);
-    items = [...(icons.icons ?? []), ...(shots.shots ?? [])];
+    ({ games, items } = await dataP);
   } catch (e) {
     bootError('Не удалось загрузить данные игры', 'Проверь соединение и обнови страницу.');
     console.error(e);
@@ -810,7 +862,10 @@ async function boot() {
 
   el.kind.addEventListener('click', (e) => {
     const btn = e.target.closest('.seg__btn');
-    if (btn) setKind(btn.dataset.kind);
+    if (btn) {
+      setKind(btn.dataset.kind);
+      warmFirstQuestion();
+    }
   });
 
   music.init(renderSound);
@@ -897,6 +952,7 @@ async function boot() {
   el.boot.hidden = true;
   show(el.start);
   sdk.ready();
+  warmFirstQuestion();
   refreshMenu();
 }
 

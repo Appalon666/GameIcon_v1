@@ -9,6 +9,7 @@ import { createServer } from 'node:http';
 import { readFile, writeFile } from 'node:fs/promises';
 import { join, extname, normalize } from 'node:path';
 import { ROOT, DATA } from './lib.mjs';
+import { buildBundle, describeBundle } from './bundle.mjs';
 
 const PUBLIC = join(ROOT, 'public');
 const PORT = Number(process.env.PORT) || 8080;
@@ -93,6 +94,9 @@ async function saveMarks(res, body) {
       }
     }
     await writeFile(path, JSON.stringify(doc, null, 2) + '\n');
+    // Игра читает не эти файлы, а data/bundle.json — обновляем и его, иначе
+    // редактор сохранил, а игра в соседней вкладке играет по-старому.
+    await buildBundle();
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ ok: true, saved: n }));
   } catch (e) {
@@ -131,4 +135,10 @@ const server = createServer((req, res) => {
   serveFile(res, path);
 });
 
+// bundle.json — генерируемый: данные могли поправить в обход build/pack, а игра
+// читает только его. Пересобираем при каждом запуске; если данные битые —
+// говорим об этом и раздаём то, что есть.
+buildBundle()
+  .then((b) => console.log(`[serve] ${describeBundle(b)}`))
+  .catch((e) => console.warn(`[serve] bundle не пересобран: ${e.message}`));
 server.listen(PORT, () => console.log(`http://localhost:${PORT}/`));
