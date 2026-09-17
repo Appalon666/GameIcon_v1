@@ -706,7 +706,8 @@ function fillBoardList(list, entries) {
     if (entry.self) li.className = 'board__self';
     const name = document.createElement('span');
     name.className = 'board__name';
-    name.textContent = `${entry.rank}. ${entry.name}`;
+    // place — номер среди видимых строк (см. sdk.topScores), rank площадки — с дырками от спрятанных.
+    name.textContent = `${entry.place ?? entry.rank}. ${entry.name}`;
     const score = document.createElement('b');
     score.textContent = String(entry.score);
     li.append(name);

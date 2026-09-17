@@ -45,7 +45,9 @@ const check = (item, ok, detail) => {
  */
 const STUB = `
 window.__lb = {
-  entries: {}, extra: {}, table: {}, calls: [], mode: 'logged-in', entryFail: null, data: {}, dataCalls: [], ready: false,
+  entries: {}, extra: {}, table: {}, calls: [], mode: 'logged-in', entryFail: null, dataCalls: [], ready: false,
+  // Сохранение можно подложить ДО старта игры: рекорды читаются один раз и кэшируются.
+  data: sessionStorage.getItem('__lb_best') ? { best: JSON.parse(sessionStorage.getItem('__lb_best')) } : {},
   // Флаг переживает перезагрузку: сбой getData надо задать ДО старта игры,
   // иначе модуль успеет прочитать рекорды и запомнить их.
   dataFail: sessionStorage.getItem('__lb_dataFail') === '1',
@@ -65,7 +67,7 @@ const getPlayerEntry = (name) => {
     e.code = 'LEADERBOARD_PLAYER_NOT_PRESENT';
     return Promise.reject(e);
   }
-  return Promise.resolve({ score: lb.entries[name], rank: 1, player: { uniqueID: 'stub' } });
+  return Promise.resolve({ score: lb.entries[name], extraData: lb.extra[name], rank: 1, player: { uniqueID: 'stub' } });
 };
 window.YaGames = {
   init: () => Promise.resolve({
@@ -147,6 +149,21 @@ async function main() {
   const sdkCall = (code) => frame.evaluate(`import('/js/sdk.js').then((m) => (${code}))`);
   /** Сводка партии для подписи: вопросов, верных, секунд. */
   const ST = (q, c, t) => `{ questions: ${q}, correct: ${c}, seconds: ${t}, mode: 'normal', kind: 'mix' }`;
+  /** Та же подпись, что в sdk.js, — повторена здесь, чтобы игра её не экспортировала. */
+  const fnv1a = (str, seed) => {
+    let h = seed >>> 0;
+    for (const b of new TextEncoder().encode(str)) {
+      h ^= b;
+      h = Math.imul(h, 16777619) >>> 0;
+    }
+    return h.toString(16).padStart(8, '0');
+  };
+  const SALT = 'rename-the-shortcut-2026-09';
+  const signExtra = (score, q, c, t) => {
+    const f = [1, q, c, t, 'n', 'm'];
+    const base = [score, ...f, SALT].join('|');
+    return [...f, fnv1a(base, 0x811c9dc5) + fnv1a(base, 0x9747b28c)].join('|');
+  };
   /** Что лежит в таблице и что до неё дошло. */
   const state = (name) =>
     frame.evaluate(
@@ -192,6 +209,22 @@ async function main() {
     window.__lb.mode = 'logged-in';
   });
 
+  // --- Подпись не экспортируется: из консоли фрейма её не позвать одной строкой.
+  const exported = await sdkCall(`typeof m.signExtraData + '/' + typeof m.verifyEntry`);
+  check('Помощники подписи не экспортированы из sdk.js', exported === 'undefined/undefined', exported);
+
+  // --- Своя строка без подписи (старая версия или консоль): её не видно, и
+  // подписанная партия перезаписывает её даже меньшим результатом.
+  await frame.evaluate(() => {
+    window.__lb.entries.leadicons = 9000;
+  });
+  await sdkCall(`m.sdk.submitScore('icons', 300, undefined, ${ST(5, 3, 20)})`);
+  s = await state(NAME.icons);
+  check('Своя строка без подписи перезаписывается подписанной, даже меньшей', s.entry === 300, `в таблице ${s.entry}`);
+  await sdkCall(`m.sdk.submitScore('icons', 200, undefined, ${ST(4, 2, 15)})`);
+  s = await state(NAME.icons);
+  check('А подписанную меньший результат уже не трогает', s.entry === 300, `в таблице ${s.entry}`);
+
   // --- Строку не прочитать: сравниваем с личным рекордом, который знаем сами.
   await frame.evaluate(() => {
     window.__lb.entries.leadshots = 9000;
@@ -228,6 +261,12 @@ async function main() {
     first === true && second === false,
     `первая партия ${first}, вторая ${second}`,
   );
+  const cloud = await frame.evaluate(() => window.__lb.data.best);
+  check(
+    'Рекорды в облаке уходят с подписью',
+    typeof cloud?.sig === 'string' && cloud.sig.length === 16 && cloud.timed === 15000,
+    `sig=${cloud?.sig}, timed=${cloud?.timed}`,
+  );
 
   // --- Подпись партии: что уходит в extraData и что из таблицы показываем.
   const lastSent = await frame.evaluate(() => window.__lb.calls.at(-1));
@@ -250,9 +289,9 @@ async function main() {
 
   // Таблица со всем зоопарком: консоль, подделка, невозможные цифры, честный,
   // своя строка без подписи и соседи за пределами топа.
-  const legit = await sdkCall(`m.signExtraData(15000, ${ST(80, 80, 200)})`);
-  const impossible = await sdkCall(`m.signExtraData(5000, ${ST(1, 1, 5)})`);
-  const neighbour = await sdkCall(`m.signExtraData(900, ${ST(6, 5, 30)})`);
+  const legit = signExtra(15000, 80, 80, 200);
+  const impossible = signExtra(5000, 1, 1, 5);
+  const neighbour = signExtra(900, 6, 5, 30);
   await frame.evaluate(
     (legit, impossible, neighbour) => {
       window.__lb.table.leadtotal = [
@@ -286,20 +325,26 @@ async function main() {
     top.around.map((e) => e.name).join(', ') === 'Сосед',
     `соседи: ${top.around.map((e) => e.name).join(', ')}`,
   );
+  check(
+    'Номера идут по видимым строкам, без дырок от спрятанных',
+    top.entries.map((e) => e.place).join(',') === '1,2' && top.around[0]?.place === 8,
+    `топ: ${top.entries.map((e) => e.place).join(',')}; сосед: ${top.around[0]?.place} (rank ${top.around[0]?.rank})`,
+  );
 
   // То же глазами игрока: окно лидербордов.
   await frame.click('#btn-board');
   await frame.waitForFunction(() => document.querySelectorAll('#boards-list li').length > 0, { timeout: 10000 });
   const dom = await frame.evaluate(() => ({
     rows: document.querySelectorAll('#boards-list li').length,
+    first: document.querySelector('#boards-list .board__name')?.textContent ?? '',
     flag: document.querySelector('#boards-list .board__flag')?.textContent ?? '',
     around: document.querySelectorAll('#boards-around li').length,
     aroundShown: !document.getElementById('boards-around').hidden,
   }));
   check(
     'Окно лидербордов: две строки в топе, пометка у своей, один сосед',
-    dom.rows === 2 && dom.flag === 'не подтверждено' && dom.around === 1 && dom.aroundShown,
-    `строк ${dom.rows}, пометка «${dom.flag}», соседей ${dom.around}`,
+    dom.rows === 2 && dom.first === '1. Я' && dom.flag === 'не подтверждено' && dom.around === 1 && dom.aroundShown,
+    `строк ${dom.rows}, первая «${dom.first}», пометка «${dom.flag}», соседей ${dom.around}`,
   );
   await frame.click('#btn-boards-close');
   await frame.evaluate(() => {
@@ -350,6 +395,23 @@ async function main() {
     `в таблице ${live}`,
   );
   await frame2.evaluate(() => sessionStorage.removeItem('__lb_dataFail'));
+
+  // --- Сохранение подделано из консоли: подпись не сходится — рекорды нули.
+  // Старое сохранение без подписи — принимается: у честных игроков рекорды
+  // не должны обнуляться при обновлении.
+  const loadWith = async (best) => {
+    await page.evaluate((b) => sessionStorage.setItem('__lb_best', JSON.stringify(b)), best);
+    await page.goto(`${ORIGIN}/__host`, { waitUntil: 'domcontentloaded' });
+    const fr = await page.waitForFrame((f) => f.url().startsWith(`${ORIGIN}/`) && !f.url().includes('__host'));
+    await fr.waitForSelector('#screen-start:not([hidden])', { timeout: 60000 });
+    const got = await fr.evaluate(`import('/js/sdk.js').then((m) => m.sdk.loadBest())`);
+    await fr.evaluate(() => sessionStorage.removeItem('__lb_best'));
+    return got;
+  };
+  const forged = await loadWith({ total: 999999, icons: 0, shots: 0, timed: 0, hardcore: 0, sig: 'deadbeefdeadbeef' });
+  check('Подделанное сохранение считается нулями', forged.total === 0, `total=${forged.total}`);
+  const legacy = await loadWith({ total: 4321 });
+  check('Старое сохранение без подписи принимается', legacy.total === 4321, `total=${legacy.total}`);
 
   await browser.close();
 

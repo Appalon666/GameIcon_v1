@@ -58,8 +58,13 @@ function plausible(score, { questions, correct, seconds }) {
   );
 }
 
-/** extraData для отправки: сводка и подпись. Экспорт — для проверок. */
-export function signExtraData(score, stats) {
+/**
+ * extraData для отправки: сводка и подпись. Не экспортируется намеренно:
+ * экспортированную функцию из консоли фрейма зовут одной строкой через
+ * import('/js/sdk.js'), и соль знать не нужно. Проверки повторяют алгоритм
+ * у себя (scripts/check-leaderboard.mjs).
+ */
+function signExtraData(score, stats) {
   const fields = summaryFields(stats);
   return [...fields, signature(score, fields)].join('|');
 }
@@ -69,7 +74,7 @@ export function signExtraData(score, stats) {
  * подделана; подпись сходится, а цифры невозможные — тоже подделана.
  * @returns {boolean}
  */
-export function verifyEntry(score, extraData) {
+function verifyEntry(score, extraData) {
   if (typeof extraData !== 'string') return false;
   const parts = extraData.split('|');
   if (parts.length !== 7 || Number(parts[0]) !== SIGN_VERSION) return false;
@@ -104,6 +109,26 @@ function emptyBest() {
 function coerceBest(raw) {
   const best = {};
   for (const b of BOARDS) best[b] = Number(raw?.[b]) || 0;
+  return best;
+}
+
+/**
+ * Подпись рекордов в сохранении. Облако площадки, как и таблица, пишет то, что
+ * прислали: рекорд правится из консоли той же строкой. Чужим подделка не видна
+ * (это меню самого читера и его порог отправки), но лазейку закрываем и здесь:
+ * рекорды с неверной подписью считаем нулями. Сохранения до этой версии, без
+ * подписи, принимаем — иначе при обновлении обнулились бы рекорды честных.
+ */
+function bestSignature(best) {
+  return signature('best', BOARDS.map((b) => best[b] ?? 0));
+}
+
+function readSignedBest(raw) {
+  const best = coerceBest(raw);
+  if (raw && typeof raw === 'object' && 'sig' in raw && raw.sig !== bestSignature(best)) {
+    console.warn('[sdk] рекорды в сохранении не сходятся с подписью — считаем нулями');
+    return emptyBest();
+  }
   return best;
 }
 
@@ -266,22 +291,24 @@ async function attachLeaderboards() {
 }
 
 /**
- * Результат игрока, уже лежащий в таблице. Нужен перед отправкой: сравнить
- * новую партию с тем, что записано, площадка сама не умеет.
- * @returns {Promise<number|null>} 0 — игрока в таблице ещё нет, это первый
- *   результат; null — строку прочитать не удалось, сравнивать не с чем.
+ * Строка игрока, уже лежащая в таблице. Нужна перед отправкой: сравнить новую
+ * партию с тем, что записано, площадка сама не умеет.
+ * @returns {Promise<{score:number, verified:boolean}|null>} score 0 — игрока в
+ *   таблице ещё нет, это первый результат; verified — сходится ли подпись
+ *   строки; null — строку прочитать не удалось, сравнивать не с чем.
  */
-async function playerEntryScore(name) {
+async function playerEntry(name) {
   try {
     const entry = await withTimeout(
       callLeaderboard('getPlayerEntry', 'getLeaderboardPlayerEntry', name),
       'getPlayerEntry',
     );
-    return Number(entry?.score) || 0;
+    const score = Number(entry?.score) || 0;
+    return { score, verified: verifyEntry(score, entry?.extraData) };
   } catch (e) {
     // «Игрока нет в таблице» — не сбой, а обычный первый заход: пусть шлёт.
     const reason = e?.code ?? e?.message ?? String(e);
-    if (/NOT_PRESENT/i.test(String(reason))) return 0;
+    if (/NOT_PRESENT/i.test(String(reason))) return { score: 0, verified: true };
     console.warn('[sdk] getPlayerEntry:', reason);
     return null;
   }
@@ -301,7 +328,7 @@ async function readBest() {
   try {
     if (!ysdk) return (bestCache = readLocalBest());
     const data = await withTimeout(getPlayer().then((p) => p.getData([BEST_KEY])), 'getData');
-    return (bestCache = coerceBest(data?.[BEST_KEY]));
+    return (bestCache = readSignedBest(data?.[BEST_KEY]));
   } catch (e) {
     console.warn('[sdk] loadBest:', e?.message ?? e);
     return null;
@@ -311,7 +338,7 @@ async function readBest() {
 /** Рекорд вне площадки: SDK нет, храним в браузере. */
 function readLocalBest() {
   try {
-    return coerceBest(JSON.parse(localStorage.getItem(BEST_KEY) ?? '{}'));
+    return readSignedBest(JSON.parse(localStorage.getItem(BEST_KEY) ?? '{}'));
   } catch {
     return emptyBest();
   }
@@ -568,6 +595,7 @@ export const sdk = {
     if (score <= (best[board] ?? 0)) return false;
 
     const next = { ...best, [board]: score };
+    next.sig = bestSignature(next);
     try {
       if (!ysdk) {
         localStorage.setItem(BEST_KEY, JSON.stringify(next));
@@ -619,8 +647,12 @@ export const sdk = {
       }
       // Своя строка в таблице авторитетнее личного рекорда: игрок мог играть
       // на другом устройстве или ещё до того, как рекорд стали хранить.
-      const current = await playerEntryScore(name);
-      const floor = current ?? knownBest ?? (await readBest())?.[board];
+      const current = await playerEntry(name);
+      // Своя строка без подписи — из версии до подписей или из консоли: видна
+      // она не будет, и подписанный результат её перезаписывает, даже
+      // меньший. Иначе честный игрок со старым высоким рекордом пропал бы из
+      // таблицы, пока его не побьёт.
+      const floor = current ? (current.verified ? current.score : 0) : (knownBest ?? (await readBest())?.[board]);
       // Ни строки в таблице, ни облачного рекорда — сравнить не с чем.
       // setScore пишет что дадут, поэтому молчим: пропущенная отправка стоит
       // одной партии, а отправка вслепую — всего накопленного рекорда.
@@ -713,9 +745,14 @@ export const sdk = {
         });
       }
       const shown = all.filter((e) => e.verified || e.self).sort((a, b) => a.rank - b.rank);
+      // Номера — по видимым строкам: с платформенным rank топ начинался бы с
+      // «3.», когда две строки над ним спрятаны. У соседей за пределами топа
+      // спрятанные между ними и топом неизвестны — вычитаем только спрятанное
+      // в топе, rank площадки остаётся в поле rank.
+      const hiddenInTop = all.filter((e) => e.rank <= limit && !(e.verified || e.self)).length;
       return {
-        entries: shown.filter((e) => e.rank <= limit),
-        around: shown.filter((e) => e.rank > limit),
+        entries: shown.filter((e) => e.rank <= limit).map((e, i) => ({ ...e, place: i + 1 })),
+        around: shown.filter((e) => e.rank > limit).map((e) => ({ ...e, place: e.rank - hiddenInTop })),
         hidden: all.length - shown.length,
         available: true,
       };
