@@ -22,24 +22,29 @@
     <p id="boot-text">Загрузка…</p>
   </div>
 
-  <!-- Старт -->
-  <section id="screen-start" class="screen screen--center" hidden>
-    <h1 class="title">Угадай игру по иконке и скриншоту</h1>
-    <p class="subtitle">Докажи, что ты настоящий геймер!</p>
-    <p class="howto">Выбери название из четырёх вариантов. Подсказка 50/50 убирает два неверных.</p>
+  <!-- Старт: рабочий стол. Название — на обоях, партия выбирается в окне
+       «Новая партия», где режимы лежат ярлыками, внизу — панель задач с
+       лидербордами, «Об игре» и звуком. Тот же язык, что и на игровом экране
+       (ярлык с рамкой выделения, контекстное меню). -->
+  <section id="screen-start" class="screen desk" hidden>
+    <div class="desk__main">
+      <div class="desk__wall">
+        <h1 class="title">Угадай игру по иконке и скриншоту</h1>
+        <p class="subtitle">Докажи, что ты настоящий геймер!</p>
+      </div>
 
-    <!-- На десктопе .start-body раскладывается в две колонки: слева выбор
-         режима, справа топ-5. На мобиле — одна колонка, топ-5 скрыт (см. CSS). -->
-    <div class="start-body">
-      <div class="start-main">
-        <div class="winbar" aria-hidden="true">
-          <span class="winbar__dots"><i></i><i></i><i></i></span>
-          <span class="winbar__name">Выбор режима</span>
-        </div>
-        <div class="picker">
-          <div class="picker__row">
-            <span class="picker__label">Показывать</span>
-            <div class="picker__ctrls">
+      <!-- На широком экране окно партии и окно топ-5 стоят рядом, на телефоне
+           — одна колонка, топ-5 скрыт (см. CSS). -->
+      <div class="desk__body">
+        <div class="win win--modes">
+          <div class="winbar" aria-hidden="true">
+            <span class="winbar__dots"><i></i><i></i><i></i></span>
+            <span class="winbar__name">Новая партия</span>
+          </div>
+
+          <div class="win__tools">
+            <span class="win__tools-label">Показывать</span>
+            <div class="win__ctrls">
               <div id="kind" class="seg" role="group" aria-label="Тип картинки">
                 <button class="seg__btn seg__btn--on" type="button" data-kind="mix">Всё</button>
                 <button class="seg__btn" type="button" data-kind="icon">Иконки</button>
@@ -50,41 +55,76 @@
               </button>
             </div>
           </div>
+
+          <!-- Режимы — ярлыки в окне. Значки нарисованы прямо здесь: три
+               штриховых глифа, currentColor красит их под палитру. -->
+          <div class="modes">
+            <button id="btn-play" class="mode mode--primary" type="button">
+              <span class="mode__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8h10a4 4 0 0 1 4 4v1.5a3.5 3.5 0 0 1-6.3 2.1L14 14h-4l-.7 1.6A3.5 3.5 0 0 1 3 13.5V12a4 4 0 0 1 4-4z"/><path d="M8 10.5v3M6.5 12h3"/><path d="M15.5 11.5h.01M17.5 13.5h.01"/></svg>
+              </span>
+              <span class="mode__text">
+                <span class="mode__name">Обычный</span>
+                <span class="mode__desc">3 жизни, без спешки</span>
+                <span id="mode-board-normal" class="mode__board">Таблица: Общий · Всё</span>
+              </span>
+            </button>
+            <button id="btn-play-timed" class="mode" type="button">
+              <span class="mode__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+              </span>
+              <span class="mode__text">
+                <span class="mode__name">На время</span>
+                <span class="mode__desc">10 секунд на вопрос, ошибка — конец</span>
+                <span id="mode-board-timed" class="mode__board">Таблица: На время</span>
+              </span>
+            </button>
+            <button id="btn-play-hard" class="mode mode--hard" type="button">
+              <span class="mode__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/><path d="M12 7.4l-1.5 3 2.5 1.5-1.5 3.5"/></svg>
+              </span>
+              <span class="mode__text">
+                <span class="mode__name">Хардкор</span>
+                <span class="mode__desc">Одна жизнь — одна ошибка</span>
+                <span id="mode-board-hard" class="mode__board">Таблица: Хардкор</span>
+              </span>
+            </button>
+          </div>
+
+          <!-- Строка состояния, как в проводнике: сколько «объектов» и рекорд.
+               Числа ставит main.js из данных. -->
+          <p class="win__status">
+            <span id="desk-status"></span>
+            <span id="records" class="records" hidden></span>
+          </p>
         </div>
 
-        <div class="modes">
-          <button id="btn-play" class="mode mode--primary" type="button">
-            <span class="mode__name">Обычный</span>
-            <span class="mode__desc">3 жизни, без спешки</span>
-            <span id="mode-board-normal" class="mode__board">Таблица: Общий · Всё</span>
-          </button>
-          <button id="btn-play-timed" class="mode" type="button">
-            <span class="mode__name">На время</span>
-            <span class="mode__desc">10 секунд на вопрос, ошибка — конец</span>
-            <span id="mode-board-timed" class="mode__board">Таблица: На время</span>
-          </button>
-          <button id="btn-play-hard" class="mode mode--hard" type="button">
-            <span class="mode__name">Хардкор</span>
-            <span class="mode__desc">1 жизнь — одна ошибка, и всё</span>
-            <span id="mode-board-hard" class="mode__board">Таблица: Хардкор</span>
-          </button>
+        <div id="menu-board" class="win win--board" hidden>
+          <div class="winbar" aria-hidden="true">
+            <span class="winbar__dots"><i></i><i></i><i></i></span>
+            <span class="winbar__name">Лучшие игроки</span>
+          </div>
+          <ol id="menu-board-list" class="board__list"></ol>
         </div>
-
-        <p id="records" class="records" hidden></p>
-      </div>
-
-      <div id="menu-board" class="board board--menu" hidden>
-        <h3 class="board__title">Лучшие игроки</h3>
-        <ol id="menu-board-list" class="board__list"></ol>
       </div>
     </div>
 
-    <div class="links">
-      <button id="btn-board" class="btn btn--link" type="button">Лидерборды</button>
-      <button id="btn-credits" class="btn btn--link" type="button">Об игре</button>
-      <button id="btn-sound-menu" class="btn btn--link btn--sound" type="button" aria-label="Выключить звук" aria-pressed="false">
-        <span id="sound-icon-menu" class="btn__icon"></span>
+    <!-- Панель задач. Кнопки — 44px в высоту (п. 1.8). -->
+    <div class="taskbar">
+      <button id="btn-board" class="task" type="button">
+        <span class="task__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0V4z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M9 20h6"/></svg></span>
+        Лидерборды
       </button>
+      <button id="btn-credits" class="task" type="button">
+        <span class="task__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></span>
+        Об игре
+      </button>
+      <span class="taskbar__tray">
+        <button id="btn-sound-menu" class="task task--icon" type="button" aria-label="Выключить звук" aria-pressed="false">
+          <span id="sound-icon-menu" class="btn__icon"></span>
+        </button>
+        <span id="taskbar-clock" class="taskbar__clock" aria-hidden="true"></span>
+      </span>
     </div>
   </section>
 
@@ -184,8 +224,11 @@
 
   <!-- Лидерборды: 5 таблиц — общий зачёт разбит по типу контента, плюс «на время» и «хардкор» -->
   <div id="boards" class="modal" hidden>
-    <div class="modal__box">
-      <h3 class="modal__title">Лидерборды</h3>
+    <div class="modal__box modal__box--win">
+      <div class="winbar" aria-hidden="true">
+        <span class="winbar__dots"><i></i><i></i><i></i></span>
+        <span class="winbar__name">Лидерборды</span>
+      </div>
       <div class="tabs" role="tablist">
         <button id="tab-total" class="tab tab--on" type="button" role="tab">Всё</button>
         <button id="tab-icons" class="tab" type="button" role="tab">Иконки</button>
@@ -199,12 +242,37 @@
     </div>
   </div>
 
-  <!-- Об игре -->
+  <!-- Об игре: окно «Свойства» — как у файла в проводнике. Раздел «Титры»
+       здесь же, вкладок нет намеренно: один прокручиваемый лист. -->
   <div id="credits" class="modal" hidden>
-    <div class="modal__box">
-      <h3 class="modal__title">Об игре</h3>
+    <div class="modal__box modal__box--win">
+      <div class="winbar" aria-hidden="true">
+        <span class="winbar__dots"><i></i><i></i><i></i></span>
+        <span class="winbar__name">Свойства: Угадай игру.exe</span>
+      </div>
 
       <div class="modal__scroll">
+        <div class="props__head">
+          <img class="props__ico" src="favicon.png" alt="" width="44" height="44">
+          <div>
+            <p class="props__name">Угадай игру по иконке и скриншоту</p>
+            <p class="props__kind">Викторина для геймеров</p>
+          </div>
+        </div>
+
+        <p class="modal__note modal__note--tight">Общие</p>
+        <dl class="props__list">
+          <dt>Тип</dt>
+          <dd>Игра, 16+</dd>
+          <dt>Размер</dt>
+          <dd id="props-size">1000+ игр</dd>
+          <dt>Содержимое</dt>
+          <dd>4 варианта ответа, подсказка 50/50, три режима</dd>
+          <dt>Установлено</dt>
+          <dd>Яндекс Игры</dd>
+        </dl>
+
+        <p class="modal__note modal__note--tight">Титры</p>
         <dl class="roles">
           <dt>Идея, код, дизайн<br>и вынос мусора</dt>
           <dd>Appalon999</dd>
@@ -218,9 +286,16 @@
           <dt>В роли главного злодея</dt>
           <dd>логотип, который выдавал ответ</dd>
 
+          <dt>Каскадёры</dt>
+          <dd>три жизни — ни одна<br>не пережила тестирование</dd>
+
+          <dt>Монтаж</dt>
+          <dd>таймер на 10 секунд,<br>режет без жалости</dd>
+
           <dt>Саундтрек</dt>
           <dd>«Menu Music», mrpoly<br>лицензия CC0</dd>
         </dl>
+        <p class="roles__joke">При съёмках ни один ярлык не пострадал.</p>
 
         <p class="modal__note modal__note--tight">Материалы</p>
         <p class="modal__note">
@@ -228,7 +303,7 @@
           и используются здесь только для того, чтобы игру можно было опознать.
         </p>
       </div>
-      <button id="btn-credits-close" class="btn btn--primary" type="button">Закрыть</button>
+      <button id="btn-credits-close" class="btn btn--primary" type="button">ОК</button>
     </div>
   </div>
 

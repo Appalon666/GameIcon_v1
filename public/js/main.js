@@ -1,6 +1,6 @@
 /** Связывает игровую логику, отрисовку картинки и SDK Яндекс Игр с DOM. */
 import { sdk } from './sdk.js';
-import { Game, MODE, KIND, BOARD, TIME } from './game.js';
+import { Game, MODE, KIND, BOARD, TIME, OPTIONS } from './game.js';
 import { drawItem, loadImage } from './render.js';
 import { icon, setIcon } from './icons.js';
 import { music } from './audio.js';
@@ -83,6 +83,9 @@ const el = {
   records: $('records'),
   menuBoard: $('menu-board'),
   menuBoardList: $('menu-board-list'),
+  deskStatus: $('desk-status'),
+  clock: $('taskbar-clock'),
+  propsSize: $('props-size'),
   credits: $('credits'),
   creditsOpen: $('btn-credits'),
   creditsClose: $('btn-credits-close'),
@@ -803,6 +806,24 @@ async function openBoards(board) {
 
 /* ---------- Запуск ---------- */
 
+/** Склоняет по числу: plural(5, ['игра', 'игры', 'игр']) → «5 игр». */
+function plural(n, [one, few, many]) {
+  const m10 = n % 10;
+  const m100 = n % 100;
+  const word =
+    m10 === 1 && m100 !== 11 ? one : m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14) ? few : many;
+  return `${n} ${word}`;
+}
+
+/** Часы на панели задач — как у настоящей. Без секунд, хватает раза в полминуты. */
+function startClock() {
+  const tick = () => {
+    el.clock.textContent = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+  };
+  tick();
+  setInterval(tick, 30_000);
+}
+
 function bootError(title, hint) {
   el.boot.classList.add('boot--error');
   el.bootText.textContent = title;
@@ -844,6 +865,17 @@ async function boot() {
     );
     return;
   }
+
+  // «Объектов» в окне и в свойствах — живые числа из данных, а не текст,
+  // который отстанет от набора в первый же сбор.
+  const nIcons = items.filter((it) => it.kind === KIND.ICON).length;
+  const gamesText = plural(games.length, ['игра', 'игры', 'игр']);
+  el.deskStatus.textContent =
+    `${gamesText} · ${plural(OPTIONS, ['вариант', 'варианта', 'вариантов'])} ответа · подсказка 50/50`;
+  el.propsSize.textContent =
+    `${gamesText} · ${plural(nIcons, ['иконка', 'иконки', 'иконок'])} · ` +
+    plural(items.length - nIcons, ['скриншот', 'скриншота', 'скриншотов']);
+  startClock();
 
   setIcon(el.scoreIcon, 'star', { size: 17 });
   setIcon(el.hintIcon, 'bulb', { size: 17 });

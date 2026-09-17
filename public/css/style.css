@@ -27,18 +27,23 @@
   --muted: #98a3b7;
   --dim: #6b7688;
 
-  /* --accent светит на тёмном (рамки, иконки, текст), --accent-fill заливает
-     кнопки. Разными токенами, потому что один цвет обе роли не тянет: яркий
-     синий даёт белому тексту всего 3:1, а тёмный теряется на фоне.
-     Верхний стоп заливки считаем по самому светлому её краю: на #4f6fe6 белый
-     давал 4.42:1 — под порогом 4.5:1, который мелкий текст обязан держать. */
-  --accent: #6c8cff;
-  --accent-2: #3f63e0;
-  --accent-fill: linear-gradient(180deg, #4b6ade, #33509f);
-  --accent-ink: #ffffff;
+  /* Палитра «циан + янтарь» на тёмно-синем. База (фон, карточки) остаётся
+     синей: в ней нарисованы заставка hero.jpg и обложка карточки. Акценты
+     делят две роли: --accent светит на тёмном (рамки выделения, значки,
+     ссылки) — циан, как блики на заставке; --accent-fill заливает кнопки и
+     «переименованный» ярлык — янтарь с тёмным текстом, 9:1 против 4.4:1 у
+     белого на прежней синей заливке. --accent-rgb / --fill-rgb — те же цвета
+     числами, для rgba() в тенях и рамках. */
+  --accent: #4fd8ff;
+  --accent-rgb: 79, 216, 255;
+  --accent-2: #22b8e6;
+  --accent-fill: linear-gradient(180deg, #ffbe5c, #e0912a);
+  --fill-rgb: 224, 145, 42;
+  --accent-ink: #1b1204;
+  --title-lo: #bfe9ff;
   /* Заливка рамки выделения — то же, чем ОС подсвечивает выбранный ярлык. */
-  --sel: rgba(108, 140, 255, 0.16);
-  --sel-2: rgba(108, 140, 255, 0.28);
+  --sel: rgba(var(--accent-rgb), 0.14);
+  --sel-2: rgba(var(--accent-rgb), 0.26);
 
   --good: #4fd598;
   --bad: #ff6b81;
@@ -197,7 +202,7 @@ body {
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.05;
-  background: linear-gradient(180deg, #ffffff, #b7d6ee);
+  background: linear-gradient(180deg, #ffffff, var(--title-lo));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -211,38 +216,26 @@ body {
   font-weight: 800;
   font-size: 22px;
   letter-spacing: -0.01em;
-  text-shadow: 0 1px 12px rgba(108, 140, 255, 0.25);
+  text-shadow: 0 1px 12px rgba(var(--accent-rgb), 0.25);
 }
 
-.howto {
-  margin: 0 auto;
-  color: var(--muted);
-  font-size: 13.5px;
-  line-height: 1.4;
-  max-width: 340px;
-}
 
-/* ---------- Выбор параметров партии ---------- */
+/* ---------- Окно «Новая партия»: панель инструментов ---------- */
 
-.picker {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 0 0 12px;
-  border-bottom: 1px solid var(--line);
-}
-
-.picker__row {
+/* «Показывать» + переключатель + «?». Подпись и переключатель вместе занимают
+   361px и не влезали в 360px-телефон: «?» вылезал за правый край — переносим
+   на вторую строку. */
+.win__tools {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  /* Подпись + переключатель + «?» вместе занимают 361px и не влезали уже в
-     360px-телефон: «?» вылезал за правый край. Переносим на вторую строку. */
   flex-wrap: wrap;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
 }
 
-.picker__label { color: var(--muted); font-size: 14px; font-weight: 600; }
+.win__tools-label { color: var(--muted); font-size: 13px; font-weight: 600; }
 
 /* Сегментированный переключатель типа контента. */
 .seg {
@@ -274,11 +267,11 @@ body {
 .seg__btn--on {
   background: var(--accent-fill);
   color: var(--accent-ink);
-  box-shadow: 0 2px 8px rgba(51, 80, 159, 0.4);
+  box-shadow: 0 2px 8px rgba(var(--fill-rgb), 0.4);
 }
 
 /* Переключатель + «?» справа. */
-.picker__ctrls { display: flex; align-items: center; gap: 12px; }
+.win__ctrls { display: flex; align-items: center; gap: 12px; }
 
 /* Кружок-подсказка «?» с всплывающим пояснением по наведению/фокусу. */
 .hint-dot {
@@ -342,50 +335,52 @@ body {
   }
 }
 
-.select {
-  appearance: none;
-  font: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-  background: var(--bg);
-  border: 1px solid var(--line-2);
-  border-radius: 10px;
-  padding: 8px 30px 8px 12px;
-  cursor: pointer;
-  background-image:
-    linear-gradient(45deg, transparent 50%, var(--muted) 50%),
-    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
-  background-position: right 13px center, right 8px center;
-  background-size: 5px 5px, 5px 5px;
-  background-repeat: no-repeat;
-}
 
-.select option { background: var(--card); color: var(--text); }
+/* ==========================================================================
+   Стартовый экран — рабочий стол
+   ========================================================================== */
 
-/* ---------- Раскладка стартового экрана ---------- */
-
-/* По умолчанию (мобила и узкие окна) — одна колонка, как раньше.
-   На десктопе .start-body становится строкой: режимы слева, топ-5 справа
-   (см. медиазапрос min-width:720px в разделе «Адаптив»). */
-.start-body { display: flex; flex-direction: column; gap: 14px; }
-
-/* Окно выбора режима. Внутренние отступы даём полями детей, а не паддингом
-   контейнера: строка заголовка обязана идти от края до края, как у настоящего
-   окна, а паддинг отодвинул бы и её. */
-.start-main {
+/* Название — на обоях, под ним окна, внизу панель задач. Содержимое между
+   обоями и панелью центрируется автоотступами: пока влезает — по центру,
+   перестало — прижимается к верху и прокручивается, а не срезает заголовок
+   (тот же смысл, что у safe center на .screen--center). */
+.desk { align-items: center; text-align: center; overflow-y: auto; padding-bottom: 0; }
+.desk__main {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  min-width: 0;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  margin: auto 0;
   padding-bottom: 14px;
+}
+.desk__main > * { width: 100%; max-width: var(--maxw); }
+/* Название длинное и в колонке 480px разваливалось на три строки, съедая
+   126px высоты. Даём ему больше ширины — на широком экране укладывается в
+   одну-две. */
+.desk__main > .desk__wall { max-width: 720px; }
+.desk__wall { display: flex; flex-direction: column; gap: 8px; }
+.desk__body { display: flex; flex-direction: column; gap: 14px; }
+
+/* Окно. Внутренние отступы даём полями детей, а не паддингом контейнера:
+   строка заголовка обязана идти от края до края, как у настоящего окна.
+   overflow не режем: подсказка «?» раскрывается вверх, поверх строки
+   заголовка, и с overflow: hidden её бы обрезало. */
+.win {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding-bottom: 12px;
   background: linear-gradient(180deg, var(--card-2), var(--card));
   border: 1px solid var(--line-2);
   border-radius: 14px;
   box-shadow: var(--shadow);
-  overflow: hidden;
+  text-align: left;
 }
-.start-main > :not(.winbar) { margin-inline: 12px; }
+.win > :not(.winbar) { margin-inline: 12px; }
+.win > .winbar { border-radius: 13px 13px 0 0; }
+.win--board { gap: 8px; }
 
 .winbar__name {
   font-size: 12px;
@@ -396,62 +391,87 @@ body {
   text-overflow: ellipsis;
 }
 
-/* ---------- Кнопки-режимы ---------- */
+/* ---------- Режимы — ярлыки в окне ---------- */
 
-.modes { display: flex; flex-direction: column; gap: 8px; }
+/* По умолчанию (телефон) — списком: значок слева, подпись справа. На широком
+   экране — крупными значками в ряд, как в проводнике (см. адаптив). */
+.modes { display: grid; grid-template-columns: 1fr; gap: 6px; }
 
 .mode {
   appearance: none;
   cursor: pointer;
   text-align: left;
   display: flex;
-  flex-direction: column;
-  gap: 1px;
-  padding: 10px 16px;
-  border-radius: var(--radius);
-  border: 1px solid var(--line-2);
-  background: var(--card-2);
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  min-height: 44px;
+  border-radius: 12px;
+  /* Рамка выделения — та же пунктирная, что у ярлыка на игровом экране;
+     пока ярлык не выбран, она прозрачная и места не меняет. */
+  border: 2px dashed transparent;
+  background: transparent;
   color: var(--text);
-  box-shadow: var(--shadow-sm);
-  transition: transform 0.12s, border-color 0.15s, background 0.15s;
+  font: inherit;
+  transition: background 0.15s, border-color 0.15s;
 }
-
+.mode:focus-visible { outline: 0; border-color: rgba(var(--accent-rgb), 0.75); background: var(--sel); }
 @media (hover: hover) {
-  .mode:hover { border-color: var(--accent-2); }
+  .mode:hover:not(:disabled) { border-color: rgba(var(--accent-rgb), 0.75); background: var(--sel); }
 }
-.mode:active { transform: translateY(1px); }
+.mode:active:not(:disabled) { background: var(--sel-2); }
 
 /* Недоступный режим: при выборе типа «Иконки/Скриншоты» «На время» и «Хардкор»
    гаснут — они играются только по всему набору. */
-.mode:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-@media (hover: hover) {
-  .mode:disabled:hover { border-color: var(--line-2); }
-  .mode--hard:disabled:hover { border-color: rgba(255, 107, 107, 0.5); }
-}
-.mode:disabled:active { transform: none; }
+.mode:disabled { opacity: 0.4; cursor: not-allowed; }
 
-.mode--primary {
+.mode__icon {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--line-2);
+}
+.mode__icon svg { width: 24px; height: 24px; }
+/* «Обычный» — главный: значок залит акцентом, как кнопка действия. */
+.mode--primary .mode__icon {
   background: var(--accent-fill);
-  border-color: transparent;
   color: var(--accent-ink);
-  box-shadow: 0 8px 22px rgba(51, 80, 159, 0.4);
+  box-shadow: 0 6px 16px rgba(var(--fill-rgb), 0.4);
 }
+.mode--hard .mode__icon { color: var(--bad); }
 
-.mode--hard { border-color: rgba(255, 107, 107, 0.5); }
-@media (hover: hover) {
-  .mode--hard:hover { border-color: var(--bad); }
-}
+.mode__text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.mode__name { font-size: 16px; font-weight: 800; }
 .mode--hard .mode__name { color: #ff9a9a; }
+.mode__desc { font-size: 12.5px; color: var(--muted); }
+/* Подпись: в какую таблицу лидербордов уходит счёт этого режима. --muted, а не
+   --dim: мелкий кегль обязан держать 4.5:1, --dim на карточке даёт 3.2:1.
+   12px, а не 11: мелкий кегль — постоянная придирка к вёрстке. */
+.mode__board {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
 
-.mode__name { font-size: 17px; font-weight: 800; }
-.mode__desc { font-size: 12.5px; opacity: 0.85; }
-/* Подпись: в какую таблицу лидербордов уходит счёт этого режима. */
-.mode__board { font-size: 11.5px; font-weight: 700; opacity: 0.6; margin-top: 1px; }
-.mode--primary .mode__board { opacity: 0.72; }
+/* Строка состояния окна, как в проводнике: сколько «объектов» и рекорд. */
+.win__status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin-block: 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+}
 
 /* ---------- Кнопки общего вида ---------- */
 
@@ -474,42 +494,75 @@ body {
   background: var(--accent-fill);
   border-color: transparent;
   color: var(--accent-ink);
-  box-shadow: 0 6px 18px rgba(51, 80, 159, 0.35);
+  box-shadow: 0 6px 18px rgba(var(--fill-rgb), 0.35);
 }
 
 .btn--big { padding: 15px 22px; font-size: 17px; }
 
-.btn--link {
-  background: none;
-  border: 0;
-  color: var(--muted);
+/* ---------- Панель задач ---------- */
+
+/* Во всю ширину экрана у нижнего края: отрицательные поля выводят её за
+   паддинг .screen (18px по бокам). Ссылки меню и звук — её кнопки. */
+.taskbar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: calc(100% + 36px);
+  margin: 0 -18px;
+  padding: 6px 12px calc(6px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, var(--card-2), var(--card));
+  border-top: 1px solid var(--line-2);
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.task {
+  appearance: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
   font-weight: 600;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 10px;
   padding: 8px 12px;
+  /* п. 1.8 — палец должен попадать: 44px по высоте. */
   min-height: 44px;
   display: inline-flex;
   align-items: center;
+  gap: 8px;
+  white-space: nowrap;
 }
 @media (hover: hover) {
-  .btn--link:hover { color: var(--accent); }
+  .task:hover { background: var(--sel); border-color: var(--line-2); }
 }
+.task:active { background: var(--sel-2); }
+.task__ico { display: inline-flex; color: var(--accent); }
+.task__ico svg { width: 18px; height: 18px; }
 
-.links { display: flex; justify-content: center; gap: 8px; }
-
-/* Кнопка звука в ряду ссылок: только иконка, без подписи — ряд и так упирается
-   в ширину телефона (п. 1.10.1), а динамик понятен без слов. */
-.btn--sound { padding: 8px 10px; }
+/* Звук — в трее справа: только значок, без подписи, динамик понятен без слов. */
+.task--icon { padding: 8px 10px; }
+.taskbar__tray { margin-left: auto; display: flex; align-items: center; gap: 4px; }
+.taskbar__clock {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  padding: 0 8px;
+}
 .btn__icon { display: inline-flex; color: var(--muted); }
 @media (hover: hover) {
-  .btn--sound:hover .btn__icon { color: var(--accent); }
+  .task--icon:hover .btn__icon { color: var(--accent); }
+}
 }
 
 /* Выключенный звук виден по иконке, но приглушим и цвет: состояние кнопки
    должно читаться с одного взгляда, а не по форме значка. */
 .chip.is-off .chip__icon,
-.btn--sound.is-off .btn__icon { color: var(--muted); }
+.task.is-off .btn__icon { color: var(--muted); }
 .chip.is-off { border-color: var(--line); }
 
-.records { color: var(--muted); font-size: 14px; }
 .records b { color: var(--text); }
 
 /* ---------- Таблица лидеров ---------- */
@@ -522,7 +575,6 @@ body {
   text-align: left;
 }
 
-.board--menu { box-shadow: var(--shadow-sm); }
 .board__title { margin: 0 0 8px; font-size: 14px; color: var(--muted); font-weight: 700; }
 .board__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
 /* overscroll-behavior: contain — без него докрутка до конца списка передаётся
@@ -676,7 +728,7 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.03em;
   color: var(--accent);
-  background: rgba(108, 140, 255, 0.14);
+  background: rgba(var(--accent-rgb), 0.14);
   border-radius: 6px;
   padding: 2px 6px;
 }
@@ -805,7 +857,7 @@ body {
   /* Поля скромные: aspect-ratio считается по border-box, и у широкого кадра
      поля слева и справа выходят шире верхнего примерно на padding*(ar-1). */
   padding: 8px;
-  border: 2px dashed rgba(108, 140, 255, 0.75);
+  border: 2px dashed rgba(var(--accent-rgb), 0.75);
   border-radius: 14px;
   background: var(--sel);
   overflow: hidden;
@@ -962,7 +1014,7 @@ body {
 .reveal__next { width: 100%; }
 .reveal__next + .reveal__next { margin-top: 8px; }
 .btn--revive {
-  background: rgba(108, 140, 255, 0.12);
+  background: rgba(var(--accent-rgb), 0.12);
   border-color: var(--accent);
   color: var(--accent);
   display: flex;
@@ -1009,7 +1061,11 @@ body {
   padding: 18px;
 }
 
-.modal__title { margin: 0; font-size: 20px; font-weight: 800; }
+/* Модалка-окно: строка заголовка от края до края, остальное — с полями. */
+.modal__box--win { padding: 0; }
+.modal__box--win > .winbar { border-radius: 19px 19px 0 0; }
+.modal__box--win > :not(.winbar) { margin-inline: 18px; }
+.modal__box--win > :last-child { margin-bottom: 18px; }
 /* min-height: 0 обязателен, и это тот же класс В1, что у .controls: без него
    гибкий элемент не даёт сжать себя ниже содержимого, коробка окна перерастает
    свой max-height, и текст «Об игре» уезжает за нижний край экрана вместо того,
@@ -1050,6 +1106,27 @@ body {
 .roles dd { margin: 0; font-size: 13px; }
 .roles__joke { color: var(--muted); font-size: 13px; font-style: italic; margin: 12px 0 0; }
 
+/* «Свойства: Угадай игру.exe» — шапка со значком и таблица «ключ — значение». */
+.props__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.props__ico { flex: none; width: 44px; height: 44px; border-radius: 11px; }
+.props__name { margin: 0; font-size: 15px; font-weight: 800; line-height: 1.25; }
+.props__kind { margin: 2px 0 0; color: var(--muted); font-size: 12.5px; }
+.props__list {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 14px;
+  margin: 0;
+  font-size: 13px;
+}
+.props__list dt { color: var(--muted); }
+.props__list dd { margin: 0; }
+
 .icon { display: block; }
 
 /* ==========================================================================
@@ -1071,20 +1148,25 @@ body {
   .option::before { left: 16px; }
   .photo { --maxh: 52vh; --maxh: 52dvh; }
 
-  /* Делим стартовый экран на две колонки: слева выбор режима, справа топ-5.
-     max-width перебивает 480px из «.screen--center > *» (правило ниже по коду). */
-  .start-body {
+  /* Рабочий стол во всю ширь: окно партии и окно топ-5 рядом, режимы —
+     крупными значками в ряд, как в проводнике. max-width перебивает 480px
+     из «.desk__main > *» (правило выше по коду, та же специфичность). */
+  .desk__body {
     flex-direction: row;
     align-items: flex-start;
     justify-content: center;
     gap: 22px;
-    max-width: 840px;
-    text-align: left;
+    max-width: 960px;
   }
-  .start-main { flex: 0 1 460px; }
+  .win--modes { flex: 0 1 640px; }
   /* Топ-5 — фиксированная правая колонка; когда он скрыт (нет записей),
-     режимы занимают всю ширину. */
-  .board--menu { flex: 0 0 300px; align-self: stretch; }
+     окно партии занимает всю ширину. */
+  .win--board { flex: 0 0 300px; align-self: stretch; }
+  .modes { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .mode { flex-direction: column; align-items: center; text-align: center; gap: 8px; padding: 14px 10px 12px; }
+  .mode__icon { width: 60px; height: 60px; border-radius: 18px; }
+  .mode__icon svg { width: 32px; height: 32px; }
+  .mode__text { align-items: center; }
 }
 
 /* Низкие экраны (ландшафт на телефоне): ужимаем меню, прячем таблицу в меню.
@@ -1098,19 +1180,20 @@ body {
 @media (max-height: 600px) {
   .screen--center { justify-content: flex-start; }
   .title { font-size: 28px; }
-  .subtitle, .howto { display: none; }
-  .board--menu { display: none; }
+  .subtitle { display: none; }
+  .win--board { display: none; }
   .screen { padding-top: 12px; padding-bottom: 12px; }
-  .modes { gap: 8px; }
-  .mode { padding: 11px 16px; }
   .mode__desc, .mode__board { display: none; }
+  .mode { padding: 4px 10px; }
+  .mode__icon { width: 36px; height: 36px; border-radius: 10px; }
+  .mode__icon svg { width: 20px; height: 20px; }
 }
 
 /* На телефонах топ-5 «Лучшие игроки» делал стартовый экран слишком длинным —
    прячем его на узких экранах. Полные таблицы остаются по кнопке «Лидерборды».
    На десктопе блок сохраняется. */
 @media (max-width: 560px) {
-  .board--menu { display: none; }
+  .win--board { display: none; }
 }
 
 /* Ряду HUD не хватает совсем чуть-чуть: на 375px (iPhone SE) — 7px, на 360
@@ -1130,7 +1213,7 @@ body {
    правый край на 10px. Ужимаем поля сегментов — 24px хватает. Высоту не
    трогаем, зона нажатия 44x44 остаётся. */
 @media (max-width: 360px) {
-  .picker__ctrls { min-width: 0; }
+  .win__ctrls { min-width: 0; }
   .seg { min-width: 0; }
   .seg__btn { padding: 7px 6px; }
 }
@@ -1331,17 +1414,14 @@ body {
   .screen { padding-top: 14px; padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
   .title { font-size: 38px; }
   .subtitle { font-size: 20px; }
-  .modes { gap: 9px; }
-  .mode { padding: 12px 16px; }
   /* Высоту мелких элементов возвращаем к компактной: 44px по п. 1.8 здесь не
      влезают. У игрока с рекордом появляется строка «Твой рекорд: …», и меню
      становилось 647px при окне 630 — заголовок срезало сверху, ссылки снизу
      (п. 1.10.1). Зона нажатия остаётся 44x44 за счёт накладки. */
   .seg__btn { min-height: 36px; }
-  .btn--link { min-height: 36px; }
+  .task { min-height: 36px; }
   .chip { min-height: 36px; }
-  .picker { padding: 10px; }
-  .records { font-size: 12px; }
+  .win__status { font-size: 11.5px; }
 }
 
 /* Совсем низкий ландшафт (телефон лёжа, ~390px): даже после компактного
@@ -1354,11 +1434,9 @@ body {
   .screen { padding-top: 8px; padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
   .screen--center { gap: 7px; }
   .title { font-size: 24px; }
-  .modes { gap: 6px; }
-  .mode { padding: 9px 14px; }
-  .picker__row { padding: 6px 10px; }
-  .links { margin-top: 2px; }
-  .btn--link { padding: 6px 10px; }
+  .modes { gap: 4px; }
+  .mode { padding: 3px 10px; }
+  .task { padding: 6px 10px; }
 }
 
 /* п. 1.8 — зона нажатия не меньше 44x44.
@@ -1368,13 +1446,15 @@ body {
    на раскладку не влияет. */
 .seg__btn,
 .hint-dot,
-.btn--link,
+.task,
+.mode,
 .chip,
 .chip--icon { position: relative; }
 
 .seg__btn::after,
 .hint-dot::after,
-.btn--link::after,
+.task::after,
+.mode::after,
 .chip::after,
 .chip--icon::after {
   content: '';
@@ -1391,7 +1471,7 @@ body {
 /* Ландшафт на телефоне: возвращаем компактность, зона нажатия остаётся. */
 @media (orientation: landscape) and (max-height: 560px) {
   .seg__btn { min-height: 34px; }
-  .btn--link { min-height: 34px; }
+  .task { min-height: 34px; }
   .chip { min-height: 34px; }
   .chip--icon { min-width: 36px; min-height: 36px; }
 }
@@ -1405,16 +1485,15 @@ body {
   .screen--center { gap: 10px; }
   .title { font-size: 28px; }
   .subtitle { font-size: 17px; }
-  .howto { display: none; }
 }
 
 /* Совсем мало места по высоте: убираем подпись «Показывать» — переключатель и
    без неё понятен, а ряд перестаёт занимать две строки. */
 @media (max-height: 400px) {
-  .picker__label { display: none; }
-  .picker { padding: 8px; }
+  .win__tools-label { display: none; }
   .screen--center { gap: 6px; }
-  .mode { padding: 7px 12px; }
+  .mode__icon { width: 32px; height: 32px; border-radius: 9px; }
+  .mode__icon svg { width: 18px; height: 18px; }
   .option { padding: 6px 10px; }
 }
 
@@ -1428,9 +1507,7 @@ body {
   .screen { padding-top: 5px; padding-bottom: calc(5px + env(safe-area-inset-bottom)); }
   .screen--center { gap: 4px; }
   .title { font-size: 20px; }
-  .mode { padding: 5px 12px; }
-  .mode__desc { font-size: 11.5px; }
-  .picker { padding: 6px; }
+  .mode { padding: 2px 8px; }
 }
 
 
@@ -1448,8 +1525,8 @@ body {
    меню продолжали есть высоту. */
 
 @media (max-height: 780px) {
-  .start-main > .winbar { display: none; }
-  .start-main { gap: 10px; padding-bottom: 10px; }
+  .win--modes > .winbar { display: none; }
+  .win--modes { gap: 8px; padding-bottom: 10px; }
 }
 
 /* Подпись ярлыка стоит 30px. На 320x630 и 430x430 их не было, и картинка
@@ -1471,13 +1548,13 @@ body {
 }
 
 @media (max-height: 420px) {
-  .start-main { gap: 8px; padding-bottom: 8px; }
+  .win--modes { gap: 6px; padding-bottom: 6px; }
 }
 
 /* Поля окна режимов: переключателю «Всё / Иконки / Скриншоты» не хватало 4–8px
    и он вылезал за правый край. */
 @media (max-width: 400px) {
-  .start-main > :not(.winbar) { margin-inline: 10px; }
+  .win > :not(.winbar) { margin-inline: 10px; }
 }
 
 /* Треугольник пункта меню отнимает у текста 18px ширины. На узком экране это
@@ -1486,4 +1563,56 @@ body {
 @media (max-width: 380px), (max-height: 460px) {
   .option { padding-left: 10px; padding-right: 10px; text-align: center; }
   .option::before { display: none; }
+}
+
+/* ---------- Адаптив рабочего стола ----------
+   Зазоры между обоями, окнами и панелью задач сжимаются вместе с высотой —
+   те же пороги, что у .screen--center на экране итогов. */
+@media (max-height: 700px) {
+  .desk__main { gap: 10px; }
+  .desk__wall { gap: 4px; }
+}
+@media (max-height: 600px) {
+  .taskbar { padding-top: 4px; }
+}
+@media (max-height: 440px) {
+  .desk__main { gap: 6px; padding-bottom: 8px; }
+}
+@media (max-height: 360px) {
+  .desk__main { gap: 4px; padding-bottom: 5px; }
+  .win--modes { gap: 4px; }
+}
+
+/* Телефон лёжа: ширины много, высоты нет. Три режима — в ряд компактными
+   строками (значок + название), а не столбиком: три ряда по 44px превращались
+   бы в один. Порог по ширине: три строки «значок + название» — это 3 × ~190px. */
+@media (orientation: landscape) and (min-width: 600px) and (max-height: 560px) {
+  .modes { grid-template-columns: repeat(3, 1fr); gap: 4px; }
+  .mode { padding: 4px 8px; gap: 8px; }
+  /* Ряд вместо столбика освободил высоту — строке состояния место есть. */
+  .win__status { display: flex; }
+}
+
+/* Крошечные окна (320x320, 320x430): панель задач и переключатель ужимаются до
+   36px — попадать пальцем помогает накладка, — строка состояния прячется,
+   а ниже 360px по высоте ярлыки режимов теряют значки: три строки по 44px
+   на таком окне не помещаются вместе с заголовком. */
+@media (max-height: 440px) {
+  .task { min-height: 36px; padding-block: 4px; }
+  .taskbar { padding-top: 3px; padding-bottom: calc(3px + env(safe-area-inset-bottom)); }
+  .seg__btn { min-height: 36px; }
+  .win__status { display: none; }
+}
+@media (max-height: 360px) {
+  .mode__icon { display: none; }
+  .mode { min-height: 30px; }
+  .title { font-size: 18px; }
+}
+
+/* Узкий телефон: «Лидерборды», «Об игре», звук и часы вместе шире 320px —
+   часы убираем, кнопки ужимаем. */
+@media (max-width: 400px) {
+  .taskbar__clock { display: none; }
+  .taskbar { gap: 2px; }
+  .task { font-size: 13px; padding-inline: 8px; }
 }
