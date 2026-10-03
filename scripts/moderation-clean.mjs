@@ -6,7 +6,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
-import { DROP_GAMES, DROP_SHOTS, DROP_ICONS } from './moderation-list.mjs';
+import { DROP_GAMES, DROP_SHOTS, DROP_ICONS, RENAME_GAMES } from './moderation-list.mjs';
 
 const DATA = 'public/data';
 const IMG = 'public/img';
@@ -41,6 +41,9 @@ for (const f of Object.keys(DROP_ICONS)) rmFile('icons', f);
 shots.shots = shots.shots.filter((s) => !DROP_SHOTS[s.file]);
 icons.icons = icons.icons.filter((i) => !DROP_ICONS[i.file]);
 
+// 3. Названия с магазином внутри.
+for (const g of games.games) if (RENAME_GAMES[g.id]) g.name = RENAME_GAMES[g.id];
+
 games.count = games.games.length;
 icons.count = icons.icons.length;
 shots.count = shots.shots.length;
@@ -48,7 +51,7 @@ write('games.json', games);
 write('icons.json', icons);
 write('shots.json', shots);
 
-// 3. Отчёт: игры, оставшиеся без единой картинки.
+// 4. Отчёт: игры, оставшиеся без единой картинки.
 const withImg = new Set([...icons.icons, ...shots.shots].map((x) => x.gameId));
 const noImg = games.games.filter((g) => !withImg.has(g.id));
 console.log(`игр:   ${gamesBefore} -> ${games.count}`);

@@ -125,6 +125,39 @@ const shots = read('public/data/shots.json');
   check('п. 8.4.2 — в игре нет ссылок и доменов', !hits.length, hits.join('; ') || 'только SDK Яндекса');
 }
 
+// п. 3.5 — название площадки в тексте игры. «Яндекс» — чужой товарный знак:
+// второй отказ (03.10.2026) пришёл со стрелкой на строку «Установлено: Яндекс
+// Игры» в «Свойствах», а соседние Tafl и viktorina получили то же самое за
+// «войди в аккаунт Яндекса». Смотрим только то, что видит игрок: комментарии
+// и строки для console.* не в счёт, а разметку и строковые литералы — все.
+{
+  const strip = (s) => s
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/(^|[^:'"`\\])\/\/.*$/gm, '$1');
+  const BRAND = /[Яя]ндекс|yandex/i;
+  const hits = [];
+  const markup = strip(html).replace(/<script[\s\S]*?<\/script>/g, '');
+  for (const m of markup.matchAll(/[^<>]+/g)) {
+    if (BRAND.test(m[0])) hits.push(`index.html: «${m[0].trim().slice(0, 60)}»`);
+  }
+  for (const f of fs.readdirSync('public/js')) {
+    for (const line of strip(fs.readFileSync(`public/js/${f}`, 'utf8')).split('\n')) {
+      if (/console\.(log|info|warn|error|debug)/.test(line)) continue;
+      for (const m of line.matchAll(/(['"`])((?:\\.|(?!\1).)*)\1/g)) {
+        if (BRAND.test(m[2])) hits.push(`js/${f}: «${m[2].slice(0, 60)}»`);
+      }
+    }
+  }
+  // Магазины в названиях игр: варианты ответа — тоже текст на экране. За
+  // «Steam Edition» на кадре Castle Crashers кадр уже убирали (п. 8.4.2).
+  for (const g of games.games) {
+    if (/\bsteam\b|\bgog\b|epic games store|windows edition/i.test(g.name)) hits.push(`игра ${g.id}: «${g.name}»`);
+  }
+  check('п. 3.5 — в тексте игры нет «Яндекса» и названий магазинов', !hits.length,
+    hits.slice(0, 5).join('; ') || 'ни в разметке, ни в строках кода, ни в названиях игр');
+}
+
 // п. 8.2.5 — вычищенный контент отсутствует и в данных, и на диске.
 {
   // Списки — общие с moderation-clean.mjs: свой второй список рано или поздно

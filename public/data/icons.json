@@ -1,6 +1,6 @@
 {
   "generatedAt": "2026-07-28T23:09:08.938Z",
-  "count": 822,
+  "count": 760,
   "icons": [
     {
       "file": "counter-strike-global-offensive.png",
@@ -161,17 +161,6 @@
       "gameId": "warframe",
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/83adc9225e4deb67d7ce42d58fe5157c.ico",
-      "author": "darklinkpower",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "path-of-exile.png",
-      "gameId": "path-of-exile",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/6709e8d64a5f47269ed5cea9f625f7ab.ico",
       "author": "darklinkpower",
       "blur": [],
       "clean": true,
@@ -663,17 +652,6 @@
       "skip": false
     },
     {
-      "file": "z1-battle-royale.png",
-      "gameId": "z1-battle-royale",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/e8db6ebd8c4a86f982cd94bb49534ef3.ico",
-      "author": "BigHungryChicken",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "paladins.png",
       "gameId": "paladins",
       "kind": "icon",
@@ -905,17 +883,6 @@
       "skip": false
     },
     {
-      "file": "day-of-defeat.png",
-      "gameId": "day-of-defeat",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/5d3d1a17bfceed6d6fbd9cd2bf5c619e.ico",
-      "author": "Yamstreed",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "deathmatch-classic.png",
       "gameId": "deathmatch-classic",
       "kind": "icon",
@@ -987,17 +954,6 @@
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/d846e38f1196eb61a7b71e1cd7a913e4.png",
       "author": "XGAMER",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "fallout-new-vegas.png",
-      "gameId": "fallout-new-vegas",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/854de648cbfe8c7e2a3e0597acb07ad6.ico",
-      "author": "GNUS",
       "blur": [],
       "clean": true,
       "needsReview": false,
@@ -1207,17 +1163,6 @@
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/97208e4cb6de9c04b325c2185316439f.png",
       "author": "X3R0X77",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "the-binding-of-isaac-rebirth.png",
-      "gameId": "the-binding-of-isaac-rebirth",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/bc573864331a9e42e4511de6f678aa83.ico",
-      "author": "BigHungryChicken",
       "blur": [],
       "clean": true,
       "needsReview": false,
@@ -1763,17 +1708,6 @@
       "skip": false
     },
     {
-      "file": "kurtzpel.png",
-      "gameId": "kurtzpel",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/29330fd16af21aa9a9559c4450d329e2.png",
-      "author": "TheWaslijn",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "hitman-2.png",
       "gameId": "hitman-2",
       "kind": "icon",
@@ -1972,17 +1906,6 @@
       "skip": false
     },
     {
-      "file": "monster-hunter-rise.png",
-      "gameId": "monster-hunter-rise",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/831b342d8a83408e5960e9b0c5f31f0c.ico",
-      "author": "Peggin",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "forza-horizon-5.png",
       "gameId": "forza-horizon-5",
       "kind": "icon",
@@ -2021,17 +1944,6 @@
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/512dea4132628ddddccdd5b133c3c502.png",
       "author": "Pirilampo",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "poppy-playtime.png",
-      "gameId": "poppy-playtime",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/6be0fc6d398b58e837e9ed93a6342a46.ico",
-      "author": "BigHungryChicken",
       "blur": [],
       "clean": true,
       "needsReview": false,
@@ -2170,17 +2082,6 @@
       "skip": false
     },
     {
-      "file": "plants-vs-zombies-goty-edition.png",
-      "gameId": "plants-vs-zombies-goty-edition",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/c724bedfba9b4aeb92b446fbb6baf31c.png",
-      "author": "FakeLebowski",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "star-wars-battlefront-ii-classic-2005.png",
       "gameId": "star-wars-battlefront-ii-classic-2005",
       "kind": "icon",
@@ -2241,17 +2142,6 @@
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/dfdf46549ea3b27b3434532212238c1b.ico",
       "author": "Kyuyrii",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "saints-row-2.png",
-      "gameId": "saints-row-2",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/f2708856060b3b50379aeb13c54a563e.png",
-      "author": "MrWheyne",
       "blur": [],
       "clean": true,
       "needsReview": false,
@@ -2357,17 +2247,6 @@
       "skip": false
     },
     {
-      "file": "dead-space-2008.png",
-      "gameId": "dead-space-2008",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/cbfe5681369338a48e2d1b63998099d6.png",
-      "author": "CluckenDip",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "the-witcher-enhanced-edition-directors-cut.png",
       "gameId": "the-witcher-enhanced-edition-directors-cut",
       "kind": "icon",
@@ -2467,17 +2346,6 @@
       "skip": false
     },
     {
-      "file": "red-orchestra-2-heroes-of-stalingrad-with-rising-storm.png",
-      "gameId": "red-orchestra-2-heroes-of-stalingrad-with-rising-storm",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/b8c27b7a1c450ffdacb31483454e0b54.ico",
-      "author": "darklinkpower",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "trine-enchanted-edition.png",
       "gameId": "trine-enchanted-edition",
       "kind": "icon",
@@ -2527,17 +2395,6 @@
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/d07e70efcfab08731a97e7b91be644de.ico",
       "author": "SirYodaJedi",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "serious-sam-3-bfe.png",
-      "gameId": "serious-sam-3-bfe",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/de596bc2f2a21ed618ef73e8f5e9e58e.ico",
-      "author": "saturday99",
       "blur": [],
       "clean": true,
       "needsReview": false,
@@ -2632,28 +2489,6 @@
       "skip": false
     },
     {
-      "file": "homefront.png",
-      "gameId": "homefront",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/69ebf66b3de72cc233fe47eb0cb8d48f.ico",
-      "author": "koshelev1gor",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "warhammer-40-000-space-marine-anniversary-edition.png",
-      "gameId": "warhammer-40-000-space-marine-anniversary-edition",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/0fe38f58cfec984b3894a5b4e23e2cd4.ico",
-      "author": "pix0wl",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "saints-row-the-third.png",
       "gameId": "saints-row-the-third",
       "kind": "icon",
@@ -2698,17 +2533,6 @@
       "skip": false
     },
     {
-      "file": "the-darkness-ii.png",
-      "gameId": "the-darkness-ii",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/f9c99524d8cf6cc6b51eade30dd95437.png",
-      "author": "TheWaslijn",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "spiral-knights.png",
       "gameId": "spiral-knights",
       "kind": "icon",
@@ -2742,28 +2566,6 @@
       "skip": false
     },
     {
-      "file": "monaco-whats-yours-is-mine.png",
-      "gameId": "monaco-whats-yours-is-mine",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/d64eacb932a5d483336b1008fff7da34.ico",
-      "author": "aaroncledge",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "batman-arkham-city-game-of-the-year-edition.png",
-      "gameId": "batman-arkham-city-game-of-the-year-edition",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/19bcaf989e32ed60b579f6a4e950176a.ico",
-      "author": "CluckenDip",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "xcom-enemy-unknown.png",
       "gameId": "xcom-enemy-unknown",
       "kind": "icon",
@@ -2791,17 +2593,6 @@
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/35d3a3f153a5dfb0e85d69dcfefea315.ico",
       "author": "pix0wl",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "wolfenstein-the-new-order.png",
-      "gameId": "wolfenstein-the-new-order",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/0a93091da5efb0d9d5649e7f6b2ad9d7.ico",
-      "author": "cyberbobgr",
       "blur": [],
       "clean": true,
       "needsReview": false,
@@ -2890,17 +2681,6 @@
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/9744c8cf184ceb07cf5c2bbce1489eb3.ico",
       "author": "Bradaloop",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "the-walking-dead.png",
-      "gameId": "the-walking-dead",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/1509c5822b3f60050ebd79dbc1343b06.ico",
-      "author": "saturday99",
       "blur": [],
       "clean": true,
       "needsReview": false,
@@ -3083,44 +2863,11 @@
       "skip": false
     },
     {
-      "file": "postal.png",
-      "gameId": "postal",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/34dd3675a36242216e981ddc1c3064b0.ico",
-      "author": "BigHungryChicken",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "shadow-warrior.png",
-      "gameId": "shadow-warrior",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/b6b5151cdd2b5e4e0332be02908cc100.ico",
-      "author": "r_dsgnd",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "kenshi.png",
       "gameId": "kenshi",
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/28d37080cc66cf58a326ca0939e0bd4b.ico",
       "author": "TheShadowGamer",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "mad-max.png",
-      "gameId": "mad-max",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/6eeff401f7601e4c1435352ad1b564c7.png",
-      "author": "xclsbm3",
       "blur": [],
       "clean": true,
       "needsReview": false,
@@ -3215,17 +2962,6 @@
       "skip": false
     },
     {
-      "file": "papers-please.png",
-      "gameId": "papers-please",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/3b92d18aa7a6176dd37d372bc2f1eb71.ico",
-      "author": "Moofy",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "getting-over-it-with-bennett-foddy.png",
       "gameId": "getting-over-it-with-bennett-foddy",
       "kind": "icon",
@@ -3275,17 +3011,6 @@
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/b630d97460c4d5807197d28fe2d3b849.ico",
       "author": "metalsamba",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "toribash.png",
-      "gameId": "toribash",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/9bad02571a0355e4a035c155db391fcc.ico",
-      "author": "smokedzn",
       "blur": [],
       "clean": true,
       "needsReview": false,
@@ -3732,17 +3457,6 @@
       "skip": false
     },
     {
-      "file": "kholat.png",
-      "gameId": "kholat",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/e58a9052057eab54f8b49e8c553d1837.ico",
-      "author": "BigHungryChicken",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "naruto-shippuden-ultimate-ninja-storm-4.png",
       "gameId": "naruto-shippuden-ultimate-ninja-storm-4",
       "kind": "icon",
@@ -3952,17 +3666,6 @@
       "skip": false
     },
     {
-      "file": "layers-of-fear-2016.png",
-      "gameId": "layers-of-fear-2016",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/c145e9e6fe8eb591cfdbe9fb6b7eda82.ico",
-      "author": "Dudge 404",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "squad.png",
       "gameId": "squad",
       "kind": "icon",
@@ -4034,17 +3737,6 @@
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/2ef248c04979d6b3a7b283ec3dc32cca.ico",
       "author": "Pixelguin",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "rising-storm-2-vietnam.png",
-      "gameId": "rising-storm-2-vietnam",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/8d11e7423637a894913fac78d8279dd9.png",
-      "author": "tosione",
       "blur": [],
       "clean": true,
       "needsReview": false,
@@ -4161,17 +3853,6 @@
       "skip": false
     },
     {
-      "file": "uno.png",
-      "gameId": "uno",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/b803f0a4e6b8514f2dab43eaca581b05.ico",
-      "author": "BigHungryChicken",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "rec-room.png",
       "gameId": "rec-room",
       "kind": "icon",
@@ -4243,17 +3924,6 @@
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/571f3ecb0738e2eb0f162196fea1ef91.png",
       "author": "Addams",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "state-of-decay-2-juggernaut-edition.png",
-      "gameId": "state-of-decay-2-juggernaut-edition",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/36b84e50eac55cadf8778631ba96bc7a.ico",
-      "author": "Itsudda",
       "blur": [],
       "clean": true,
       "needsReview": false,
@@ -4359,17 +4029,6 @@
       "skip": false
     },
     {
-      "file": "kards-the-wwii-card-game.png",
-      "gameId": "kards-the-wwii-card-game",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/65fc52ed8f88c81323a418ca94cec2ed.ico",
-      "author": "darklinkpower",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "half-life-alyx.png",
       "gameId": "half-life-alyx",
       "kind": "icon",
@@ -4386,28 +4045,6 @@
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/e20e7a93c5d1451db744969f59430981.ico",
       "author": "thenameadder",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "far-cry-5.png",
-      "gameId": "far-cry-5",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/5eb6422e73e02f9fd9b284b320dc42fd.ico",
-      "author": "AstralBloodEX",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "life-is-strange-before-the-storm.png",
-      "gameId": "life-is-strange-before-the-storm",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/e61def9f4feb639478b2a3f71642a916.png",
-      "author": "aetherium.",
       "blur": [],
       "clean": true,
       "needsReview": false,
@@ -4507,17 +4144,6 @@
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/c3fd7907dc594c388f475cb51562427c.ico",
       "author": "NEKRØ",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "mordhau.png",
-      "gameId": "mordhau",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/3a61ed715ee66c48bacf237fa7bb5289.ico",
-      "author": "Peggin",
       "blur": [],
       "clean": true,
       "needsReview": false,
@@ -4810,17 +4436,6 @@
       "skip": false
     },
     {
-      "file": "ultimate-custom-night.png",
-      "gameId": "ultimate-custom-night",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/f3b7e5d3eb074cde5b76e26bc0fb5776.png",
-      "author": "Daisy Lavender",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "pummel-party.png",
       "gameId": "pummel-party",
       "kind": "icon",
@@ -4881,17 +4496,6 @@
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/186a157b2992e7daed3677ce8e9fe40f.ico",
       "author": "NinjaBlade",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "century-age-of-ashes.png",
-      "gameId": "century-age-of-ashes",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/f85c1f7703bee190435c00682adda222.png",
-      "author": "Zer0c0mbat",
       "blur": [],
       "clean": true,
       "needsReview": false,
@@ -4969,17 +4573,6 @@
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/dc8a0799f0ddae72f04bcedf8d24ace3.ico",
       "author": "Poptheweasel100",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "wolfenstein-youngblood.png",
-      "gameId": "wolfenstein-youngblood",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/cff8ef12f1b0df2195b2c9a4d948b6cf.png",
-      "author": "Red2303",
       "blur": [],
       "clean": true,
       "needsReview": false,
@@ -5668,17 +5261,6 @@
       "skip": false
     },
     {
-      "file": "buckshot-roulette.png",
-      "gameId": "buckshot-roulette",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/a9dc0b4a2809b2e4e26480b54f8e7c2a.png",
-      "author": "Scrunge",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "liars-bar.png",
       "gameId": "liars-bar",
       "kind": "icon",
@@ -5833,33 +5415,11 @@
       "skip": false
     },
     {
-      "file": "aliens-vs-predator.png",
-      "gameId": "aliens-vs-predator",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/97108695bd93b6be52fa0334874c8722.ico",
-      "author": "FrostWolf",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "grand-theft-auto-vice-city.png",
       "gameId": "grand-theft-auto-vice-city",
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/f420063e121d14a0e66d79946b28219a.png",
       "author": "Emmalise",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "assassins-creed-directors-cut-edition.png",
-      "gameId": "assassins-creed-directors-cut-edition",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/ae5eb824ef87499f644c3f11a7176157.ico",
-      "author": "wulfbraker",
       "blur": [],
       "clean": true,
       "needsReview": false,
@@ -5932,17 +5492,6 @@
       "skip": false
     },
     {
-      "file": "warhammer-40-000-dawn-of-war-ii-chaos-rising.png",
-      "gameId": "warhammer-40-000-dawn-of-war-ii-chaos-rising",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/a0368cd40dbd0600d33a4dfb5c63c6f3.ico",
-      "author": "Moohoo",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "resident-evil-5.png",
       "gameId": "resident-evil-5",
       "kind": "icon",
@@ -5959,17 +5508,6 @@
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/4129304d04cff4cb688585ffd88c45fd.png",
       "author": "DrCerezetto",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "the-last-remnant.png",
-      "gameId": "the-last-remnant",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/f39ae9ff3a81f499230c4126e01f421b.ico",
-      "author": "darklinkpower",
       "blur": [],
       "clean": true,
       "needsReview": false,
@@ -6218,17 +5756,6 @@
       "skip": false
     },
     {
-      "file": "the-binding-of-isaac.png",
-      "gameId": "the-binding-of-isaac",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/735b90b4568125ed6c3f678819b6e058.ico",
-      "author": "Bruh man",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "alan-wakes-american-nightmare.png",
       "gameId": "alan-wakes-american-nightmare",
       "kind": "icon",
@@ -6383,17 +5910,6 @@
       "skip": false
     },
     {
-      "file": "ace-of-spades-battle-builder.png",
-      "gameId": "ace-of-spades-battle-builder",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/6daff3d43615b65709577a08c6adab4e.ico",
-      "author": "BigHungryChicken",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "fez.png",
       "gameId": "fez",
       "kind": "icon",
@@ -6454,17 +5970,6 @@
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/9324b10a35885c3b25c026278f7095a0.ico",
       "author": "pix0wl",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "surgeon-simulator.png",
-      "gameId": "surgeon-simulator",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/b1f391b61183d032ea38054238ee092a.ico",
-      "author": "BigHungryChicken",
       "blur": [],
       "clean": true,
       "needsReview": false,
@@ -6553,17 +6058,6 @@
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/ec3afa919ec7331e91c462f93608e0da.png",
       "author": "BaturaET",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "viscera-cleanup-detail.png",
-      "gameId": "viscera-cleanup-detail",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/f21ff2c15561bd5271169cb7b3e957c1.ico",
-      "author": "FireballKitty",
       "blur": [],
       "clean": true,
       "needsReview": false,
@@ -6707,28 +6201,6 @@
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/dcff0b8dbd2a160ac24e366ba89b1840.png",
       "author": "TheYoutuberAndGamer",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "warhammer-40-000-dawn-of-war-iii.png",
-      "gameId": "warhammer-40-000-dawn-of-war-iii",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/29e1c59be16c852670e3be302e8c303b.png",
-      "author": "FrostWolf",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "resident-evil-revelations-2.png",
-      "gameId": "resident-evil-revelations-2",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/a57e8915461b83adefb011530b711704.ico",
-      "author": "FrostWolf",
       "blur": [],
       "clean": true,
       "needsReview": false,
@@ -6955,17 +6427,6 @@
       "skip": false
     },
     {
-      "file": "dead-island-definitive-edition.png",
-      "gameId": "dead-island-definitive-edition",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/e4a7edcf8951363f3773c4f6c5196042.png",
-      "author": "M00NL18HT",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "ultimate-chicken-horse.png",
       "gameId": "ultimate-chicken-horse",
       "kind": "icon",
@@ -7010,33 +6471,11 @@
       "skip": false
     },
     {
-      "file": "outlast-2.png",
-      "gameId": "outlast-2",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/73e28fca2bef2542c3253ecb5def8458.ico",
-      "author": "pix0wl",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "emily-is-away.png",
       "gameId": "emily-is-away",
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/b069b3415151fa7217e870017374de7c.ico",
       "author": "darklinkpower",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "shadow-tactics-blades-of-the-shogun.png",
-      "gameId": "shadow-tactics-blades-of-the-shogun",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/95f9067d78cd71e5c49adbbf67e9ed8f.png",
-      "author": "tosione",
       "blur": [],
       "clean": true,
       "needsReview": false,
@@ -7114,17 +6553,6 @@
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/0eb178c5581f651876fadae5a8980899.ico",
       "author": "BigHungryChicken",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "bayonetta.png",
-      "gameId": "bayonetta",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/54bff62713e574c1097f56646402832a.png",
-      "author": "mutatedplush",
       "blur": [],
       "clean": true,
       "needsReview": false,
@@ -7532,17 +6960,6 @@
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/b61a560ed1b918340a0ddd00e08c990e.png",
       "author": "JustCarty",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "blasphemous.png",
-      "gameId": "blasphemous",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/7f53f8c6c730af6aeb52e66eb74d8507.ico",
-      "author": "darklinkpower",
       "blur": [],
       "clean": true,
       "needsReview": false,
@@ -8220,28 +7637,6 @@
       "skip": false
     },
     {
-      "file": "demonologist.png",
-      "gameId": "demonologist",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/d22050ea937ee457eeba22953aeea057.png",
-      "author": "Cpt Hmr",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "inside-the-backrooms.png",
-      "gameId": "inside-the-backrooms",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/3bc690387f88354b3d2e8e41d0455659.png",
-      "author": "Storbfall",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "stormgate.png",
       "gameId": "stormgate",
       "kind": "icon",
@@ -8352,33 +7747,11 @@
       "skip": false
     },
     {
-      "file": "the-first-berserker-khazan.png",
-      "gameId": "the-first-berserker-khazan",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/246bd53a58d5edb8239fe31998b908e3.ico",
-      "author": "GridDBJesse",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "webfishing.png",
       "gameId": "webfishing",
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/0f77e406b2bf5f4bf4ae0e5e90c325da.png",
       "author": "Sm0k3turt13",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "team-fortress-classic.png",
-      "gameId": "team-fortress-classic",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/e9257036daf20f062a498aab563d7712.png",
-      "author": "Besli",
       "blur": [],
       "clean": true,
       "needsReview": false,
@@ -8517,17 +7890,6 @@
       "skip": false
     },
     {
-      "file": "audiosurf.png",
-      "gameId": "audiosurf",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/8dff5136dbf4c0eb5f39155e15069444.ico",
-      "author": "Moohoo",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "americas-army-3.png",
       "gameId": "americas-army-3",
       "kind": "icon",
@@ -8621,17 +7983,6 @@
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/6a68d56bc29b2ba7743554740e04153c.png",
       "author": "BaturaET",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "fear-3.png",
-      "gameId": "fear-3",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/7b61b532c31919bdbdd10a8034e015b4.ico",
-      "author": "ShyloNura",
       "blur": [],
       "clean": true,
       "needsReview": false,
@@ -8781,17 +8132,6 @@
       "skip": false
     },
     {
-      "file": "dino-d-day.png",
-      "gameId": "dino-d-day",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/1697fe5eb0141dca1379090a4d766cc7.png",
-      "author": "rafaelsguimaraes",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "sanctum.png",
       "gameId": "sanctum",
       "kind": "icon",
@@ -8858,17 +8198,6 @@
       "skip": false
     },
     {
-      "file": "hell-yeah-wrath-of-the-dead-rabbit.png",
-      "gameId": "hell-yeah-wrath-of-the-dead-rabbit",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/1921493b5362e63fbe8983f4bd54157d.png",
-      "author": "KimaRo",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
       "file": "jet-set-radio.png",
       "gameId": "jet-set-radio",
       "kind": "icon",
@@ -8885,17 +8214,6 @@
       "kind": "icon",
       "source": "https://cdn2.steamgriddb.com/icon/3aec913b895a9112e968109fdaf02b65.ico",
       "author": "t1coon",
-      "blur": [],
-      "clean": true,
-      "needsReview": false,
-      "skip": false
-    },
-    {
-      "file": "doom-3.png",
-      "gameId": "doom-3",
-      "kind": "icon",
-      "source": "https://cdn2.steamgriddb.com/icon/392005a01d1cb2e5a1b55cc17e9c4a74.png",
-      "author": "ohshi",
       "blur": [],
       "clean": true,
       "needsReview": false,

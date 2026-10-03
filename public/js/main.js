@@ -822,12 +822,14 @@ async function openBoards(board) {
     if (error) console.warn('[boards] таблица недоступна:', error);
     el.boardsNote.textContent = sdk.available
       ? 'Таблица сейчас недоступна. Попробуй зайти позже.'
-      : 'Лидерборды доступны только внутри Яндекс Игр. Локально таблица пустая.';
+      : 'Лидерборды работают только на площадке. Локально таблица пустая.';
   } else if (!entries.length) {
     el.boardsNote.textContent = 'Пока никто не играл в этой таблице. Будь первым!';
   } else {
     // Подсказка про аккаунт — только гостю: вошедшему игроку она врала.
-    el.boardsNote.textContent = (await sdk.isGuest()) ? 'Чтобы попасть в таблицу, войди в аккаунт Яндекса.' : '';
+    // Название площадки в тексте игры не пишем: это чужой товарный знак, за него
+    // был отказ по п. 3.5 (MODERATION.md, 03.10.2026).
+    el.boardsNote.textContent = (await sdk.isGuest()) ? 'Чтобы попасть в таблицу, войди в аккаунт.' : '';
   }
   el.boardsNote.hidden = el.boardsNote.textContent === '';
 }

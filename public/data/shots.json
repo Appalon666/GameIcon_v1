@@ -1,6 +1,6 @@
 {
   "generatedAt": "2026-07-28T23:15:15.091Z",
-  "count": 984,
+  "count": 861,
   "shots": [
     {
       "file": "counter-strike-global-offensive-1.jpg",
@@ -35,14 +35,6 @@
       "clean": true
     },
     {
-      "file": "left-4-dead-2-1.jpg",
-      "gameId": "left-4-dead-2",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/550",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "grand-theft-auto-v-legacy-1.jpg",
       "gameId": "grand-theft-auto-v-legacy",
       "kind": "shot",
@@ -56,14 +48,6 @@
         }
       ],
       "clean": false
-    },
-    {
-      "file": "unturned-1.jpg",
-      "gameId": "unturned",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/304930",
-      "blur": [],
-      "clean": true
     },
     {
       "file": "new-world-aeternum-1.jpg",
@@ -194,21 +178,6 @@
       "clean": true
     },
     {
-      "file": "the-witcher-3-wild-hunt-1.jpg",
-      "gameId": "the-witcher-3-wild-hunt",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/292030",
-      "blur": [
-        {
-          "x": 0.798,
-          "y": 0.778,
-          "w": 0.201,
-          "h": 0.105
-        }
-      ],
-      "clean": false
-    },
-    {
       "file": "ark-survival-evolved-1.jpg",
       "gameId": "ark-survival-evolved",
       "kind": "shot",
@@ -245,14 +214,6 @@
       "gameId": "vrchat",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/438100",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "world-of-warships-1.jpg",
-      "gameId": "world-of-warships",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/552990",
       "blur": [],
       "clean": true
     },
@@ -357,14 +318,6 @@
       "gameId": "counter-strike",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/10",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "half-life-1.jpg",
-      "gameId": "half-life",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/70",
       "blur": [],
       "clean": true
     },
@@ -481,14 +434,6 @@
       "clean": true
     },
     {
-      "file": "7-days-to-die-1.jpg",
-      "gameId": "7-days-to-die",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/251570",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "rocket-league-1.jpg",
       "gameId": "rocket-league",
       "kind": "shot",
@@ -561,14 +506,6 @@
       "clean": true
     },
     {
-      "file": "z1-battle-royale-1.jpg",
-      "gameId": "z1-battle-royale",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/433850",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "paladins-1.jpg",
       "gameId": "paladins",
       "kind": "shot",
@@ -593,23 +530,6 @@
       "clean": true
     },
     {
-      "file": "satisfactory-1.jpg",
-      "gameId": "satisfactory",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/526870",
-      "blur": [
-        {
-          "x": 0.77,
-          "y": 0,
-          "w": 0.23,
-          "h": 0.11
-        }
-      ],
-      "clean": false,
-      "skip": false,
-      "needsReview": false
-    },
-    {
       "file": "life-is-strange-2-1.jpg",
       "gameId": "life-is-strange-2",
       "kind": "shot",
@@ -630,14 +550,6 @@
       "gameId": "monster-hunter-world",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/582010",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "hunt-showdown-1896-1.jpg",
-      "gameId": "hunt-showdown-1896",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/594650",
       "blur": [],
       "clean": true
     },
@@ -746,21 +658,6 @@
       "clean": true
     },
     {
-      "file": "efootball-1.jpg",
-      "gameId": "efootball",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/1665460",
-      "blur": [
-        {
-          "x": 0.471,
-          "y": 0.605,
-          "w": 0.126,
-          "h": 0.073
-        }
-      ],
-      "clean": false
-    },
-    {
       "file": "lethal-company-1.jpg",
       "gameId": "lethal-company",
       "kind": "shot",
@@ -769,26 +666,10 @@
       "clean": true
     },
     {
-      "file": "warhammer-40-000-rogue-trader-1.jpg",
-      "gameId": "warhammer-40-000-rogue-trader",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/2186680",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "repo-1.jpg",
       "gameId": "repo",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/3241660",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "day-of-defeat-1.jpg",
-      "gameId": "day-of-defeat",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/30",
       "blur": [],
       "clean": true
     },
@@ -825,26 +706,10 @@
       "clean": true
     },
     {
-      "file": "left-4-dead-1.jpg",
-      "gameId": "left-4-dead",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/500",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "portal-2-1.jpg",
       "gameId": "portal-2",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/620",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "call-of-duty-2-1.jpg",
-      "gameId": "call-of-duty-2",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/2630",
       "blur": [],
       "clean": true
     },
@@ -953,26 +818,10 @@
       "clean": true
     },
     {
-      "file": "no-more-room-in-hell-1.jpg",
-      "gameId": "no-more-room-in-hell",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/224260",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "just-cause-3-1.jpg",
       "gameId": "just-cause-3",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/225540",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "company-of-heroes-2-1.jpg",
-      "gameId": "company-of-heroes-2",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/231430",
       "blur": [],
       "clean": true
     },
@@ -1013,14 +862,6 @@
       "gameId": "assetto-corsa",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/244210",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "the-binding-of-isaac-rebirth-1.jpg",
-      "gameId": "the-binding-of-isaac-rebirth",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/250900",
       "blur": [],
       "clean": true
     },
@@ -1128,26 +969,10 @@
       "clean": true
     },
     {
-      "file": "rimworld-1.jpg",
-      "gameId": "rimworld",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/294100",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "robocraft-1.jpg",
       "gameId": "robocraft",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/301520",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "for-honor-1.jpg",
-      "gameId": "for-honor",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/304390",
       "blur": [],
       "clean": true
     },
@@ -1246,14 +1071,6 @@
       "clean": true
     },
     {
-      "file": "doom-1.jpg",
-      "gameId": "doom",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/379720",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "fishing-planet-1.jpg",
       "gameId": "fishing-planet",
       "kind": "shot",
@@ -1274,14 +1091,6 @@
       "gameId": "undertale",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/391540",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "hearts-of-iron-iv-1.jpg",
-      "gameId": "hearts-of-iron-iv",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/394360",
       "blur": [],
       "clean": true
     },
@@ -1334,14 +1143,6 @@
       "clean": true
     },
     {
-      "file": "deceit-1.jpg",
-      "gameId": "deceit",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/466240",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "the-elder-scrolls-v-skyrim-special-edition-1.jpg",
       "gameId": "the-elder-scrolls-v-skyrim-special-edition",
       "kind": "shot",
@@ -1362,14 +1163,6 @@
       "gameId": "thehunter-call-of-the-wild",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/518790",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "dying-light-2-stay-human-reloaded-edition-1.jpg",
-      "gameId": "dying-light-2-stay-human-reloaded-edition",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/534380",
       "blur": [],
       "clean": true
     },
@@ -1572,14 +1365,6 @@
       "clean": true
     },
     {
-      "file": "nba-2k20-1.jpg",
-      "gameId": "nba-2k20",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/1089350",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "football-manager-2020-1.jpg",
       "gameId": "football-manager-2020",
       "kind": "shot",
@@ -1632,14 +1417,6 @@
       "gameId": "battlefield-1",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/1238840",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "star-wars-the-old-republic-1.jpg",
-      "gameId": "star-wars-the-old-republic",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/1286830",
       "blur": [],
       "clean": true
     },
@@ -1778,22 +1555,6 @@
       "clean": true
     },
     {
-      "file": "ea-sports-fc-24-1.jpg",
-      "gameId": "ea-sports-fc-24",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/2195250",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "ea-sports-fc-25-1.jpg",
-      "gameId": "ea-sports-fc-25",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/2669320",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "content-warning-1.jpg",
       "gameId": "content-warning",
       "kind": "shot",
@@ -1818,34 +1579,10 @@
       "clean": true
     },
     {
-      "file": "half-life-source-1.jpg",
-      "gameId": "half-life-source",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/280",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "day-of-defeat-source-1.jpg",
-      "gameId": "day-of-defeat-source",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/300",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "alien-swarm-1.jpg",
       "gameId": "alien-swarm",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/630",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "killing-floor-1.jpg",
-      "gameId": "killing-floor",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/1250",
       "blur": [],
       "clean": true
     },
@@ -1897,14 +1634,6 @@
       "clean": true
     },
     {
-      "file": "call-of-duty-4-modern-warfare-2007-1.jpg",
-      "gameId": "call-of-duty-4-modern-warfare-2007",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/7940",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "just-cause-2-1.jpg",
       "gameId": "just-cause-2",
       "kind": "shot",
@@ -1937,14 +1666,6 @@
       "clean": true
     },
     {
-      "file": "return-to-castle-wolfenstein-1.jpg",
-      "gameId": "return-to-castle-wolfenstein",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/9010",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "saints-row-2-1.jpg",
       "gameId": "saints-row-2",
       "kind": "shot",
@@ -1957,14 +1678,6 @@
       "gameId": "star-trek-online",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/9900",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "call-of-duty-world-at-war-1.jpg",
-      "gameId": "call-of-duty-world-at-war",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/10090",
       "blur": [],
       "clean": true
     },
@@ -2017,14 +1730,6 @@
       "clean": true
     },
     {
-      "file": "warhammer-40-000-dawn-of-war-ii-anniversary-edition-classic-1.jpg",
-      "gameId": "warhammer-40-000-dawn-of-war-ii-anniversary-edition-classic",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/15620",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "spore-1.jpg",
       "gameId": "spore",
       "kind": "shot",
@@ -2073,14 +1778,6 @@
       "clean": true
     },
     {
-      "file": "payday-the-heist-1.jpg",
-      "gameId": "payday-the-heist",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/24240",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "battlefield-bad-company-2-1.jpg",
       "gameId": "battlefield-bad-company-2",
       "kind": "shot",
@@ -2125,14 +1822,6 @@
       "gameId": "batman-arkham-asylum-game-of-the-year-edition",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/35140",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "red-orchestra-2-heroes-of-stalingrad-with-rising-storm-1.jpg",
-      "gameId": "red-orchestra-2-heroes-of-stalingrad-with-rising-storm",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/35450",
       "blur": [],
       "clean": true
     },
@@ -2256,14 +1945,6 @@
       "clean": true
     },
     {
-      "file": "darksiders-1.jpg",
-      "gameId": "darksiders",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/50620",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "homefront-1.jpg",
       "gameId": "homefront",
       "kind": "shot",
@@ -2285,14 +1966,6 @@
         }
       ],
       "clean": false
-    },
-    {
-      "file": "saints-row-the-third-1.jpg",
-      "gameId": "saints-row-the-third",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/55230",
-      "blur": [],
-      "clean": true
     },
     {
       "file": "amnesia-the-dark-descent-1.jpg",
@@ -2323,14 +1996,6 @@
       "gameId": "the-bureau-xcom-declassified",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/65930",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "the-darkness-ii-1.jpg",
-      "gameId": "the-darkness-ii",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/67370",
       "blur": [],
       "clean": true
     },
@@ -2411,14 +2076,6 @@
       "gameId": "orcs-must-die-2",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/201790",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "wolfenstein-the-new-order-1.jpg",
-      "gameId": "wolfenstein-the-new-order",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/201810",
       "blur": [],
       "clean": true
     },
@@ -2507,14 +2164,6 @@
       "gameId": "speedrunners",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/207140",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "the-walking-dead-1.jpg",
-      "gameId": "the-walking-dead",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/207610",
       "blur": [],
       "clean": true
     },
@@ -2622,14 +2271,6 @@
       "clean": false
     },
     {
-      "file": "hotline-miami-1.jpg",
-      "gameId": "hotline-miami",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/219150",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "dont-starve-1.jpg",
       "gameId": "dont-starve",
       "kind": "shot",
@@ -2682,46 +2323,6 @@
       "gameId": "defiance",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/224600",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "brutal-legend-1.jpg",
-      "gameId": "brutal-legend",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/225260",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "killing-floor-2-1.jpg",
-      "gameId": "killing-floor-2",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/232090",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "postal-1.jpg",
-      "gameId": "postal",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/232770",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "shadow-warrior-1.jpg",
-      "gameId": "shadow-warrior",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/233130",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "kenshi-1.jpg",
-      "gameId": "kenshi",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/233860",
       "blur": [],
       "clean": true
     },
@@ -2789,14 +2390,6 @@
       "clean": true
     },
     {
-      "file": "outlast-1.jpg",
-      "gameId": "outlast",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/238320",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "magicka-2-1.jpg",
       "gameId": "magicka-2",
       "kind": "shot",
@@ -2805,39 +2398,10 @@
       "clean": true
     },
     {
-      "file": "battleblock-theater-1.jpg",
-      "gameId": "battleblock-theater",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/238460",
-      "blur": [
-        {
-          "x": 0.17,
-          "y": 0.02,
-          "w": 0.58,
-          "h": 0.33
-        },
-        {
-          "x": 0.86,
-          "y": 0.9,
-          "w": 0.14,
-          "h": 0.1
-        }
-      ],
-      "clean": false
-    },
-    {
       "file": "getting-over-it-with-bennett-foddy-1.jpg",
       "gameId": "getting-over-it-with-bennett-foddy",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/240720",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "gunz-2-the-second-duel-1.jpg",
-      "gameId": "gunz-2-the-second-duel",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/242720",
       "blur": [],
       "clean": true
     },
@@ -2866,26 +2430,10 @@
       "clean": true
     },
     {
-      "file": "toribash-1.jpg",
-      "gameId": "toribash",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/248570",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "divide-by-sheep-1.jpg",
       "gameId": "divide-by-sheep",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/252130",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "resident-evil-4-2005-1.jpg",
-      "gameId": "resident-evil-4-2005",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/254700",
       "blur": [],
       "clean": true
     },
@@ -3042,34 +2590,10 @@
       "clean": true
     },
     {
-      "file": "f1-2015-1.jpg",
-      "gameId": "f1-2015",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/286570",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "skill-special-force-2-shooter-1.jpg",
-      "gameId": "skill-special-force-2-shooter",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/286940",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "metro-last-light-redux-1.jpg",
       "gameId": "metro-last-light-redux",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/287390",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "metal-gear-solid-v-the-phantom-pain-1.jpg",
-      "gameId": "metal-gear-solid-v-the-phantom-pain",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/287700",
       "blur": [],
       "clean": true
     },
@@ -3110,14 +2634,6 @@
       "gameId": "ryse-son-of-rome",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/302510",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "blockade-3d-1.jpg",
-      "gameId": "blockade-3d",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/302830",
       "blur": [],
       "clean": true
     },
@@ -3186,26 +2702,10 @@
       "clean": true
     },
     {
-      "file": "duck-game-1.jpg",
-      "gameId": "duck-game",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/312530",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "sniper-elite-4-1.jpg",
       "gameId": "sniper-elite-4",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/312660",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "the-expendabros-1.jpg",
-      "gameId": "the-expendabros",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/312990",
       "blur": [],
       "clean": true
     },
@@ -3400,14 +2900,6 @@
       "clean": false
     },
     {
-      "file": "marvels-midnight-suns-1.jpg",
-      "gameId": "marvels-midnight-suns",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/368260",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "assassins-creed-syndicate-1.jpg",
       "gameId": "assassins-creed-syndicate",
       "kind": "shot",
@@ -3433,14 +2925,6 @@
       "gameId": "tree-of-savior-english-ver",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/372000",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "kingdom-come-deliverance-1.jpg",
-      "gameId": "kingdom-come-deliverance",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/379430",
       "blur": [],
       "clean": true
     },
@@ -3565,30 +3049,6 @@
       "clean": true
     },
     {
-      "file": "metro-exodus-1.jpg",
-      "gameId": "metro-exodus",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/412020",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "hellblade-senuas-sacrifice-1.jpg",
-      "gameId": "hellblade-senuas-sacrifice",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/414340",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "resident-evil-7-biohazard-1.jpg",
-      "gameId": "resident-evil-7-biohazard",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/418370",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "rising-storm-2-vietnam-1.jpg",
       "gameId": "rising-storm-2-vietnam",
       "kind": "shot",
@@ -3608,22 +3068,6 @@
         }
       ],
       "clean": false
-    },
-    {
-      "file": "iron-snout-1.jpg",
-      "gameId": "iron-snout",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/424280",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "whos-your-daddy-1.jpg",
-      "gameId": "whos-your-daddy",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/427730",
-      "blur": [],
-      "clean": true
     },
     {
       "file": "golf-with-your-friends-1.jpg",
@@ -3665,14 +3109,6 @@
       "clean": true
     },
     {
-      "file": "friday-the-13th-the-game-1.jpg",
-      "gameId": "friday-the-13th-the-game",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/438740",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "stories-the-path-of-destinies-1.jpg",
       "gameId": "stories-the-path-of-destinies",
       "kind": "shot",
@@ -3685,14 +3121,6 @@
       "gameId": "watch-dogs-2",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/447040",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "shadowverse-ccg-1.jpg",
-      "gameId": "shadowverse-ccg",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/453480",
       "blur": [],
       "clean": true
     },
@@ -3737,21 +3165,6 @@
       "clean": true
     },
     {
-      "file": "uno-1.jpg",
-      "gameId": "uno",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/470220",
-      "blur": [
-        {
-          "x": 0.32,
-          "y": 0.4,
-          "w": 0.32,
-          "h": 0.24
-        }
-      ],
-      "clean": false
-    },
-    {
       "file": "rec-room-1.jpg",
       "gameId": "rec-room",
       "kind": "shot",
@@ -3772,22 +3185,6 @@
       "gameId": "heaven-forest-vr-mmo",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/476480",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "football-manager-2017-1.jpg",
-      "gameId": "football-manager-2017",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/482730",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "nioh-complete-edition-1.jpg",
-      "gameId": "nioh-complete-edition",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/485510",
       "blur": [],
       "clean": true
     },
@@ -3899,14 +3296,6 @@
       "gameId": "argo",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/530700",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "kards-the-wwii-card-game-1.jpg",
-      "gameId": "kards-the-wwii-card-game",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/544810",
       "blur": [],
       "clean": true
     },
@@ -4180,26 +3569,10 @@
       "clean": true
     },
     {
-      "file": "muse-dash-1.jpg",
-      "gameId": "muse-dash",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/774171",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "farming-simulator-19-1.jpg",
       "gameId": "farming-simulator-19",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/787860",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "neon-abyss-1.jpg",
-      "gameId": "neon-abyss",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/788100",
       "blur": [],
       "clean": true
     },
@@ -4224,14 +3597,6 @@
       "gameId": "the-awesome-adventures-of-captain-spirit",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/845070",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "ultimate-custom-night-1.jpg",
-      "gameId": "ultimate-custom-night",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/871720",
       "blur": [],
       "clean": true
     },
@@ -4347,14 +3712,6 @@
       "clean": true
     },
     {
-      "file": "wolfenstein-youngblood-1.jpg",
-      "gameId": "wolfenstein-youngblood",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/1056960",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "ori-and-the-will-of-the-wisps-1.jpg",
       "gameId": "ori-and-the-will-of-the-wisps",
       "kind": "shot",
@@ -4459,30 +3816,6 @@
       "clean": true
     },
     {
-      "file": "world-war-3-1.jpg",
-      "gameId": "world-war-3",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/674020",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "operation-harsh-doorstop-1.jpg",
-      "gameId": "operation-harsh-doorstop",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/736590",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "dead-frontier-2-1.jpg",
-      "gameId": "dead-frontier-2",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/744900",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "albion-online-1.jpg",
       "gameId": "albion-online",
       "kind": "shot",
@@ -4542,14 +3875,6 @@
       "gameId": "pacify",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/967050",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "sniper-elite-5-1.jpg",
-      "gameId": "sniper-elite-5",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/1029690",
       "blur": [],
       "clean": true
     },
@@ -4729,26 +4054,10 @@
       "clean": true
     },
     {
-      "file": "cult-of-the-lamb-1.jpg",
-      "gameId": "cult-of-the-lamb",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/1313140",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "runescape-1.jpg",
       "gameId": "runescape",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/1343400",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "warhammer-40-000-darktide-1.jpg",
-      "gameId": "warhammer-40-000-darktide",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/1361210",
       "blur": [],
       "clean": true
     },
@@ -4837,14 +4146,6 @@
       "gameId": "tale-of-immortal",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/1468810",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "fifa-22-1.jpg",
-      "gameId": "fifa-22",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/1506830",
       "blur": [],
       "clean": true
     },
@@ -4940,14 +4241,6 @@
       "gameId": "marvels-spider-man-remastered",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/1817070",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "chivalry-2-1.jpg",
-      "gameId": "chivalry-2",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/1824220",
       "blur": [],
       "clean": true
     },
@@ -5104,22 +4397,6 @@
       "clean": true
     },
     {
-      "file": "dark-messiah-of-might-and-magic-1.jpg",
-      "gameId": "dark-messiah-of-might-and-magic",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/2100",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "quake-1.jpg",
-      "gameId": "quake",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/2310",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "sid-meiers-civilization-iii-complete-1.jpg",
       "gameId": "sid-meiers-civilization-iii-complete",
       "kind": "shot",
@@ -5218,14 +4495,6 @@
       "gameId": "total-war-empire-definitive-edition",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/10500",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "aliens-vs-predator-1.jpg",
-      "gameId": "aliens-vs-predator",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/10680",
       "blur": [],
       "clean": true
     },
@@ -5329,14 +4598,6 @@
       "clean": true
     },
     {
-      "file": "warhammer-40-000-dawn-of-war-ii-chaos-rising-1.jpg",
-      "gameId": "warhammer-40-000-dawn-of-war-ii-chaos-rising",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/20570",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "resident-evil-5-1.jpg",
       "gameId": "resident-evil-5",
       "kind": "shot",
@@ -5420,14 +4681,6 @@
       "gameId": "lord-of-the-rings-war-in-the-north",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/32800",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "total-war-napoleon-definitive-edition-1.jpg",
-      "gameId": "total-war-napoleon-definitive-edition",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/34030",
       "blur": [],
       "clean": true
     },
@@ -5519,26 +4772,10 @@
       "clean": true
     },
     {
-      "file": "assassins-creed-brotherhood-1.jpg",
-      "gameId": "assassins-creed-brotherhood",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/48190",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "red-faction-armageddon-1.jpg",
       "gameId": "red-faction-armageddon",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/55110",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "warhammer-40-000-dawn-of-war-ii-retribution-1.jpg",
-      "gameId": "warhammer-40-000-dawn-of-war-ii-retribution",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/56437",
       "blur": [],
       "clean": true
     },
@@ -5611,14 +4848,6 @@
         }
       ],
       "clean": false
-    },
-    {
-      "file": "the-binding-of-isaac-1.jpg",
-      "gameId": "the-binding-of-isaac",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/113200",
-      "blur": [],
-      "clean": true
     },
     {
       "file": "fallen-earth-free2play-1.jpg",
@@ -5869,14 +5098,6 @@
       "clean": true
     },
     {
-      "file": "verdun-1.jpg",
-      "gameId": "verdun",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/242860",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "tropico-5-1.jpg",
       "gameId": "tropico-5",
       "kind": "shot",
@@ -5930,14 +5151,6 @@
       "clean": true
     },
     {
-      "file": "how-to-survive-1.jpg",
-      "gameId": "how-to-survive",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/250400",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "wargame-red-dragon-1.jpg",
       "gameId": "wargame-red-dragon",
       "kind": "shot",
@@ -5950,22 +5163,6 @@
       "gameId": "knights-and-merchants",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/253900",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "jack-orlando-directors-cut-1.jpg",
-      "gameId": "jack-orlando-directors-cut",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/253960",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "enclave-1.jpg",
-      "gameId": "enclave",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/253980",
       "blur": [],
       "clean": true
     },
@@ -5986,34 +5183,10 @@
       "clean": true
     },
     {
-      "file": "the-walking-dead-season-two-1.jpg",
-      "gameId": "the-walking-dead-season-two",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/261030",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "killer-is-dead-nightmare-edition-1.jpg",
-      "gameId": "killer-is-dead-nightmare-edition",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/261110",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "dragons-and-titans-1.jpg",
       "gameId": "dragons-and-titans",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/263500",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "dead-rising-3-apocalypse-edition-1.jpg",
-      "gameId": "dead-rising-3-apocalypse-edition",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/265550",
       "blur": [],
       "clean": true
     },
@@ -6226,14 +5399,6 @@
       "clean": true
     },
     {
-      "file": "paint-the-town-red-1.jpg",
-      "gameId": "paint-the-town-red",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/337320",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "keep-talking-and-nobody-explodes-1.jpg",
       "gameId": "keep-talking-and-nobody-explodes",
       "kind": "shot",
@@ -6246,14 +5411,6 @@
       "gameId": "besiege",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/346010",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "brainbread-2-1.jpg",
-      "gameId": "brainbread-2",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/346330",
       "blur": [],
       "clean": true
     },
@@ -6523,14 +5680,6 @@
       "clean": true
     },
     {
-      "file": "day-of-infamy-1.jpg",
-      "gameId": "day-of-infamy",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/447820",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "overcooked-1.jpg",
       "gameId": "overcooked",
       "kind": "shot",
@@ -6551,14 +5700,6 @@
       "gameId": "dragon-ball-xenoverse-2",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/454650",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "bayonetta-1.jpg",
-      "gameId": "bayonetta",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/460790",
       "blur": [],
       "clean": true
     },
@@ -6610,14 +5751,6 @@
       "clean": true
     },
     {
-      "file": "orwell-keeping-an-eye-on-you-1.jpg",
-      "gameId": "orwell-keeping-an-eye-on-you",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/491950",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "tropico-6-1.jpg",
       "gameId": "tropico-6",
       "kind": "shot",
@@ -6638,22 +5771,6 @@
       "gameId": "evolvation",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/510840",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "dusk-1.jpg",
-      "gameId": "dusk",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/519860",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "warhammer-40-000-inquisitor-martyr-1.jpg",
-      "gameId": "warhammer-40-000-inquisitor-martyr",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/527430",
       "blur": [],
       "clean": true
     },
@@ -6761,14 +5878,6 @@
       "clean": true
     },
     {
-      "file": "the-evil-within-2-1.jpg",
-      "gameId": "the-evil-within-2",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/601430",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "age-of-history-ii-1.jpg",
       "gameId": "age-of-history-ii",
       "kind": "shot",
@@ -6805,14 +5914,6 @@
       "gameId": "blade-and-sorcery",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/629730",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "ravenfield-1.jpg",
-      "gameId": "ravenfield",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/636480",
       "blur": [],
       "clean": true
     },
@@ -6952,26 +6053,10 @@
       "clean": true
     },
     {
-      "file": "five-nights-at-freddys-security-breach-1.jpg",
-      "gameId": "five-nights-at-freddys-security-breach",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/747660",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "outer-wilds-1.jpg",
       "gameId": "outer-wilds",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/753640",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "blasphemous-1.jpg",
-      "gameId": "blasphemous",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/774361",
       "blur": [],
       "clean": true
     },
@@ -7004,14 +6089,6 @@
       "gameId": "assetto-corsa-competizione",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/805550",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "radical-heights-1.jpg",
-      "gameId": "radical-heights",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/809960",
       "blur": [],
       "clean": true
     },
@@ -7142,27 +6219,6 @@
       "source": "https://store.steampowered.com/app/942970",
       "blur": [],
       "clean": true
-    },
-    {
-      "file": "bright-memory-1.jpg",
-      "gameId": "bright-memory",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/955050",
-      "blur": [
-        {
-          "x": 0.38,
-          "y": 0.7,
-          "w": 0.12,
-          "h": 0.21
-        },
-        {
-          "x": 0.88,
-          "y": 0.72,
-          "w": 0.12,
-          "h": 0.19
-        }
-      ],
-      "clean": false
     },
     {
       "file": "predecessor-1.jpg",
@@ -7341,21 +6397,6 @@
       "clean": true
     },
     {
-      "file": "nba-2k21-1.jpg",
-      "gameId": "nba-2k21",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/1225330",
-      "blur": [
-        {
-          "x": 0.66,
-          "y": 0,
-          "w": 0.34,
-          "h": 0.3
-        }
-      ],
-      "clean": false
-    },
-    {
       "file": "battlefield-3-1.jpg",
       "gameId": "battlefield-3",
       "kind": "shot",
@@ -7376,14 +6417,6 @@
       "gameId": "polygon-multiplayer-shooter",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/1241100",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "signalis-1.jpg",
-      "gameId": "signalis",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/1262350",
       "blur": [],
       "clean": true
     },
@@ -7506,21 +6539,6 @@
       "source": "https://store.steampowered.com/app/1384160",
       "blur": [],
       "clean": true
-    },
-    {
-      "file": "cruelty-squad-1.jpg",
-      "gameId": "cruelty-squad",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/1388770",
-      "blur": [
-        {
-          "x": 0.033,
-          "y": 0,
-          "w": 0.936,
-          "h": 0.098
-        }
-      ],
-      "clean": false
     },
     {
       "file": "ghostwire-tokyo-1.jpg",
@@ -7778,14 +6796,6 @@
       "clean": true
     },
     {
-      "file": "two-worlds-epic-edition-1.jpg",
-      "gameId": "two-worlds-epic-edition",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/1930",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "quake-ii-1.jpg",
       "gameId": "quake-ii",
       "kind": "shot",
@@ -7817,14 +6827,6 @@
       "clean": false
     },
     {
-      "file": "warhammer-40-000-dawn-of-war-dark-crusade-1.jpg",
-      "gameId": "warhammer-40-000-dawn-of-war-dark-crusade",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/4580",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "deus-ex-invisible-war-1.jpg",
       "gameId": "deus-ex-invisible-war",
       "kind": "shot",
@@ -7837,14 +6839,6 @@
       "gameId": "x-com-ufo-defense",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/7760",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "rage-1.jpg",
-      "gameId": "rage",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/9200",
       "blur": [],
       "clean": true
     },
@@ -7865,26 +6859,10 @@
       "clean": true
     },
     {
-      "file": "warhammer-40-000-dawn-of-war-soulstorm-1.jpg",
-      "gameId": "warhammer-40-000-dawn-of-war-soulstorm",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/9450",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "prototype-1.jpg",
       "gameId": "prototype",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/10150",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "max-payne-1.jpg",
-      "gameId": "max-payne",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/12140",
       "blur": [],
       "clean": true
     },
@@ -7981,14 +6959,6 @@
       "gameId": "fear",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/21090",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "fear-3-1.jpg",
-      "gameId": "fear-3",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/21100",
       "blur": [],
       "clean": true
     },
@@ -8097,22 +7067,6 @@
       "clean": true
     },
     {
-      "file": "duke-nukem-forever-1.jpg",
-      "gameId": "duke-nukem-forever",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/57900",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "dino-d-day-1.jpg",
-      "gameId": "dino-d-day",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/70000",
-      "blur": [],
-      "clean": true
-    },
-    {
       "file": "sanctum-1.jpg",
       "gameId": "sanctum",
       "kind": "shot",
@@ -8188,14 +7142,6 @@
       "gameId": "gotham-city-impostors-free-to-play",
       "kind": "shot",
       "source": "https://store.steampowered.com/app/206210",
-      "blur": [],
-      "clean": true
-    },
-    {
-      "file": "doom-3-1.jpg",
-      "gameId": "doom-3",
-      "kind": "shot",
-      "source": "https://store.steampowered.com/app/208200",
       "blur": [],
       "clean": true
     },

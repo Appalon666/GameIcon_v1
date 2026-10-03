@@ -1,6 +1,6 @@
 {
   "generatedAt": "2026-07-28T19:39:10.912Z",
-  "count": 1033,
+  "count": 1022,
   "games": [
     {
       "id": "counter-strike-global-offensive",
@@ -1047,17 +1047,6 @@
       "year": 2025
     },
     {
-      "id": "day-of-defeat",
-      "name": "Day of Defeat",
-      "genre": "Шутер",
-      "tier": 1,
-      "appid": 30,
-      "developer": "Valve",
-      "owners": 7500000,
-      "fact": "",
-      "year": 2003
-    },
-    {
       "id": "deathmatch-classic",
       "name": "Deathmatch Classic",
       "genre": "Экшен",
@@ -1290,7 +1279,7 @@
     },
     {
       "id": "dcs-world-steam-edition",
-      "name": "DCS World Steam Edition",
+      "name": "DCS World",
       "genre": "Симулятор",
       "tier": 1,
       "appid": 223750,
@@ -2486,17 +2475,6 @@
       "year": 2004
     },
     {
-      "id": "day-of-defeat-source",
-      "name": "Day of Defeat: Source",
-      "genre": "Шутер",
-      "tier": 2,
-      "appid": 300,
-      "developer": "Valve",
-      "owners": 3500000,
-      "fact": "",
-      "year": 2010
-    },
-    {
       "id": "alien-swarm",
       "name": "Alien Swarm",
       "genre": "Экшен",
@@ -2627,17 +2605,6 @@
       "owners": 3500000,
       "fact": "",
       "year": 2023
-    },
-    {
-      "id": "return-to-castle-wolfenstein",
-      "name": "Return to Castle Wolfenstein",
-      "genre": "Шутер",
-      "tier": 2,
-      "appid": 9010,
-      "developer": "Gray Matter Studios",
-      "owners": 3500000,
-      "fact": "",
-      "year": 2007
     },
     {
       "id": "saints-row-2",
@@ -3308,17 +3275,6 @@
       "year": 2012
     },
     {
-      "id": "wolfenstein-the-new-order",
-      "name": "Wolfenstein: The New Order",
-      "genre": "Шутер",
-      "tier": 2,
-      "appid": 201810,
-      "developer": "MachineGames",
-      "owners": 3500000,
-      "fact": "",
-      "year": 2014
-    },
-    {
       "id": "call-of-duty-black-ops-ii",
       "name": "Call of Duty: Black Ops II",
       "genre": "Экшен",
@@ -3701,17 +3657,6 @@
       "owners": 3500000,
       "fact": "",
       "year": 2016
-    },
-    {
-      "id": "postal",
-      "name": "POSTAL",
-      "genre": "Хоррор",
-      "tier": 2,
-      "appid": 232770,
-      "developer": "Running With Scissors",
-      "owners": 3500000,
-      "fact": "",
-      "year": 1997
     },
     {
       "id": "shadow-warrior",
@@ -4408,7 +4353,7 @@
     },
     {
       "id": "microsoft-flight-simulator-x-steam-edition",
-      "name": "Microsoft Flight Simulator X: Steam Edition",
+      "name": "Microsoft Flight Simulator X",
       "genre": "Симулятор",
       "tier": 3,
       "appid": 314160,
@@ -4957,17 +4902,6 @@
       "year": 2017
     },
     {
-      "id": "governor-of-poker-3",
-      "name": "Governor of Poker 3",
-      "genre": "Спорт",
-      "tier": 3,
-      "appid": 436150,
-      "developer": "Playtika Ltd.",
-      "owners": 3500000,
-      "fact": "",
-      "year": 2016
-    },
-    {
       "id": "line-of-sight",
       "name": "Line of Sight",
       "genre": "Шутер",
@@ -5497,7 +5431,7 @@
     },
     {
       "id": "final-fantasy-xv-windows-edition",
-      "name": "FINAL FANTASY XV WINDOWS EDITION",
+      "name": "FINAL FANTASY XV",
       "genre": "RPG",
       "tier": 3,
       "appid": 637650,
@@ -5933,17 +5867,6 @@
       "developer": "SEGA",
       "owners": 3500000,
       "fact": ""
-    },
-    {
-      "id": "wolfenstein-youngblood",
-      "name": "Wolfenstein: Youngblood",
-      "genre": "Экшен",
-      "tier": 3,
-      "appid": 1056960,
-      "developer": "MachineGames, Arkane Studios",
-      "owners": 3500000,
-      "fact": "",
-      "year": 2019
     },
     {
       "id": "ori-and-the-will-of-the-wisps",
@@ -6952,17 +6875,6 @@
       "tier": 3,
       "appid": 2709570,
       "developer": "DeadDevsTellNoLies",
-      "owners": 3500000,
-      "fact": "",
-      "year": 2024
-    },
-    {
-      "id": "buckshot-roulette",
-      "name": "Buckshot Roulette",
-      "genre": "Хоррор",
-      "tier": 3,
-      "appid": 2835570,
-      "developer": "Mike Klubnika",
       "owners": 3500000,
       "fact": "",
       "year": 2024
@@ -9214,17 +9126,6 @@
       "year": 2018
     },
     {
-      "id": "wolfenstein-ii-the-new-colossus",
-      "name": "Wolfenstein II: The New Colossus",
-      "genre": "Шутер",
-      "tier": 4,
-      "appid": 612880,
-      "developer": "MachineGames",
-      "owners": 1500000,
-      "fact": "",
-      "year": 2017
-    },
-    {
       "id": "pc-building-simulator",
       "name": "PC Building Simulator",
       "genre": "Симулятор",
@@ -10843,7 +10744,7 @@
     },
     {
       "id": "red-faction-guerrilla-steam-edition",
-      "name": "Red Faction Guerrilla Steam Edition",
+      "name": "Red Faction Guerrilla",
       "genre": "Песочница",
       "tier": 4,
       "appid": 20500,
@@ -10917,17 +10818,6 @@
       "owners": 1500000,
       "fact": "",
       "year": 2009
-    },
-    {
-      "id": "poker-night-at-the-inventory",
-      "name": "Poker Night at the Inventory",
-      "genre": "Стратегия",
-      "tier": 4,
-      "appid": 31280,
-      "developer": "Telltale Games",
-      "owners": 1500000,
-      "fact": "",
-      "year": 2010
     },
     {
       "id": "lego-star-wars-the-complete-saga",
@@ -11068,17 +10958,6 @@
       "tier": 4,
       "appid": 57900,
       "developer": "Gearbox Software",
-      "owners": 1500000,
-      "fact": "",
-      "year": 2011
-    },
-    {
-      "id": "dino-d-day",
-      "name": "Dino D-Day",
-      "genre": "Экшен",
-      "tier": 4,
-      "appid": 70000,
-      "developer": "800 North and Digital Ranch",
       "owners": 1500000,
       "fact": "",
       "year": 2011
