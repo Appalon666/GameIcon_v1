@@ -89,6 +89,7 @@ const el = {
   deskStatus: $('desk-status'),
   clock: $('taskbar-clock'),
   propsSize: $('props-size'),
+  creditsCast: $('credits-cast'),
   credits: $('credits'),
   creditsOpen: $('btn-credits'),
   creditsClose: $('btn-credits-close'),
@@ -905,6 +906,9 @@ async function boot() {
   el.propsSize.textContent =
     `${gamesText} · ${plural(nIcons, ['иконка', 'иконки', 'иконок'])} · ` +
     plural(items.length - nIcons, ['скриншот', 'скриншота', 'скриншотов']);
+  // В титрах — круглое число вниз до сотен: «больше 1000» пережило чистку
+  // модерации 03.10.2026, когда игр осталось меньше тысячи.
+  el.creditsCast.textContent = `больше ${Math.floor(games.length / 100) * 100} видеоигр`;
   startClock();
 
   setIcon(el.scoreIcon, 'star', { size: 17 });
